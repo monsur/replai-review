@@ -88,6 +88,11 @@ def format_game_html(game: dict, team_icons: dict) -> str:
     away_icon = team_icons.get(game['away_abbr'], {}).get('icon_file_path', '')
     home_icon = team_icons.get(game['home_abbr'], {}).get('icon_file_path', '')
 
+    # Add ESPN recap link if available
+    recap_link = ""
+    if 'recap_url' in game and game['recap_url']:
+        recap_link = f' <a href="{game["recap_url"]}" class="recap-link" target="_blank">Read full recap →</a>'
+
     return f"""    <div class="game">
         <div class="game-header">
             <div class="matchup">
@@ -101,7 +106,7 @@ def format_game_html(game: dict, team_icons: dict) -> str:
             </div>
         </div>
         <div class="summary">
-            {game['summary']}
+            {game['summary']}{recap_link}
         </div>
     </div>"""
 
@@ -281,6 +286,17 @@ def wrap_newsletter_html(newsletter_content: str, week: int) -> str:
             font-size: 0.95em;
             line-height: 1.6;
             color: #333;
+        }}
+        .recap-link {{
+            display: inline-block;
+            margin-left: 8px;
+            color: #013369;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 600;
+        }}
+        .recap-link:hover {{
+            text-decoration: underline;
         }}
     </style>
 </head>

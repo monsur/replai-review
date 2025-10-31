@@ -15,7 +15,8 @@ Generate a JSON object with the following structure:
       "home_team": "Cincinnati Bengals",
       "home_abbr": "CIN",
       "home_score": 38,
-      "summary": "Summary text here (3-7 sentences)"
+      "summary": "Summary text here (2-4 sentences)",
+      "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401671760"
     }
   ]
 }
@@ -24,6 +25,13 @@ Generate a JSON object with the following structure:
 TEAM ABBREVIATIONS:
 Map team names to standard abbreviations: NYJ (Jets), CIN (Bengals), BUF (Bills), MIA (Dolphins), NE (Patriots), etc.
 Use the team_icons data provided to find the correct abbreviation for each team.
+
+RECAP URL:
+Extract the ESPN game URL from the recap content. Look for links in the format:
+https://www.espn.com/nfl/recap/_/gameId/{GAMEID}
+or
+https://www.espn.com/nfl/game/_/gameId/{GAMEID}
+Include the full URL in the recap_url field.
 
 SUMMARY CONTENT FORMULA (2-4 sentences, max 100 words):
 
