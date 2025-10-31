@@ -2,9 +2,9 @@
 
 # NFL Season Configuration
 nfl_season:
-  year: 2024
+  year: 2025
   # First game of the season (Thursday Night Football, Week 1)
-  season_start_date: "2024-09-05"
+  season_start_date: "2025-09-04"
 
 # File Storage
 storage:
