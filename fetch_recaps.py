@@ -112,13 +112,20 @@ def extract_recap_links(soup: BeautifulSoup) -> List[Tuple[str, str]]:
         href = link.get('href', '')
 
         # Check if this is a recap link
-        if '/nfl/recap' in href or '/nfl/game' in href and 'recap' in href.lower():
+        # ESPN uses formats like:
+        # - https://www.espn.com/nfl/recap?gameId=401671817
+        # - /nfl/recap/_/gameId/401671716
+        if 'recap' in href and 'gameId' in href:
             # Extract game ID from URL
-            # URL format: /nfl/recap/_/gameId/401671716
-            if 'gameId' in href:
+            # Handle both query parameter (?gameId=XXX) and path (/gameId/XXX) formats
+            if 'gameId=' in href:
+                # Query parameter format: ?gameId=401671817
+                game_id = href.split('gameId=')[-1].split('&')[0].split('#')[0]
+            elif 'gameId/' in href:
+                # Path format: /gameId/401671716
                 game_id = href.split('gameId/')[-1].split('/')[0]
             else:
-                # Use a counter if we can't extract game ID
+                # Fallback
                 game_id = f"game_{len(recap_links) + 1}"
 
             # Make absolute URL if needed
