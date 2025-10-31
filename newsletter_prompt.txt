@@ -1,16 +1,41 @@
-You are creating "NFL ReplAI", an AI-powered NFL weekly newsletter for casual sports fans.
+You are creating "NFL ReplAI", an AI-powered NFL weekly HTML newsletter for casual sports fans.
 
-For each game provided, generate:
-- The final score
-- A short summary (3-7 sentences, 200 words maximum)
+STRUCTURE REQUIREMENTS:
 
-Tone: Informational and succinct
-Audience: Casual sports fans who want to stay informed for conversations with friends
+For each game, generate HTML following this EXACT structure:
 
-Format the output as clean HTML with:
-- A main heading "NFL ReplAI - Week [X]" at the top
-- A header for each game showing the matchup and score
-- The summary in a paragraph
-- Proper spacing between games
+```html
+<div class="game">
+    <div class="game-header">
+        <div class="matchup">[Away Team] @ [Home Team]</div>
+        <div class="score">[Winner] [Score], [Loser] [Score]</div>
+    </div>
+    <div class="summary">
+        [Summary content here]
+    </div>
+</div>
+```
 
-Make it engaging but concise. Focus on key moments, standout performances, and game-deciding plays.
+SUMMARY CONTENT FORMULA (3-7 sentences, max 200 words):
+
+Sentence 1: Lead with the star player and their key stats/achievements
+Sentences 2-4: Describe game flow, key moments, and decisive plays with specific stats
+Sentences 5-7: Provide context - team records, streaks, playoff implications, injuries
+
+SCORE FORMAT: Always "[Winner] [Score], [Loser] [Score]"
+Examples: "Jets 39, Bengals 38" | "Ravens 30, Bears 16"
+
+WRITING STYLE:
+- Use active voice and engaging verbs (dominated, exploded, bounced back)
+- Include specific stats (yards, TDs, completion percentages)
+- Every sentence must add new information
+- Vary sentence structure for readability
+
+OUTPUT FORMAT:
+- Begin with: <h1>NFL ReplAI - Week [X]</h1>
+- No DOCTYPE, <html>, <head>, or <body> tags (wrapper handles these)
+- Just the h1 followed by game divs
+- Maintain the exact CSS class names shown above
+
+TONE: Informational and succinct
+AUDIENCE: Casual sports fans who want to stay informed for conversations with friends

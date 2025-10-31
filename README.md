@@ -15,20 +15,20 @@ An automated system for generating AI-powered NFL weekly recaps from ESPN game d
 
 ```
 football/
-├── config.yaml              # Configuration file
-├── newsletter_prompt.txt    # AI prompt template (editable)
-├── week_calculator.py       # Swappable week calculation module
-├── ai_providers.py          # Swappable AI provider system
-├── fetch_recaps.py          # Script 1: Fetch game recaps from ESPN
-├── process_recaps.py        # Script 2: Clean and combine recaps
-├── generate_newsletter.py   # Script 3: Generate newsletter with AI
-├── requirements.txt         # Python dependencies
-├── README.md               # This file
-└── output/                 # Output directory
-    └── week_X/             # Generated for each week
-        ├── recaps/         # Downloaded recap HTML files
-        ├── combined.html   # Combined and cleaned recaps
-        └── newsletter.html # Final newsletter
+├── config.yaml                 # Configuration file
+├── newsletter_prompt.txt       # AI prompt template (editable)
+├── week_calculator.py          # Swappable week calculation module
+├── ai_providers.py             # Swappable AI provider system
+├── fetch_recaps.py             # Script 1: Fetch game recaps from ESPN
+├── process_recaps.py           # Script 2: Clean and combine recaps
+├── generate_newsletter.py      # Script 3: Generate newsletter with AI
+├── requirements.txt            # Python dependencies
+├── README.md                  # This file
+└── output/                    # Output directory
+    └── week_X/                # Generated for each week
+        ├── recaps/            # Downloaded recap HTML files
+        ├── combined.html      # Combined and cleaned recaps
+        └── newsletter.html    # Final newsletter
 ```
 
 ## Installation
@@ -192,13 +192,15 @@ ai:
 
 ### Newsletter Prompt
 
-The AI prompt is stored in `newsletter_prompt.txt` for easy editing. This file controls:
+The AI prompt is stored in `newsletter_prompt.txt` and controls all aspects of generation:
 - Newsletter tone and style
-- Summary length (currently 3-7 sentences, 200 words max)
-- Output format (HTML structure)
-- Target audience focus
+- Summary length (3-7 sentences, 200 words max)
+- HTML structure for each game
+- Content formula (star player → game flow → context)
+- Score format rules
+- Writing style guidelines
 
-**To customize**: Simply edit `newsletter_prompt.txt` to change tone, length, or focus. Changes take effect immediately on the next run.
+**To customize**: Edit `newsletter_prompt.txt` to change any aspect of the newsletter. Changes take effect immediately on the next run.
 
 ## Week Calculation
 
