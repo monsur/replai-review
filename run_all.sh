@@ -1,7 +1,7 @@
 #!/bin/bash
-# NFL ReplAI - Run All Scripts
+# ReplAI Review - Run All Scripts
 #
-# This script runs all three scripts in sequence to generate a complete NFL ReplAI newsletter.
+# This script runs all three scripts in sequence to generate a complete ReplAI Review newsletter.
 # Usage:
 #   ./run_all.sh              # Auto-detect week
 #   ./run_all.sh 8            # Specify week number
@@ -22,7 +22,7 @@ if [ ! -z "$2" ]; then
 fi
 
 echo "=================================="
-echo "NFL ReplAI Generator"
+echo "ReplAI Review Generator"
 echo "AI-Powered NFL Recaps"
 echo "=================================="
 echo ""
@@ -38,10 +38,10 @@ python3 process_recaps.py $WEEK
 echo ""
 
 # Script 3: Generate newsletter
-echo "Step 3/3: Generating NFL ReplAI with AI..."
+echo "Step 3/3: Generating ReplAI Review with AI..."
 python3 generate_newsletter.py $WEEK $PROVIDER
 echo ""
 
 echo "=================================="
-echo "✓ NFL ReplAI generation complete!"
+echo "✓ ReplAI Review generation complete!"
 echo "=================================="

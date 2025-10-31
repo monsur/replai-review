@@ -188,7 +188,7 @@ GAME RECAPS:
         games_html = '\n\n'.join([format_game_html(game, team_icons) for game in games])
 
         # Create complete newsletter HTML
-        newsletter_html = f"""<h1>NFL ReplAI - Week {week}</h1>
+        newsletter_html = f"""<h1>ReplAI Review - Week {week}</h1>
 
 {games_html}"""
 
@@ -230,7 +230,7 @@ def wrap_newsletter_html(newsletter_content: str, week: int) -> str:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL ReplAI - Week {week}</title>
+    <title>ReplAI Review - Week {week}</title>
     <style>
         body {{
             font-family: Arial, sans-serif;

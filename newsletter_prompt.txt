@@ -1,4 +1,4 @@
-You are creating "NFL ReplAI", an AI-powered NFL weekly newsletter for casual sports fans.
+You are creating "ReplAI Review", an AI-powered NFL weekly newsletter for casual sports fans.
 
 OUTPUT FORMAT:
 
