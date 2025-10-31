@@ -40,9 +40,13 @@ ai:
     model: "gemini-1.5-pro"
     max_tokens: 4096
 
+# Newsletter Branding
+newsletter_name: "NFL ReplAI"
+newsletter_tagline: "AI-Powered NFL Recaps"
+
 # Newsletter Generation Prompt
 newsletter_prompt: |
-  You are creating an NFL weekly newsletter for casual sports fans.
+  You are creating "NFL ReplAI", an AI-powered NFL weekly newsletter for casual sports fans.
 
   For each game provided, generate:
   - The final score
@@ -52,6 +56,7 @@ newsletter_prompt: |
   Audience: Casual sports fans who want to stay informed for conversations with friends
 
   Format the output as clean HTML with:
+  - A main heading "NFL ReplAI - Week [X]" at the top
   - A header for each game showing the matchup and score
   - The summary in a paragraph
   - Proper spacing between games

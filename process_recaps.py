@@ -186,7 +186,7 @@ def combine_recaps(processed_recaps: List[Tuple[str, str]]) -> str:
         "<html>",
         "<head>",
         "    <meta charset='utf-8'>",
-        "    <title>NFL Weekly Recaps</title>",
+        "    <title>NFL ReplAI - Combined Recaps</title>",
         "    <style>",
         "        .game-recap { margin-bottom: 40px; padding: 20px; border-bottom: 2px solid #ccc; }",
         "        .game-header h2 { color: #013369; margin-bottom: 15px; }",
@@ -195,7 +195,7 @@ def combine_recaps(processed_recaps: List[Tuple[str, str]]) -> str:
         "    </style>",
         "</head>",
         "<body>",
-        "    <h1>NFL Weekly Game Recaps</h1>",
+        "    <h1>NFL ReplAI - Combined Game Recaps</h1>",
         ""
     ]
 

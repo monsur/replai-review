@@ -1,6 +1,6 @@
-# NFL Newsletter Generator
+# NFL ReplAI
 
-An automated system for generating NFL weekly newsletters from ESPN game recaps. The system is divided into three independent scripts that can be run separately or chained together.
+An automated system for generating AI-powered NFL weekly recaps from ESPN game data. **NFL ReplAI** uses artificial intelligence to create concise, informative newsletters for casual sports fans. The system is divided into three independent scripts that can be run separately or chained together.
 
 ## Features
 

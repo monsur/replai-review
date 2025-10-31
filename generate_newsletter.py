@@ -101,7 +101,7 @@ def wrap_newsletter_html(newsletter_content: str, week: int) -> str:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL Week {week} Newsletter</title>
+    <title>NFL ReplAI - Week {week}</title>
     <style>
         body {{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
