@@ -2,12 +2,18 @@ You are creating "NFL ReplAI", an AI-powered NFL weekly HTML newsletter for casu
 
 STRUCTURE REQUIREMENTS:
 
-For each game, generate HTML following this EXACT structure:
+For each game, generate HTML following this EXACT structure with team icons:
 
 ```html
 <div class="game">
     <div class="game-header">
-        <div class="matchup">[Away Team] @ [Home Team]</div>
+        <div class="matchup">
+            <img src="[AWAY_TEAM_ICON_FILE_PATH]" alt="[AWAY_ABB]" class="team-icon">
+            <span>[Away Team Full Name]</span>
+            <span>@</span>
+            <img src="[HOME_TEAM_ICON_FILE_PATH]" alt="[HOME_ABB]" class="team-icon">
+            <span>[Home Team Full Name]</span>
+        </div>
         <div class="score">[Winner] [Score], [Loser] [Score]</div>
     </div>
     <div class="summary">
@@ -15,6 +21,11 @@ For each game, generate HTML following this EXACT structure:
     </div>
 </div>
 ```
+
+TEAM ICONS:
+You will receive team_icons data with each team's icon_file_path. Use the team abbreviation to look up the icon.
+Common abbreviations: NYJ (Jets), CIN (Bengals), BUF (Bills), MIA (Dolphins), NE (Patriots), etc.
+Extract team names from the recap content and map them to abbreviations, then use team_icons[abbreviation].icon_file_path
 
 SUMMARY CONTENT FORMULA (3-7 sentences, max 200 words):
 

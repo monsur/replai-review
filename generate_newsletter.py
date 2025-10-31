@@ -10,6 +10,7 @@ This script:
 """
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -39,6 +40,20 @@ def load_prompt(prompt_file: str) -> str:
         return f.read().strip()
 
 
+def load_team_icons(icons_file: str = "team_icons.json") -> dict:
+    """
+    Load team icons from JSON file.
+
+    Args:
+        icons_file: Path to the team icons JSON file
+
+    Returns:
+        Dictionary of team icons data
+    """
+    with open(icons_file, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
 def read_combined_recaps(combined_file: Path) -> str:
     """
     Read the combined recaps file.
@@ -62,7 +77,8 @@ def read_combined_recaps(combined_file: Path) -> str:
 def generate_newsletter(
     ai_provider,
     prompt: str,
-    recap_content: str
+    recap_content: str,
+    team_icons: dict
 ) -> str:
     """
     Generate newsletter using AI provider.
@@ -71,6 +87,7 @@ def generate_newsletter(
         ai_provider: AIProvider instance
         prompt: System prompt for the AI
         recap_content: Combined recap content
+        team_icons: Dictionary of team icons data
 
     Returns:
         Generated newsletter HTML
@@ -78,10 +95,14 @@ def generate_newsletter(
     print("Generating newsletter with AI...")
     print(f"Input size: {len(recap_content):,} characters")
 
-    # Create the user message
+    # Create the user message with team icons data
     user_message = f"""
 Here are the NFL game recaps from this week. Please generate a newsletter following the guidelines in the system prompt.
 
+TEAM ICONS DATA (use icon_file_path for each team abbreviation):
+{json.dumps(team_icons, indent=2)}
+
+GAME RECAPS:
 {recap_content}
 """
 
@@ -118,38 +139,55 @@ def wrap_newsletter_html(newsletter_content: str, week: int) -> str:
     <title>NFL ReplAI - Week {week}</title>
     <style>
         body {{
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
+            font-family: Arial, sans-serif;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
-            line-height: 1.6;
-            color: #333;
             background-color: #f5f5f5;
-        }}
-        .newsletter {{
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }}
         h1 {{
             color: #013369;
-            border-bottom: 3px solid #D50A0A;
-            padding-bottom: 10px;
-        }}
-        h2 {{
-            color: #013369;
-            margin-top: 30px;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
         }}
         .game {{
+            background-color: white;
+            padding: 25px;
             margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }}
+        .game-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #013369;
+            padding-bottom: 12px;
+        }}
+        .matchup {{
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #013369;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }}
+        .team-icon {{
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
         }}
         .score {{
+            font-size: 1.5em;
             font-weight: bold;
-            color: #D50A0A;
-            font-size: 1.1em;
+            color: #333;
+        }}
+        .summary {{
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #333;
         }}
     </style>
 </head>
@@ -236,12 +274,24 @@ def main():
         print(f"Error: Prompt file '{prompt_file}' not found")
         sys.exit(1)
 
+    # Load team icons
+    try:
+        team_icons = load_team_icons()
+        print(f"Loaded {len(team_icons)} team icons")
+    except FileNotFoundError:
+        print("Warning: team_icons.json not found, proceeding without icons")
+        team_icons = {}
+    except Exception as e:
+        print(f"Warning: Error loading team icons: {e}")
+        team_icons = {}
+
     # Generate newsletter
     try:
         newsletter_content = generate_newsletter(
             ai_provider,
             prompt,
-            recap_content
+            recap_content,
+            team_icons
         )
     except Exception as e:
         print(f"Error generating newsletter: {e}")
