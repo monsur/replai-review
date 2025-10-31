@@ -1,3 +1,5 @@
 # API keys (if accidentally committed)
 # Note: Keep config.yaml in git but don't commit with real API keys
 config.yaml
+
+*.pyc
