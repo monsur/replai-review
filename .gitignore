@@ -2,10 +2,13 @@
 # Note: Keep config.yaml in git but don't commit with real API keys
 config.yaml
 
+.DS_Store
+__pycache__/
 *.pyc
 
 # Generated output files (organized by week)
 output/
+team_logos/
 
 # Personal scratch doc
 thoughts.txt
