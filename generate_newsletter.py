@@ -25,6 +25,20 @@ def load_config(config_path: str = "config.yaml") -> dict:
         return yaml.safe_load(f)
 
 
+def load_prompt(prompt_file: str) -> str:
+    """
+    Load the newsletter generation prompt from a text file.
+
+    Args:
+        prompt_file: Path to the prompt file
+
+    Returns:
+        Prompt text as a string
+    """
+    with open(prompt_file, 'r', encoding='utf-8') as f:
+        return f.read().strip()
+
+
 def read_combined_recaps(combined_file: Path) -> str:
     """
     Read the combined recaps file.
@@ -214,8 +228,13 @@ def main():
         print(f"Error initializing AI provider: {e}")
         sys.exit(1)
 
-    # Get prompt
-    prompt = config['newsletter_prompt']
+    # Load prompt from file
+    prompt_file = config.get('newsletter_prompt_file', 'newsletter_prompt.txt')
+    try:
+        prompt = load_prompt(prompt_file)
+    except FileNotFoundError:
+        print(f"Error: Prompt file '{prompt_file}' not found")
+        sys.exit(1)
 
     # Generate newsletter
     try:

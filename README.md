@@ -16,6 +16,7 @@ An automated system for generating AI-powered NFL weekly recaps from ESPN game d
 ```
 football/
 ├── config.yaml              # Configuration file
+├── newsletter_prompt.txt    # AI prompt template (editable)
 ├── week_calculator.py       # Swappable week calculation module
 ├── ai_providers.py          # Swappable AI provider system
 ├── fetch_recaps.py          # Script 1: Fetch game recaps from ESPN
@@ -191,7 +192,13 @@ ai:
 
 ### Newsletter Prompt
 
-The `newsletter_prompt` in `config.yaml` controls how the AI generates the newsletter. Customize it to change tone, length, or focus.
+The AI prompt is stored in `newsletter_prompt.txt` for easy editing. This file controls:
+- Newsletter tone and style
+- Summary length (currently 3-7 sentences, 200 words max)
+- Output format (HTML structure)
+- Target audience focus
+
+**To customize**: Simply edit `newsletter_prompt.txt` to change tone, length, or focus. Changes take effect immediately on the next run.
 
 ## Week Calculation
 
@@ -268,10 +275,11 @@ echo "Newsletter generated: week_$(date +\%U)/newsletter.html"
 
 ### Custom Newsletter Format
 
-Edit the `newsletter_prompt` in `config.yaml` to customize:
+Edit `newsletter_prompt.txt` to customize:
 - Summary length (currently 3-7 sentences, 200 words max)
 - Tone (currently informational and succinct)
 - Additional content (e.g., stats, player highlights, predictions)
+- HTML structure and styling instructions
 
 ### Process Multiple Weeks
 

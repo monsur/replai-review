@@ -45,20 +45,5 @@ newsletter_name: "NFL ReplAI"
 newsletter_tagline: "AI-Powered NFL Recaps"
 
 # Newsletter Generation Prompt
-newsletter_prompt: |
-  You are creating "NFL ReplAI", an AI-powered NFL weekly newsletter for casual sports fans.
-
-  For each game provided, generate:
-  - The final score
-  - A short summary (3-7 sentences, 200 words maximum)
-
-  Tone: Informational and succinct
-  Audience: Casual sports fans who want to stay informed for conversations with friends
-
-  Format the output as clean HTML with:
-  - A main heading "NFL ReplAI - Week [X]" at the top
-  - A header for each game showing the matchup and score
-  - The summary in a paragraph
-  - Proper spacing between games
-
-  Make it engaging but concise. Focus on key moments, standout performances, and game-deciding plays.
+# Path to the prompt file (relative to this config file)
+newsletter_prompt_file: "newsletter_prompt.txt"
