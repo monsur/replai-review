@@ -23,10 +23,11 @@ football/
 ├── generate_newsletter.py   # Script 3: Generate newsletter with AI
 ├── requirements.txt         # Python dependencies
 ├── README.md               # This file
-└── week_X/                 # Generated for each week
-    ├── recaps/             # Downloaded recap HTML files
-    ├── combined.html       # Combined and cleaned recaps
-    └── newsletter.html     # Final newsletter
+└── output/                 # Output directory
+    └── week_X/             # Generated for each week
+        ├── recaps/         # Downloaded recap HTML files
+        ├── combined.html   # Combined and cleaned recaps
+        └── newsletter.html # Final newsletter
 ```
 
 ## Installation
@@ -90,7 +91,7 @@ python fetch_recaps.py --week 8
 python fetch_recaps.py --config my_config.yaml
 ```
 
-**Output**: Creates `week_X/recaps/` directory with HTML files for each game.
+**Output**: Creates `output/week_X/recaps/` directory with HTML files for each game.
 
 ### Script 2: Process Recaps
 
@@ -107,7 +108,7 @@ python process_recaps.py --week 8
 python process_recaps.py --config my_config.yaml
 ```
 
-**Output**: Creates `week_X/combined.html` with cleaned and combined recaps.
+**Output**: Creates `output/week_X/combined.html` with cleaned and combined recaps.
 
 ### Script 3: Generate Newsletter
 
@@ -127,7 +128,7 @@ python generate_newsletter.py --week 8
 python generate_newsletter.py --week 8 --provider claude
 ```
 
-**Output**: Creates `week_X/newsletter.html` - the final newsletter ready to view or distribute.
+**Output**: Creates `output/week_X/newsletter.html` - the final newsletter ready to view or distribute.
 
 ### View the Newsletter
 
@@ -135,13 +136,13 @@ Open the generated newsletter in your browser:
 
 ```bash
 # macOS
-open week_8/newsletter.html
+open output/week_8/newsletter.html
 
 # Linux
-xdg-open week_8/newsletter.html
+xdg-open output/week_8/newsletter.html
 
 # Windows
-start week_8/newsletter.html
+start output/week_8/newsletter.html
 ```
 
 ## Configuration
@@ -160,7 +161,7 @@ Update `season_start_date` at the beginning of each NFL season.
 
 ```yaml
 storage:
-  base_dir: "."  # Where week_X folders are created
+  base_dir: "output"  # Where week_X folders are created
   recap_subdir: "recaps"
   combined_filename: "combined.html"
   newsletter_filename: "newsletter.html"
@@ -288,10 +289,10 @@ Generate newsletters with different providers for the same week:
 
 ```bash
 python generate_newsletter.py --week 8 --provider claude
-mv week_8/newsletter.html week_8/newsletter_claude.html
+mv output/week_8/newsletter.html output/week_8/newsletter_claude.html
 
 python generate_newsletter.py --week 8 --provider openai
-mv week_8/newsletter.html week_8/newsletter_openai.html
+mv output/week_8/newsletter.html output/week_8/newsletter_openai.html
 
 python generate_newsletter.py --week 8 --provider gemini
 ```

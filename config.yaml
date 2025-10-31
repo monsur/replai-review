@@ -8,7 +8,7 @@ nfl_season:
 
 # File Storage
 storage:
-  base_dir: "."  # Base directory for storing week folders
+  base_dir: "output"  # Base directory for storing week folders
   recap_subdir: "recaps"  # Subdirectory within week folder for recap files
   combined_filename: "combined.html"  # Combined recaps file
   newsletter_filename: "newsletter.html"  # Final newsletter file

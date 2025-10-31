@@ -3,3 +3,6 @@
 config.yaml
 
 *.pyc
+
+# Generated output files (organized by week)
+output/
