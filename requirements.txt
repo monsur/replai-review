@@ -6,6 +6,9 @@ pyyaml>=6.0
 # HTML parsing
 lxml>=4.9.0
 
+# Image processing (for team icons)
+Pillow>=10.0.0
+
 # AI Provider dependencies
 # Install only the ones you need for your chosen provider
 
