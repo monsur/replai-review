@@ -1,0 +1,59 @@
+# NFL Newsletter Generator Configuration
+
+# NFL Season Configuration
+nfl_season:
+  year: 2024
+  # First game of the season (Thursday Night Football, Week 1)
+  season_start_date: "2024-09-05"
+
+# File Storage
+storage:
+  base_dir: "."  # Base directory for storing week folders
+  recap_subdir: "recaps"  # Subdirectory within week folder for recap files
+  combined_filename: "combined.html"  # Combined recaps file
+  newsletter_filename: "newsletter.html"  # Final newsletter file
+
+# ESPN Configuration
+espn:
+  scoreboard_url: "https://www.espn.com/nfl/scoreboard"
+
+# AI Provider Configuration
+# Set the active provider: "claude", "openai", or "gemini"
+ai:
+  active_provider: "claude"
+
+  # Claude (Anthropic) Configuration
+  claude:
+    api_key: "YOUR_CLAUDE_API_KEY_HERE"  # Or set ANTHROPIC_API_KEY env var
+    model: "claude-3-5-sonnet-20241022"
+    max_tokens: 4096
+
+  # OpenAI Configuration
+  openai:
+    api_key: "YOUR_OPENAI_API_KEY_HERE"  # Or set OPENAI_API_KEY env var
+    model: "gpt-4o"
+    max_tokens: 4096
+
+  # Google Gemini Configuration
+  gemini:
+    api_key: "YOUR_GEMINI_API_KEY_HERE"  # Or set GOOGLE_API_KEY env var
+    model: "gemini-1.5-pro"
+    max_tokens: 4096
+
+# Newsletter Generation Prompt
+newsletter_prompt: |
+  You are creating an NFL weekly newsletter for casual sports fans.
+
+  For each game provided, generate:
+  - The final score
+  - A short summary (3-7 sentences, 200 words maximum)
+
+  Tone: Informational and succinct
+  Audience: Casual sports fans who want to stay informed for conversations with friends
+
+  Format the output as clean HTML with:
+  - A header for each game showing the matchup and score
+  - The summary in a paragraph
+  - Proper spacing between games
+
+  Make it engaging but concise. Focus on key moments, standout performances, and game-deciding plays.
