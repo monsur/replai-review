@@ -36,10 +36,15 @@ class DateBasedWeekCalculator(WeekCalculator):
     Calculates NFL week based on the current date and season start date.
 
     Logic:
-    - Takes the season start date (first game of Week 1)
-    - Calculates weeks since season start
-    - If today is Mon/Tue/Wed, returns last week (games just finished)
-    - Otherwise, returns current week
+    - Takes the season start date (first game of Week 1, typically a Thursday)
+    - Calculates which week we're in based on Thursday-Wednesday cycles
+    - Returns the current week number (1-18 for regular season)
+
+    Examples:
+    - If season starts Thursday Sept 5:
+      - Thursday Sept 5 - Wednesday Sept 11: Week 1
+      - Thursday Sept 12 - Wednesday Sept 18: Week 2
+      - Tuesday Oct 29 (day 54): Week 8
     """
 
     def __init__(self, season_start_date: str):
@@ -69,21 +74,18 @@ class DateBasedWeekCalculator(WeekCalculator):
 
         # Calculate current week (1-indexed)
         # NFL weeks run Thursday to Wednesday
-        current_week = (days_since_start // 7) + 1
-
-        # If today is Monday, Tuesday, or Wednesday, we want the previous week
-        # (games were played Thu-Mon of the previous week)
-        day_of_week = reference_date.weekday()  # 0=Monday, 6=Sunday
-        if day_of_week in [0, 1, 2]:  # Monday, Tuesday, Wednesday
-            target_week = current_week - 1
-        else:
-            # Thursday through Sunday - current week's games
-            target_week = current_week
+        # Since season starts on a Thursday (day 0), this calculation
+        # naturally aligns weeks to Thursday-Wednesday:
+        # - Days 0-6: Week 1 (Thu-Wed)
+        # - Days 7-13: Week 2 (Thu-Wed)
+        # - Days 49-55: Week 8 (Thu-Wed)
+        # etc.
+        week = (days_since_start // 7) + 1
 
         # Ensure week is at least 1
-        target_week = max(1, target_week)
+        week = max(1, week)
 
-        return target_week
+        return week
 
 
 class ManualWeekCalculator(WeekCalculator):
