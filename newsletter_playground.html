@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL ReplAI - Playground</title>
+    <style>
+        /*
+        ================================================================================
+        NEWSLETTER PLAYGROUND - EXPERIMENT SAFELY HERE
+        ================================================================================
+
+        This file has two sections:
+
+        1. WRAPPER STYLES (lines marked "WRAPPER")
+           - These go in generate_newsletter.py's wrap_newsletter_html() function
+           - Copy to: generate_newsletter.py, inside the <style> tag (around line 119)
+
+        2. CONTENT STYLES (lines marked "AI CONTENT")
+           - These describe what the AI generates
+           - Copy to: newsletter_prompt.txt, in the HTML structure section
+
+        After making changes, copy the relevant sections to the appropriate files.
+        ================================================================================
+        */
+
+        /* === WRAPPER SECTION START === */
+        /* Copy everything between "WRAPPER SECTION START" and "WRAPPER SECTION END"
+           to generate_newsletter.py, replacing the CSS inside the <style> tag */
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .newsletter {
+            /* This wrapper div is added by generate_newsletter.py */
+            /* Not needed in the styles, but shown here for completeness */
+        }
+
+        h1 {
+            color: #013369;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+
+        .game {
+            background-color: white;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #013369;
+            padding-bottom: 12px;
+        }
+
+        .matchup {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #013369;
+        }
+
+        .score {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .summary {
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* === WRAPPER SECTION END === */
+    </style>
+</head>
+<body>
+    <!--
+    ================================================================================
+    AI CONTENT SECTION
+    ================================================================================
+    Everything below (the h1 and .game divs) is what the AI generates.
+    Copy the HTML structure (not the actual content) to newsletter_prompt.txt
+    ================================================================================
+    -->
+
+    <h1>NFL ReplAI - Week 8</h1>
+
+    <!--
+    === AI CONTENT: GAME ENTRY TEMPLATE ===
+
+    This is the structure the AI should generate for each game.
+    Copy this HTML structure to newsletter_prompt.txt in the "STRUCTURE REQUIREMENTS" section.
+
+    Edit this structure to experiment with different layouts.
+    Once satisfied, update newsletter_prompt.txt with your changes.
+    -->
+
+    <div class="game">
+        <div class="game-header">
+            <div class="matchup">New York Jets @ Cincinnati Bengals</div>
+            <div class="score">Jets 39, Bengals 38</div>
+        </div>
+        <div class="summary">
+            Justin Fields bounced back after a difficult week, leading the Jets to their first win under coach Aaron Glenn. Running back Breece Hall stole the show with two second-half TD runs and made NFL history by throwing a go-ahead 4-yard TD pass with 1:54 left. The Jets' ground game dominated with 254 rushing yards, erasing a 31-16 deficit in the fourth quarter. Despite Joe Flacco's two TD passes for Cincinnati, the Bengals couldn't hold on, dropping to 3-5.
+        </div>
+    </div>
+
+    <!--
+    Add more game entries below to test how multiple games look together.
+
+    REMEMBER:
+    - CSS changes → copy to generate_newsletter.py (wrapper)
+    - HTML structure changes → copy to newsletter_prompt.txt (AI instructions)
+    -->
+
+</body>
+</html>

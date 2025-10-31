@@ -202,6 +202,25 @@ The AI prompt is stored in `newsletter_prompt.txt` and controls all aspects of g
 
 **To customize**: Edit `newsletter_prompt.txt` to change any aspect of the newsletter. Changes take effect immediately on the next run.
 
+### Experimenting with Newsletter Format
+
+Use `newsletter_playground.html` to safely experiment with the newsletter format:
+
+1. Open `newsletter_playground.html` in your browser
+2. Edit the HTML structure and CSS styling
+3. Refresh to see changes instantly
+4. Copy changes to the appropriate files:
+
+**If you changed CSS styles:**
+- Copy the "WRAPPER SECTION" (between START/END markers)
+- Paste into `generate_newsletter.py` → `wrap_newsletter_html()` function → inside the `<style>` tag
+
+**If you changed HTML structure:**
+- Copy the game entry template structure
+- Paste into `newsletter_prompt.txt` → "STRUCTURE REQUIREMENTS" section
+
+The playground clearly marks which sections go where, making it easy to apply your changes to the right files.
+
 ## Week Calculation
 
 The system uses a **date-based week calculator** by default:
