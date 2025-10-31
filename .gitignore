@@ -6,3 +6,6 @@ config.yaml
 
 # Generated output files (organized by week)
 output/
+
+# Personal scratch doc
+thoughts.txt
