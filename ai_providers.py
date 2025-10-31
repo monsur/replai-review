@@ -123,22 +123,29 @@ class OpenAIProvider(AIProvider):
         """Generate text using OpenAI API."""
         print(f"Using OpenAI model: {self.model}")
 
-        response = self.client.chat.completions.create(
-            model=self.model,
-            max_tokens=self.max_tokens,
-            messages=[
-                {
-                    "role": "system",
-                    "content": prompt
-                },
-                {
-                    "role": "user",
-                    "content": content
-                }
-            ]
-        )
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                max_completion_tokens=self.max_tokens,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": prompt
+                    },
+                    {
+                        "role": "user",
+                        "content": content
+                    }
+                ]
+            )
 
-        return response.choices[0].message.content
+            content = response.choices[0].message.content
+            if not content:
+                raise ValueError(f"OpenAI returned empty response. Response: {response}")
+            return content
+        except Exception as e:
+            print(f"OpenAI API Error: {e}")
+            raise
 
 
 class GeminiProvider(AIProvider):
