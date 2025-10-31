@@ -9,12 +9,13 @@ For each game, generate HTML following this EXACT structure with team icons:
     <div class="game-header">
         <div class="matchup">
             <img src="[AWAY_TEAM_ICON_FILE_PATH]" alt="[AWAY_ABB]" class="team-icon">
-            <span>[Away Team Full Name]</span>
-            <span>@</span>
+            <span class="team-name">[Away Team Full Name]</span>
+            <span class="score">[Away Score]</span>
+            <span class="at">@</span>
+            <span class="score">[Home Score]</span>
+            <span class="team-name">[Home Team Full Name]</span>
             <img src="[HOME_TEAM_ICON_FILE_PATH]" alt="[HOME_ABB]" class="team-icon">
-            <span>[Home Team Full Name]</span>
         </div>
-        <div class="score">[Winner] [Score], [Loser] [Score]</div>
     </div>
     <div class="summary">
         [Summary content here]
@@ -33,8 +34,8 @@ Sentence 1: Lead with the star player and their key stats/achievements
 Sentences 2-4: Describe game flow, key moments, and decisive plays with specific stats
 Sentences 5-7: Provide context - team records, streaks, playoff implications, injuries
 
-SCORE FORMAT: Always "[Winner] [Score], [Loser] [Score]"
-Examples: "Jets 39, Bengals 38" | "Ravens 30, Bears 16"
+SCORE FORMAT: Always show scores in order (away @ home), not winner/loser
+Examples: Away team 39 @ 38 Home team (even if away team won)
 
 WRITING STYLE:
 - Use active voice and engaging verbs (dominated, exploded, bounced back)

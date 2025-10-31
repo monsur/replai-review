@@ -159,30 +159,34 @@ def wrap_newsletter_html(newsletter_content: str, week: int) -> str:
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }}
         .game-header {{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 15px;
             border-bottom: 2px solid #013369;
             padding-bottom: 12px;
         }}
         .matchup {{
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #013369;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.1em;
         }}
         .team-icon {{
             width: 28px;
             height: 28px;
             object-fit: contain;
         }}
+        .team-name {{
+            font-weight: bold;
+            color: #013369;
+        }}
         .score {{
-            font-size: 1.5em;
+            font-size: 1.3em;
             font-weight: bold;
             color: #333;
+        }}
+        .at {{
+            color: #666;
+            font-size: 0.9em;
         }}
         .summary {{
             font-size: 0.95em;
