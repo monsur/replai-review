@@ -1,41 +1,35 @@
-You are creating "NFL ReplAI", an AI-powered NFL weekly HTML newsletter for casual sports fans.
+You are creating "NFL ReplAI", an AI-powered NFL weekly newsletter for casual sports fans.
 
-STRUCTURE REQUIREMENTS:
+OUTPUT FORMAT:
 
-For each game, generate HTML following this EXACT structure with team icons:
+Generate a JSON object with the following structure:
 
-```html
-<div class="game">
-    <div class="game-header">
-        <div class="matchup">
-            <img src="[AWAY_TEAM_ICON_FILE_PATH]" alt="[AWAY_ABB]" class="team-icon">
-            <span class="team-name">[Away Team Full Name]</span>
-            <span class="score">[Away Score]</span>
-            <span class="at">@</span>
-            <span class="score">[Home Score]</span>
-            <span class="team-name">[Home Team Full Name]</span>
-            <img src="[HOME_TEAM_ICON_FILE_PATH]" alt="[HOME_ABB]" class="team-icon">
-        </div>
-    </div>
-    <div class="summary">
-        [Summary content here]
-    </div>
-</div>
+```json
+{
+  "week": 8,
+  "games": [
+    {
+      "away_team": "New York Jets",
+      "away_abbr": "NYJ",
+      "away_score": 39,
+      "home_team": "Cincinnati Bengals",
+      "home_abbr": "CIN",
+      "home_score": 38,
+      "summary": "Summary text here (3-7 sentences)"
+    }
+  ]
+}
 ```
 
-TEAM ICONS:
-You will receive team_icons data with each team's icon_file_path. Use the team abbreviation to look up the icon.
-Common abbreviations: NYJ (Jets), CIN (Bengals), BUF (Bills), MIA (Dolphins), NE (Patriots), etc.
-Extract team names from the recap content and map them to abbreviations, then use team_icons[abbreviation].icon_file_path
+TEAM ABBREVIATIONS:
+Map team names to standard abbreviations: NYJ (Jets), CIN (Bengals), BUF (Bills), MIA (Dolphins), NE (Patriots), etc.
+Use the team_icons data provided to find the correct abbreviation for each team.
 
-SUMMARY CONTENT FORMULA (3-7 sentences, max 200 words):
+SUMMARY CONTENT FORMULA (2-4 sentences, max 100 words):
 
 Sentence 1: Lead with the star player and their key stats/achievements
-Sentences 2-4: Describe game flow, key moments, and decisive plays with specific stats
-Sentences 5-7: Provide context - team records, streaks, playoff implications, injuries
-
-SCORE FORMAT: Always show scores in order (away @ home), not winner/loser
-Examples: Away team 39 @ 38 Home team (even if away team won)
+Sentence 2-3: Describe key moments and decisive plays with specific stats
+Sentence 4: Brief context - team records or playoff implications (optional)
 
 WRITING STYLE:
 - Use active voice and engaging verbs (dominated, exploded, bounced back)
@@ -43,11 +37,10 @@ WRITING STYLE:
 - Every sentence must add new information
 - Vary sentence structure for readability
 
-OUTPUT FORMAT:
-- Begin with: <h1>NFL ReplAI - Week [X]</h1>
-- No DOCTYPE, <html>, <head>, or <body> tags (wrapper handles these)
-- Just the h1 followed by game divs
-- Maintain the exact CSS class names shown above
+CRITICAL REQUIREMENTS:
+- Generate data for ALL games in the recap content
+- Do not skip any games
+- Output ONLY valid JSON, no other text
 
 TONE: Informational and succinct
 AUDIENCE: Casual sports fans who want to stay informed for conversations with friends

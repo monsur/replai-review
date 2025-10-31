@@ -74,11 +74,45 @@ def read_combined_recaps(combined_file: Path) -> str:
         return f.read()
 
 
+def format_game_html(game: dict, team_icons: dict) -> str:
+    """
+    Format a single game's data into HTML.
+
+    Args:
+        game: Dictionary with game data
+        team_icons: Dictionary of team icons data
+
+    Returns:
+        HTML string for the game
+    """
+    away_icon = team_icons.get(game['away_abbr'], {}).get('icon_file_path', '')
+    home_icon = team_icons.get(game['home_abbr'], {}).get('icon_file_path', '')
+
+    return f"""    <div class="game">
+        <div class="game-header">
+            <div class="matchup">
+                <img src="{away_icon}" alt="{game['away_abbr']}" class="team-icon">
+                <span class="team-name">{game['away_team']}</span>
+                <span class="score">{game['away_score']}</span>
+                <span class="at">@</span>
+                <span class="score">{game['home_score']}</span>
+                <span class="team-name">{game['home_team']}</span>
+                <img src="{home_icon}" alt="{game['home_abbr']}" class="team-icon">
+            </div>
+        </div>
+        <div class="summary">
+            {game['summary']}
+        </div>
+    </div>"""
+
+
 def generate_newsletter(
     ai_provider,
     prompt: str,
     recap_content: str,
-    team_icons: dict
+    team_icons: dict,
+    week: int,
+    output_dir: Path
 ) -> str:
     """
     Generate newsletter using AI provider.
@@ -88,6 +122,8 @@ def generate_newsletter(
         prompt: System prompt for the AI
         recap_content: Combined recap content
         team_icons: Dictionary of team icons data
+        week: Week number
+        output_dir: Output directory path
 
     Returns:
         Generated newsletter HTML
@@ -99,19 +135,72 @@ def generate_newsletter(
     user_message = f"""
 Here are the NFL game recaps from this week. Please generate a newsletter following the guidelines in the system prompt.
 
-TEAM ICONS DATA (use icon_file_path for each team abbreviation):
+TEAM ICONS DATA (use abbreviations to map teams):
 {json.dumps(team_icons, indent=2)}
 
 GAME RECAPS:
 {recap_content}
 """
 
-    # Generate the newsletter
-    newsletter = ai_provider.generate(prompt, user_message)
+    # Generate the newsletter JSON
+    newsletter_json = ai_provider.generate(prompt, user_message)
 
-    print(f"Generated newsletter: {len(newsletter):,} characters")
+    print(f"Generated JSON: {len(newsletter_json):,} characters")
 
-    return newsletter
+    # Save raw JSON response to output directory
+    json_output_file = output_dir / f"newsletter_week_{week}.json"
+    with open(json_output_file, 'w', encoding='utf-8') as f:
+        f.write(newsletter_json)
+    print(f"Raw JSON saved to: {json_output_file}")
+
+    # Parse JSON response
+    try:
+        # Clean up potential markdown code blocks
+        json_str = newsletter_json.strip()
+        if json_str.startswith('```'):
+            # Remove markdown code blocks
+            lines = json_str.split('\n')
+            # Find the actual JSON start and end
+            start_idx = 1
+            end_idx = len(lines) - 1
+            # Skip the ```json line
+            if lines[start_idx].strip().startswith('json'):
+                start_idx += 1
+            # Find the closing ```
+            for i in range(len(lines) - 1, -1, -1):
+                if lines[i].strip() == '```':
+                    end_idx = i
+                    break
+            json_str = '\n'.join(lines[start_idx:end_idx])
+
+        data = json.loads(json_str)
+        week = data.get('week', 'Unknown')
+        games = data.get('games', [])
+
+        print(f"Parsed {len(games)} games from JSON")
+
+        # Format games into HTML
+        games_html = '\n\n'.join([format_game_html(game, team_icons) for game in games])
+
+        # Create complete newsletter HTML
+        newsletter_html = f"""<h1>NFL ReplAI - Week {week}</h1>
+
+{games_html}"""
+
+        return newsletter_html
+
+    except json.JSONDecodeError as e:
+        print(f"Error parsing JSON: {e}")
+        # Save the raw JSON for debugging
+        debug_file = Path('newsletter_debug.json')
+        with open(debug_file, 'w', encoding='utf-8') as f:
+            f.write(newsletter_json)
+        print(f"Raw JSON saved to {debug_file} for debugging")
+        print(f"Response preview: {newsletter_json[:500]}...")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error formatting newsletter: {e}")
+        sys.exit(1)
 
 
 def wrap_newsletter_html(newsletter_content: str, week: int) -> str:
@@ -295,7 +384,9 @@ def main():
             ai_provider,
             prompt,
             recap_content,
-            team_icons
+            team_icons,
+            target_week,
+            week_dir
         )
     except Exception as e:
         print(f"Error generating newsletter: {e}")
