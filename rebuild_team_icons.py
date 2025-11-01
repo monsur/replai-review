@@ -17,7 +17,7 @@ for png_file in png_files:
     abbr = png_file.stem  # Get filename without extension
     team_icons[abbr] = {
         "abbreviation": abbr,
-        "icon_file_path": f"../images/{png_file.name}"
+        "icon_file_path": f"images/{png_file.name}"
     }
 
 # Write to team_icons.json

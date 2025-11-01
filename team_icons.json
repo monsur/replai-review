@@ -1,130 +1,130 @@
 {
   "ARI": {
     "abbreviation": "ARI",
-    "icon_file_path": "../images/ARI.png"
+    "icon_file_path": "images/ARI.png"
   },
   "ATL": {
     "abbreviation": "ATL",
-    "icon_file_path": "../images/ATL.png"
+    "icon_file_path": "images/ATL.png"
   },
   "BAL": {
     "abbreviation": "BAL",
-    "icon_file_path": "../images/BAL.png"
+    "icon_file_path": "images/BAL.png"
   },
   "BUF": {
     "abbreviation": "BUF",
-    "icon_file_path": "../images/BUF.png"
+    "icon_file_path": "images/BUF.png"
   },
   "CAR": {
     "abbreviation": "CAR",
-    "icon_file_path": "../images/CAR.png"
+    "icon_file_path": "images/CAR.png"
   },
   "CHI": {
     "abbreviation": "CHI",
-    "icon_file_path": "../images/CHI.png"
+    "icon_file_path": "images/CHI.png"
   },
   "CIN": {
     "abbreviation": "CIN",
-    "icon_file_path": "../images/CIN.png"
+    "icon_file_path": "images/CIN.png"
   },
   "CLE": {
     "abbreviation": "CLE",
-    "icon_file_path": "../images/CLE.png"
+    "icon_file_path": "images/CLE.png"
   },
   "DAL": {
     "abbreviation": "DAL",
-    "icon_file_path": "../images/DAL.png"
+    "icon_file_path": "images/DAL.png"
   },
   "DEN": {
     "abbreviation": "DEN",
-    "icon_file_path": "../images/DEN.png"
+    "icon_file_path": "images/DEN.png"
   },
   "DET": {
     "abbreviation": "DET",
-    "icon_file_path": "../images/DET.png"
+    "icon_file_path": "images/DET.png"
   },
   "GB": {
     "abbreviation": "GB",
-    "icon_file_path": "../images/GB.png"
+    "icon_file_path": "images/GB.png"
   },
   "HOU": {
     "abbreviation": "HOU",
-    "icon_file_path": "../images/HOU.png"
+    "icon_file_path": "images/HOU.png"
   },
   "IND": {
     "abbreviation": "IND",
-    "icon_file_path": "../images/IND.png"
+    "icon_file_path": "images/IND.png"
   },
   "JAX": {
     "abbreviation": "JAX",
-    "icon_file_path": "../images/JAX.png"
+    "icon_file_path": "images/JAX.png"
   },
   "KC": {
     "abbreviation": "KC",
-    "icon_file_path": "../images/KC.png"
+    "icon_file_path": "images/KC.png"
   },
   "LAC": {
     "abbreviation": "LAC",
-    "icon_file_path": "../images/LAC.png"
+    "icon_file_path": "images/LAC.png"
   },
   "LAR": {
     "abbreviation": "LAR",
-    "icon_file_path": "../images/LAR.png"
+    "icon_file_path": "images/LAR.png"
   },
   "LV": {
     "abbreviation": "LV",
-    "icon_file_path": "../images/LV.png"
+    "icon_file_path": "images/LV.png"
   },
   "MIA": {
     "abbreviation": "MIA",
-    "icon_file_path": "../images/MIA.png"
+    "icon_file_path": "images/MIA.png"
   },
   "MIN": {
     "abbreviation": "MIN",
-    "icon_file_path": "../images/MIN.png"
+    "icon_file_path": "images/MIN.png"
   },
   "NE": {
     "abbreviation": "NE",
-    "icon_file_path": "../images/NE.png"
+    "icon_file_path": "images/NE.png"
   },
   "NO": {
     "abbreviation": "NO",
-    "icon_file_path": "../images/NO.png"
+    "icon_file_path": "images/NO.png"
   },
   "NYG": {
     "abbreviation": "NYG",
-    "icon_file_path": "../images/NYG.png"
+    "icon_file_path": "images/NYG.png"
   },
   "NYJ": {
     "abbreviation": "NYJ",
-    "icon_file_path": "../images/NYJ.png"
+    "icon_file_path": "images/NYJ.png"
   },
   "PHI": {
     "abbreviation": "PHI",
-    "icon_file_path": "../images/PHI.png"
+    "icon_file_path": "images/PHI.png"
   },
   "PIT": {
     "abbreviation": "PIT",
-    "icon_file_path": "../images/PIT.png"
+    "icon_file_path": "images/PIT.png"
   },
   "SEA": {
     "abbreviation": "SEA",
-    "icon_file_path": "../images/SEA.png"
+    "icon_file_path": "images/SEA.png"
   },
   "SF": {
     "abbreviation": "SF",
-    "icon_file_path": "../images/SF.png"
+    "icon_file_path": "images/SF.png"
   },
   "TB": {
     "abbreviation": "TB",
-    "icon_file_path": "../images/TB.png"
+    "icon_file_path": "images/TB.png"
   },
   "TEN": {
     "abbreviation": "TEN",
-    "icon_file_path": "../images/TEN.png"
+    "icon_file_path": "images/TEN.png"
   },
   "WAS": {
     "abbreviation": "WAS",
-    "icon_file_path": "../images/WAS.png"
+    "icon_file_path": "images/WAS.png"
   }
 }
