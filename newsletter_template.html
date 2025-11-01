@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReplAI Review - Week {{ week }}</title>
+    <style>
+        /* CSS Variables for Theme */
+        :root {
+            --nfl-navy: #013369;
+            --nfl-red: #D50A0A;
+            --nfl-green: #00B140;
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6c757d;
+            --border-light: #e9ecef;
+            --accent-gold: #FFB612;
+            --winner-color: #00B140;
+            --loser-color: #999;
+        }
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: #1a1a1a;
+                --card-bg: #2d2d2d;
+                --text-primary: #e0e0e0;
+                --text-secondary: #a0a0a0;
+                --border-light: #404040;
+                --nfl-navy: #4A90E2;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        /* Enhanced Header */
+        .newsletter-header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 4px solid var(--nfl-navy);
+            background: linear-gradient(135deg, var(--nfl-navy) 0%, #024a9c 100%);
+            color: white;
+            padding: 40px 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(1, 51, 105, 0.2);
+        }
+
+        .newsletter-title {
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .newsletter-subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .newsletter-meta {
+            font-size: 0.95em;
+            opacity: 0.85;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .newsletter-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Game Cards */
+        .games-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+
+        .game {
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        /* Game Badges */
+        .game-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-nailbiter {
+            background-color: #FFF3CD;
+            color: #856404;
+        }
+
+        .badge-comeback {
+            background-color: #FFE5E5;
+            color: #D50A0A;
+        }
+
+        .badge-blowout {
+            background-color: #E8F4F8;
+            color: #0066CC;
+        }
+
+        .badge-upset {
+            background-color: #F3E5F5;
+            color: #7B1FA2;
+        }
+
+        .badge-game-of-week {
+            background-color: var(--accent-gold);
+            color: #000;
+        }
+
+        /* Game Header */
+        .game-header {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--border-light);
+        }
+
+        .game-meta {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .game-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Matchup Display */
+        .matchup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .team-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .team-section.winner .team-name {
+            color: var(--winner-color);
+            font-weight: 800;
+        }
+
+        .team-section.winner .score {
+            color: var(--winner-color);
+        }
+
+        .team-section.loser .team-name {
+            color: var(--loser-color);
+            font-weight: 600;
+        }
+
+        .team-section.loser .score {
+            color: var(--loser-color);
+        }
+
+        .team-logo-container {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .team-icon {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .team-info {
+            text-align: center;
+        }
+
+        .team-name {
+            font-weight: 700;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+
+        .team-record {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .score {
+            font-size: 2.5em;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+
+        .vs-divider {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+        }
+
+        .at-symbol {
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .score-divider {
+            width: 40px;
+            height: 2px;
+            background-color: var(--border-light);
+        }
+
+        /* Summary */
+        .summary {
+            font-size: 1em;
+            line-height: 1.7;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .summary strong {
+            color: var(--nfl-navy);
+            font-weight: 700;
+        }
+
+        .stat-highlight {
+            background-color: #FFF8E1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .stat-highlight {
+                background-color: #4a4a2a;
+            }
+        }
+
+        /* Footer Actions */
+        .game-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .recap-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: var(--nfl-navy);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .recap-link:hover {
+            background-color: #024a9c;
+            transform: translateX(2px);
+        }
+
+        .recap-link:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        .recap-link::after {
+            content: "→";
+            font-size: 1.2em;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 1024px) {
+            .games-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 16px;
+            }
+
+            .newsletter-title {
+                font-size: 2em;
+            }
+
+            .newsletter-subtitle {
+                font-size: 1em;
+            }
+
+            .game {
+                padding: 20px;
+            }
+
+            .matchup {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .score {
+                font-size: 2em;
+            }
+
+            .team-name {
+                font-size: 1em;
+            }
+
+            .vs-divider {
+                flex-direction: row;
+            }
+
+            .score-divider {
+                width: 2px;
+                height: 40px;
+            }
+
+            .game-footer {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+
+            .recap-link {
+                justify-content: center;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+            }
+
+            .game {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            .recap-link {
+                background-color: white;
+                color: black;
+                border: 1px solid black;
+            }
+        }
+
+        /* Focus Styles for Accessibility */
+        *:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        /* Loading Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .game {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <header class="newsletter-header">
+        <h1 class="newsletter-title">🏈 ReplAI Review</h1>
+        <div class="newsletter-subtitle">Week {{ week }} - 2025 NFL Season</div>
+        <div class="newsletter-meta">
+            <span>🎮 {{ game_count }} Games</span>
+            <span>⭐ {{ upset_count }} Upsets</span>
+        </div>
+    </header>
+
+    <main class="games-container">
+        {% for game in games %}
+        <article class="game">
+            {% if game.badges %}
+            <div class="game-badges">
+                {% for badge in game.badges %}
+                <span class="badge {{ badge.css_class }}">{{ badge.label }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="game-header">
+                {% if game.meta %}
+                <div class="game-meta">
+                    {% for meta in game.meta %}
+                    <span>{{ meta }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="matchup">
+                    <div class="team-section {{ game.away_class }}">
+                        <div class="team-logo-container">
+                            <img src="{{ game.away_icon }}" alt="{{ game.away_team }}" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">{{ game.away_team }}</div>
+                            {% if game.away_record %}
+                            <div class="team-record">({{ game.away_record }})</div>
+                            {% endif %}
+                        </div>
+                        <div class="score">{{ game.away_score }}</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section {{ game.home_class }}">
+                        <div class="team-logo-container">
+                            <img src="{{ game.home_icon }}" alt="{{ game.home_team }}" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">{{ game.home_team }}</div>
+                            {% if game.home_record %}
+                            <div class="team-record">({{ game.home_record }})</div>
+                            {% endif %}
+                        </div>
+                        <div class="score">{{ game.home_score }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                {{ game.summary | safe }}
+            </div>
+
+            <div class="game-footer">
+                <a href="{{ game.recap_url }}" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>
+        {% endfor %}
+    </main>
+</body>
+</html>

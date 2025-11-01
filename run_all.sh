@@ -1,7 +1,7 @@
 #!/bin/bash
 # ReplAI Review - Run All Scripts
 #
-# This script runs all three scripts in sequence to generate a complete ReplAI Review newsletter.
+# This script runs all four scripts in sequence to generate a complete ReplAI Review newsletter.
 # Usage:
 #   ./run_all.sh                    # Auto-detect week
 #   ./run_all.sh 8                  # Specify week number (positional)
@@ -47,18 +47,23 @@ echo "=================================="
 echo ""
 
 # Script 1: Fetch recaps
-echo "Step 1/3: Fetching game recaps from ESPN..."
+echo "Step 1/4: Fetching game recaps from ESPN..."
 python3 fetch_recaps.py $WEEK
 echo ""
 
 # Script 2: Process recaps
-echo "Step 2/3: Processing and combining recaps..."
+echo "Step 2/4: Processing and combining recaps..."
 python3 process_recaps.py $WEEK
 echo ""
 
-# Script 3: Generate newsletter
-echo "Step 3/3: Generating ReplAI Review with AI..."
-python3 generate_newsletter.py $WEEK $PROVIDER
+# Script 3a: Generate JSON with AI
+echo "Step 3/4: Generating newsletter JSON with AI..."
+python3 generate_json.py $WEEK $PROVIDER
+echo ""
+
+# Script 3b: Format HTML newsletter
+echo "Step 4/4: Formatting HTML newsletter..."
+python3 format_newsletter.py $WEEK
 echo ""
 
 echo "=================================="

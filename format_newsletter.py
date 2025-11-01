@@ -20,6 +20,7 @@ from datetime import datetime
 from pathlib import Path
 
 import yaml
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from week_calculator import create_week_calculator
 
@@ -136,15 +137,15 @@ def sort_games_chronologically(games: list) -> list:
     return sorted(games, key=get_sort_key)
 
 
-def format_game_html(game: dict) -> str:
+def prepare_game_for_template(game: dict) -> dict:
     """
-    Format a single game's data into HTML.
+    Prepare a single game's data for template rendering.
 
     Args:
-        game: Dictionary with game data
+        game: Dictionary with game data from JSON
 
     Returns:
-        HTML string for the game
+        Dictionary with template-ready data
     """
     # Use consistent pattern: images/{TEAM_ABB}.png
     away_icon = f"images/{game['away_abbr']}.png"
@@ -160,102 +161,59 @@ def format_game_html(game: dict) -> str:
     home_class = "winner" if home_winner else "loser"
 
     # Format badges
-    badges_html = ""
+    badge_map = {
+        'nail-biter': ('badge-nailbiter', '🎯 Nail-Biter'),
+        'comeback': ('badge-comeback', '🔥 Comeback'),
+        'blowout': ('badge-blowout', '💥 Blowout'),
+        'upset': ('badge-upset', '⬆️ Upset'),
+        'game-of-week': ('badge-game-of-week', '🏆 Game of the Week')
+    }
+
+    badges = []
     if 'badges' in game and game['badges']:
-        badge_items = []
-        badge_map = {
-            'nail-biter': ('badge-nailbiter', '🎯 Nail-Biter'),
-            'comeback': ('badge-comeback', '🔥 Comeback'),
-            'blowout': ('badge-blowout', '💥 Blowout'),
-            'upset': ('badge-upset', '⬆️ Upset'),
-            'game-of-week': ('badge-game-of-week', '🏆 Game of the Week')
-        }
         for badge in game['badges']:
             if badge in badge_map:
                 css_class, label = badge_map[badge]
-                badge_items.append(f'<span class="badge {css_class}">{label}</span>')
-
-        if badge_items:
-            badges_html = f"""
-            <div class="game-badges">
-                {' '.join(badge_items)}
-            </div>"""
+                badges.append({'css_class': css_class, 'label': label})
 
     # Format game metadata
-    game_meta_items = []
+    meta = []
     if 'game_date' in game and game['game_date']:
-        game_meta_items.append(f'<span>📅 {game["game_date"]}</span>')
+        meta.append(f'📅 {game["game_date"]}')
     if 'stadium' in game and game['stadium']:
-        game_meta_items.append(f'<span>📍 {game["stadium"]}</span>')
+        meta.append(f'📍 {game["stadium"]}')
     if 'tv_network' in game and game['tv_network']:
-        game_meta_items.append(f'<span>📺 {game["tv_network"]}</span>')
+        meta.append(f'📺 {game["tv_network"]}')
 
-    game_meta_html = ""
-    if game_meta_items:
-        game_meta_html = f"""
-                <div class="game-meta">
-                    {' '.join(game_meta_items)}
-                </div>"""
-
-    # Format team records
-    away_record = f'<div class="team-record">({game["away_record"]})</div>' if 'away_record' in game and game['away_record'] else ''
-    home_record = f'<div class="team-record">({game["home_record"]})</div>' if 'home_record' in game and game['home_record'] else ''
-
-    return f"""        <article class="game">{badges_html}
-            <div class="game-header">{game_meta_html}
-
-                <div class="matchup">
-                    <div class="team-section {away_class}">
-                        <div class="team-logo-container">
-                            <img src="{away_icon}" alt="{game['away_team']}" class="team-icon">
-                        </div>
-                        <div class="team-info">
-                            <div class="team-name">{game['away_team']}</div>
-                            {away_record}
-                        </div>
-                        <div class="score">{game['away_score']}</div>
-                    </div>
-
-                    <div class="vs-divider">
-                        <span class="at-symbol">@</span>
-                        <div class="score-divider"></div>
-                    </div>
-
-                    <div class="team-section {home_class}">
-                        <div class="team-logo-container">
-                            <img src="{home_icon}" alt="{game['home_team']}" class="team-icon">
-                        </div>
-                        <div class="team-info">
-                            <div class="team-name">{game['home_team']}</div>
-                            {home_record}
-                        </div>
-                        <div class="score">{game['home_score']}</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary">
-                {game['summary']}
-            </div>
-
-            <div class="game-footer">
-                <a href="{game.get('recap_url', '#')}" class="recap-link" target="_blank" rel="noopener noreferrer">
-                    Read Full Recap
-                </a>
-            </div>
-        </article>"""
+    return {
+        'away_team': game['away_team'],
+        'away_abbr': game['away_abbr'],
+        'away_score': game['away_score'],
+        'away_record': game.get('away_record'),
+        'away_icon': away_icon,
+        'away_class': away_class,
+        'home_team': game['home_team'],
+        'home_abbr': game['home_abbr'],
+        'home_score': game['home_score'],
+        'home_record': game.get('home_record'),
+        'home_icon': home_icon,
+        'home_class': home_class,
+        'summary': game['summary'],
+        'recap_url': game.get('recap_url', '#'),
+        'badges': badges,
+        'meta': meta
+    }
 
 
-def parse_and_format_json(json_content: str, week: int) -> tuple[str, int]:
+def parse_json(json_content: str) -> tuple[dict, int]:
     """
-    Parse JSON and format into newsletter HTML.
+    Parse JSON and prepare data for template rendering.
 
     Args:
         json_content: Raw JSON string
-        week: Week number
 
     Returns:
-        Tuple of (newsletter HTML, game count)
+        Tuple of (template data dict, game count)
     """
     # Clean up potential markdown code blocks
     json_str = json_content.strip()
@@ -285,493 +243,46 @@ def parse_and_format_json(json_content: str, week: int) -> tuple[str, int]:
     games = sort_games_chronologically(games)
     print("Games sorted chronologically")
 
-    # Format games into HTML
-    games_html = '\n\n'.join([format_game_html(game) for game in games])
+    # Prepare games for template
+    prepared_games = [prepare_game_for_template(game) for game in games]
 
-    # Calculate game count and other stats
+    # Calculate stats
     game_count = len(games)
-
-    # Count upsets (games with upset badge)
     upset_count = sum(1 for game in games if 'badges' in game and 'upset' in game.get('badges', []))
 
-    # Create complete newsletter HTML with enhanced header
-    newsletter_html = f"""    <header class="newsletter-header">
-        <h1 class="newsletter-title">🏈 ReplAI Review</h1>
-        <div class="newsletter-subtitle">Week {week} - 2025 NFL Season</div>
-        <div class="newsletter-meta">
-            <span>🎮 {game_count} Games</span>
-            <span>⭐ {upset_count} Upsets</span>
-        </div>
-    </header>
+    # Prepare template data
+    template_data = {
+        'week': week,
+        'game_count': game_count,
+        'upset_count': upset_count,
+        'games': prepared_games
+    }
 
-    <main class="games-container">
-{games_html}
-    </main>"""
-
-    return newsletter_html, game_count
+    return template_data, game_count
 
 
-def wrap_newsletter_html(newsletter_content: str, week: int) -> str:
+def render_newsletter(template_data: dict, template_file: str = "newsletter_template.html") -> str:
     """
-    Wrap the newsletter content in a complete HTML document.
+    Render newsletter using Jinja2 template.
 
     Args:
-        newsletter_content: The newsletter content
-        week: NFL week number
+        template_data: Dictionary with template variables
+        template_file: Path to template file
 
     Returns:
-        Complete HTML document
+        Rendered HTML
     """
-    # Check if already a complete HTML document
-    if newsletter_content.strip().lower().startswith('<!doctype html') or \
-       newsletter_content.strip().lower().startswith('<html'):
-        return newsletter_content
-
-    # Read CSS from the playground file to keep styles in sync
-    wrapped = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReplAI Review - Week {week}</title>
-    <style>
-        /* CSS Variables for Theme */
-        :root {{
-            --nfl-navy: #013369;
-            --nfl-red: #D50A0A;
-            --nfl-green: #00B140;
-            --background: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-primary: #1a1a1a;
-            --text-secondary: #6c757d;
-            --border-light: #e9ecef;
-            --accent-gold: #FFB612;
-            --winner-color: #00B140;
-            --loser-color: #999;
-        }}
-
-        /* Dark Mode */
-        @media (prefers-color-scheme: dark) {{
-            :root {{
-                --background: #1a1a1a;
-                --card-bg: #2d2d2d;
-                --text-primary: #e0e0e0;
-                --text-secondary: #a0a0a0;
-                --border-light: #404040;
-                --nfl-navy: #4A90E2;
-            }}
-        }}
-
-        * {{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }}
-
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 32px 24px;
-            background-color: var(--background);
-            color: var(--text-primary);
-            line-height: 1.7;
-        }}
-
-        /* Enhanced Header */
-        .newsletter-header {{
-            text-align: center;
-            margin-bottom: 48px;
-            padding-bottom: 32px;
-            border-bottom: 4px solid var(--nfl-navy);
-            background: linear-gradient(135deg, var(--nfl-navy) 0%, #024a9c 100%);
-            color: white;
-            padding: 40px 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(1, 51, 105, 0.2);
-        }}
-
-        .newsletter-title {{
-            font-size: 3em;
-            font-weight: 800;
-            margin-bottom: 8px;
-            letter-spacing: -0.02em;
-        }}
-
-        .newsletter-subtitle {{
-            font-size: 1.2em;
-            opacity: 0.95;
-            font-weight: 400;
-            margin-bottom: 8px;
-        }}
-
-        .newsletter-meta {{
-            font-size: 0.95em;
-            opacity: 0.85;
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }}
-
-        .newsletter-meta span {{
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }}
-
-        /* Game Cards */
-        .games-container {{
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 32px;
-        }}
-
-        .game {{
-            background-color: var(--card-bg);
-            padding: 32px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }}
-
-        .game:hover {{
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-        }}
-
-        /* Game Badges */
-        .game-badges {{
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }}
-
-        .badge {{
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 0.75em;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }}
-
-        .badge-nailbiter {{
-            background-color: #FFF3CD;
-            color: #856404;
-        }}
-
-        .badge-comeback {{
-            background-color: #FFE5E5;
-            color: #D50A0A;
-        }}
-
-        .badge-blowout {{
-            background-color: #E8F4F8;
-            color: #0066CC;
-        }}
-
-        .badge-upset {{
-            background-color: #F3E5F5;
-            color: #7B1FA2;
-        }}
-
-        .badge-game-of-week {{
-            background-color: var(--accent-gold);
-            color: #000;
-        }}
-
-        /* Game Header */
-        .game-header {{
-            margin-bottom: 24px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid var(--border-light);
-        }}
-
-        .game-meta {{
-            font-size: 0.85em;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }}
-
-        .game-meta span {{
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }}
-
-        /* Matchup Display */
-        .matchup {{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 16px;
-        }}
-
-        .team-section {{
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            max-width: 200px;
-        }}
-
-        .team-section.winner .team-name {{
-            color: var(--winner-color);
-            font-weight: 800;
-        }}
-
-        .team-section.winner .score {{
-            color: var(--winner-color);
-        }}
-
-        .team-section.loser .team-name {{
-            color: var(--loser-color);
-            font-weight: 600;
-        }}
-
-        .team-section.loser .score {{
-            color: var(--loser-color);
-        }}
-
-        .team-logo-container {{
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }}
-
-        .team-icon {{
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-        }}
-
-        .team-info {{
-            text-align: center;
-        }}
-
-        .team-name {{
-            font-weight: 700;
-            font-size: 1.1em;
-            transition: color 0.3s ease;
-        }}
-
-        .team-record {{
-            font-size: 0.8em;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }}
-
-        .score {{
-            font-size: 2.5em;
-            font-weight: 800;
-            font-variant-numeric: tabular-nums;
-            line-height: 1;
-        }}
-
-        .vs-divider {{
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-        }}
-
-        .at-symbol {{
-            font-size: 0.9em;
-            font-weight: 600;
-        }}
-
-        .score-divider {{
-            width: 40px;
-            height: 2px;
-            background-color: var(--border-light);
-        }}
-
-        /* Summary */
-        .summary {{
-            font-size: 1em;
-            line-height: 1.7;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-        }}
-
-        .summary strong {{
-            color: var(--nfl-navy);
-            font-weight: 700;
-        }}
-
-        .stat-highlight {{
-            background-color: #FFF8E1;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-            white-space: nowrap;
-        }}
-
-        @media (prefers-color-scheme: dark) {{
-            .stat-highlight {{
-                background-color: #4a4a2a;
-            }}
-        }}
-
-        /* Footer Actions */
-        .game-footer {{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-light);
-        }}
-
-        .recap-link {{
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background-color: var(--nfl-navy);
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9em;
-            transition: all 0.3s ease;
-        }}
-
-        .recap-link:hover {{
-            background-color: #024a9c;
-            transform: translateX(2px);
-        }}
-
-        .recap-link:focus {{
-            outline: 3px solid var(--accent-gold);
-            outline-offset: 2px;
-        }}
-
-        .recap-link::after {{
-            content: "→";
-            font-size: 1.2em;
-        }}
-
-        /* Responsive Design */
-        @media (min-width: 1024px) {{
-            .games-container {{
-                grid-template-columns: repeat(2, 1fr);
-            }}
-        }}
-
-        @media (max-width: 640px) {{
-            body {{
-                padding: 16px;
-            }}
-
-            .newsletter-title {{
-                font-size: 2em;
-            }}
-
-            .newsletter-subtitle {{
-                font-size: 1em;
-            }}
-
-            .game {{
-                padding: 20px;
-            }}
-
-            .matchup {{
-                flex-direction: column;
-                gap: 8px;
-            }}
-
-            .score {{
-                font-size: 2em;
-            }}
-
-            .team-name {{
-                font-size: 1em;
-            }}
-
-            .vs-divider {{
-                flex-direction: row;
-            }}
-
-            .score-divider {{
-                width: 2px;
-                height: 40px;
-            }}
-
-            .game-footer {{
-                flex-direction: column;
-                gap: 12px;
-                align-items: stretch;
-            }}
-
-            .recap-link {{
-                justify-content: center;
-            }}
-        }}
-
-        /* Print Styles */
-        @media print {{
-            body {{
-                background-color: white;
-                color: black;
-            }}
-
-            .game {{
-                break-inside: avoid;
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }}
-
-            .recap-link {{
-                background-color: white;
-                color: black;
-                border: 1px solid black;
-            }}
-        }}
-
-        /* Focus Styles for Accessibility */
-        *:focus {{
-            outline: 3px solid var(--accent-gold);
-            outline-offset: 2px;
-        }}
-
-        /* Loading Animation */
-        @keyframes fadeIn {{
-            from {{
-                opacity: 0;
-                transform: translateY(10px);
-            }}
-            to {{
-                opacity: 1;
-                transform: translateY(0);
-            }}
-        }}
-
-        .game {{
-            animation: fadeIn 0.5s ease-out;
-        }}
-    </style>
-</head>
-<body>
-{newsletter_content}
-</body>
-</html>"""
-
-    return wrapped
+    # Set up Jinja2 environment
+    env = Environment(
+        loader=FileSystemLoader('.'),
+        autoescape=select_autoescape(['html'])
+    )
+
+    # Load template
+    template = env.get_template(template_file)
+
+    # Render template with data
+    return template.render(**template_data)
 
 
 def update_index_html(web_dir: Path, newsletter_filename: str, year: int, week: int) -> None:
@@ -950,22 +461,28 @@ def main():
         print(f"Error reading JSON file: {e}")
         sys.exit(1)
 
-    # Parse and format JSON
+    # Parse JSON and prepare template data
     try:
-        newsletter_content, game_count = parse_and_format_json(json_content, target_week)
+        template_data, game_count = parse_json(json_content)
     except json.JSONDecodeError as e:
         print(f"Error parsing JSON: {e}")
         print(f"JSON file: {json_file}")
         print(f"Error at line {e.lineno}, column {e.colno}")
         sys.exit(1)
     except Exception as e:
-        print(f"Error formatting newsletter: {e}")
+        print(f"Error parsing newsletter data: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
 
-    # Wrap in complete HTML
-    complete_html = wrap_newsletter_html(newsletter_content, target_week)
+    # Render newsletter using template
+    try:
+        complete_html = render_newsletter(template_data)
+    except Exception as e:
+        print(f"Error rendering newsletter: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
     # Save to web directory
     web_dir = Path(config['storage']['web_dir'])

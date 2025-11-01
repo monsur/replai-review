@@ -198,6 +198,28 @@ python format_newsletter.py --week 8
 python format_newsletter.py --week 8
 ```
 
+### Customizing the Newsletter Template
+
+The newsletter HTML and CSS are defined in `newsletter_template.html`, making it easy to customize the design without touching Python code.
+
+**Template file**: `newsletter_template.html`
+- Uses [Jinja2 templating](https://jinja.palletsprojects.com/) for dynamic content
+- Contains all HTML structure and CSS styles
+- Edit this file to change colors, fonts, layout, or any visual elements
+
+**After editing the template**, simply regenerate the HTML:
+```bash
+python format_newsletter.py --week 8
+```
+
+No need to regenerate JSON - the template changes apply instantly!
+
+**Template variables available**:
+- `week`: NFL week number
+- `game_count`: Total number of games
+- `upset_count`: Number of upset games
+- `games`: Array of game objects with all game data (teams, scores, badges, etc.)
+
 ## Configuration
 
 ### NFL Season Settings
