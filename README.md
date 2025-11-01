@@ -77,8 +77,11 @@ python fetch_recaps.py
 # Clean and combine recaps
 python process_recaps.py
 
-# Generate newsletter with AI
-python generate_newsletter.py
+# Generate JSON with AI
+python generate_json.py
+
+# Format JSON into HTML newsletter
+python format_newsletter.py
 ```
 
 ### Script 1: Fetch Recaps
@@ -115,25 +118,42 @@ python process_recaps.py --config my_config.yaml
 
 **Output**: Creates `tmp/YYYY-weekWW/combined.html` (e.g., `tmp/2025-week08/combined.html`) with cleaned and combined recaps.
 
-### Script 3: Generate Newsletter
+### Script 3a: Generate JSON
 
-Uses AI to generate a formatted newsletter from the combined recaps.
+Uses AI to generate structured JSON data from the combined recaps.
 
 ```bash
-# Generate newsletter (uses provider from config)
-python generate_newsletter.py
+# Generate JSON (uses provider from config)
+python generate_json.py
 
 # Override AI provider
-python generate_newsletter.py --provider openai
+python generate_json.py --provider openai
 
 # Process specific week
-python generate_newsletter.py --week 8
+python generate_json.py --week 8
 
 # Combine options
-python generate_newsletter.py --week 8 --provider claude
+python generate_json.py --week 8 --provider claude
 ```
 
-**Output**: Creates `web/YYYY-weekWW.html` (e.g., `web/2025-week08.html`) - the final newsletter ready to view or distribute.
+**Output**: Creates `tmp/YYYY-weekWW/newsletter.json` (e.g., `tmp/2025-week08/newsletter.json`) with structured game data.
+
+### Script 3b: Format Newsletter
+
+Formats the JSON data into a complete HTML newsletter.
+
+```bash
+# Format newsletter for current week
+python format_newsletter.py
+
+# Format specific week
+python format_newsletter.py --week 8
+
+# Use custom JSON file
+python format_newsletter.py --json-file tmp/2025-week08/newsletter.json
+```
+
+**Output**: Creates `web/YYYY-weekWW.html` (e.g., `web/2025-week08.html`) - the final newsletter ready to view or distribute. Also updates `web/index.html` and `web/archive.json`.
 
 ### View the Newsletter
 
@@ -148,6 +168,34 @@ xdg-open web/2025-week08.html
 
 # Windows
 start web/2025-week08.html
+```
+
+### Benefits of the Split Workflow
+
+The newsletter generation is split into two scripts for flexibility:
+
+- **`generate_json.py`**: Calls the AI API to generate structured JSON data
+- **`format_newsletter.py`**: Formats the JSON into the final HTML newsletter
+
+**Why this split is useful**:
+1. **Regenerate HTML without AI calls**: If you want to tweak the HTML formatting or fix a bug, you can run `format_newsletter.py` alone without calling the AI API again (saving time and API costs)
+2. **Manual JSON editing**: You can manually edit the JSON file (fix typos, adjust scores, etc.) before formatting
+3. **Testing**: Test HTML formatting changes quickly by reusing existing JSON
+4. **Debugging**: Easier to debug issues - is the problem with AI generation or HTML formatting?
+
+Example workflow:
+```bash
+# Generate JSON once (costs API credits)
+python generate_json.py --week 8
+
+# Format to HTML (free, instant)
+python format_newsletter.py --week 8
+
+# Made a CSS change? Regenerate HTML instantly:
+python format_newsletter.py --week 8
+
+# Need to fix a typo in the JSON? Edit tmp/2025-week08/newsletter.json, then:
+python format_newsletter.py --week 8
 ```
 
 ## Configuration

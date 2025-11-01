@@ -1,0 +1,999 @@
+#!/usr/bin/env python3
+"""
+Script 3b: Format Newsletter HTML
+
+This script:
+1. Reads the newsletter JSON from tmp/YYYY-weekWW/newsletter.json
+2. Parses and validates the JSON
+3. Formats games into HTML
+4. Wraps in complete HTML document
+5. Saves to web/YYYY-weekWW.html
+6. Updates index.html with latest newsletter
+7. Updates archive.json with newsletter metadata
+"""
+
+import argparse
+import json
+import re
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import yaml
+
+from week_calculator import create_week_calculator
+
+
+def load_config(config_path: str = "config.yaml") -> dict:
+    """Load configuration from YAML file."""
+    with open(config_path, 'r') as f:
+        return yaml.safe_load(f)
+
+
+def parse_game_datetime(game_date: str) -> datetime:
+    """
+    Parse game date string to datetime for sorting.
+
+    Args:
+        game_date: Date string in format "Day MM/DD H:MMAM/PM ET"
+                   (e.g., "Thu 10/23 8:15PM ET")
+
+    Returns:
+        datetime object for sorting
+    """
+    try:
+        # Extract the date and time parts
+        # Format: "Day MM/DD H:MMAM/PM ET"
+        parts = game_date.split()
+        if len(parts) < 3:
+            # If format is unexpected, return a default datetime
+            return datetime.min
+
+        # Day name (Mon, Tue, etc.) - parts[0]
+        # Date (MM/DD) - parts[1]
+        # Time (H:MMAM/PM) - parts[2]
+        # Timezone (ET) - parts[3] (ignored for sorting within same week)
+
+        day_of_week = parts[0].lower()
+        date_str = parts[1]  # MM/DD
+        time_str = parts[2]  # H:MMAM/PM
+
+        # Map day names to sort order (Thu=0, Fri=1, Sat=2, Sun=3, Mon=4, Tue=5, Wed=6)
+        day_order = {
+            'thu': 0, 'thursday': 0,
+            'fri': 1, 'friday': 1,
+            'sat': 2, 'saturday': 2,
+            'sun': 3, 'sunday': 3,
+            'mon': 4, 'monday': 4,
+            'tue': 5, 'tuesday': 5,
+            'wed': 6, 'wednesday': 6
+        }
+
+        # Parse time (handle both 12:00PM and 12:00AM formats)
+        time_upper = time_str.upper()
+        # Parse the time
+        if 'AM' in time_upper:
+            time_part = time_upper.replace('AM', '')
+            is_pm = False
+        elif 'PM' in time_upper:
+            time_part = time_upper.replace('PM', '')
+            is_pm = True
+        else:
+            # Default to PM if not specified
+            time_part = time_str
+            is_pm = True
+
+        # Split hours and minutes
+        if ':' in time_part:
+            hour_str, min_str = time_part.split(':')
+            hour = int(hour_str)
+            minute = int(min_str)
+        else:
+            hour = int(time_part)
+            minute = 0
+
+        # Convert to 24-hour format
+        if is_pm and hour != 12:
+            hour += 12
+        elif not is_pm and hour == 12:
+            hour = 0
+
+        # Get day order (default to Sunday if not found)
+        day_num = day_order.get(day_of_week, 3)
+
+        # Parse month and day from date_str
+        month_day = date_str.split('/')
+        if len(month_day) == 2:
+            month = int(month_day[0])
+            day = int(month_day[1])
+        else:
+            month = 1
+            day = 1
+
+        # Create a sortable datetime (use a dummy year)
+        # We'll use day_num as the primary sort key and time as secondary
+        return datetime(2025, month, day, hour, minute)
+
+    except (ValueError, IndexError, AttributeError):
+        # If parsing fails, return minimum datetime to sort to beginning
+        return datetime.min
+
+
+def sort_games_chronologically(games: list) -> list:
+    """
+    Sort games in chronological order.
+
+    Args:
+        games: List of game dictionaries
+
+    Returns:
+        Sorted list of games (earliest first)
+    """
+    def get_sort_key(game):
+        game_date = game.get('game_date', '')
+        return parse_game_datetime(game_date)
+
+    return sorted(games, key=get_sort_key)
+
+
+def format_game_html(game: dict) -> str:
+    """
+    Format a single game's data into HTML.
+
+    Args:
+        game: Dictionary with game data
+
+    Returns:
+        HTML string for the game
+    """
+    # Use consistent pattern: images/{TEAM_ABB}.png
+    away_icon = f"images/{game['away_abbr']}.png"
+    home_icon = f"images/{game['home_abbr']}.png"
+
+    # Determine winner and loser
+    away_score = int(game['away_score'])
+    home_score = int(game['home_score'])
+    away_winner = away_score > home_score
+    home_winner = home_score > away_score
+
+    away_class = "winner" if away_winner else "loser"
+    home_class = "winner" if home_winner else "loser"
+
+    # Format badges
+    badges_html = ""
+    if 'badges' in game and game['badges']:
+        badge_items = []
+        badge_map = {
+            'nail-biter': ('badge-nailbiter', '🎯 Nail-Biter'),
+            'comeback': ('badge-comeback', '🔥 Comeback'),
+            'blowout': ('badge-blowout', '💥 Blowout'),
+            'upset': ('badge-upset', '⬆️ Upset'),
+            'game-of-week': ('badge-game-of-week', '🏆 Game of the Week')
+        }
+        for badge in game['badges']:
+            if badge in badge_map:
+                css_class, label = badge_map[badge]
+                badge_items.append(f'<span class="badge {css_class}">{label}</span>')
+
+        if badge_items:
+            badges_html = f"""
+            <div class="game-badges">
+                {' '.join(badge_items)}
+            </div>"""
+
+    # Format game metadata
+    game_meta_items = []
+    if 'game_date' in game and game['game_date']:
+        game_meta_items.append(f'<span>📅 {game["game_date"]}</span>')
+    if 'stadium' in game and game['stadium']:
+        game_meta_items.append(f'<span>📍 {game["stadium"]}</span>')
+    if 'tv_network' in game and game['tv_network']:
+        game_meta_items.append(f'<span>📺 {game["tv_network"]}</span>')
+
+    game_meta_html = ""
+    if game_meta_items:
+        game_meta_html = f"""
+                <div class="game-meta">
+                    {' '.join(game_meta_items)}
+                </div>"""
+
+    # Format team records
+    away_record = f'<div class="team-record">({game["away_record"]})</div>' if 'away_record' in game and game['away_record'] else ''
+    home_record = f'<div class="team-record">({game["home_record"]})</div>' if 'home_record' in game and game['home_record'] else ''
+
+    return f"""        <article class="game">{badges_html}
+            <div class="game-header">{game_meta_html}
+
+                <div class="matchup">
+                    <div class="team-section {away_class}">
+                        <div class="team-logo-container">
+                            <img src="{away_icon}" alt="{game['away_team']}" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">{game['away_team']}</div>
+                            {away_record}
+                        </div>
+                        <div class="score">{game['away_score']}</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section {home_class}">
+                        <div class="team-logo-container">
+                            <img src="{home_icon}" alt="{game['home_team']}" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">{game['home_team']}</div>
+                            {home_record}
+                        </div>
+                        <div class="score">{game['home_score']}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                {game['summary']}
+            </div>
+
+            <div class="game-footer">
+                <a href="{game.get('recap_url', '#')}" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>"""
+
+
+def parse_and_format_json(json_content: str, week: int) -> tuple[str, int]:
+    """
+    Parse JSON and format into newsletter HTML.
+
+    Args:
+        json_content: Raw JSON string
+        week: Week number
+
+    Returns:
+        Tuple of (newsletter HTML, game count)
+    """
+    # Clean up potential markdown code blocks
+    json_str = json_content.strip()
+    if json_str.startswith('```'):
+        # Remove markdown code blocks
+        lines = json_str.split('\n')
+        # Find the actual JSON start and end
+        start_idx = 1
+        end_idx = len(lines) - 1
+        # Skip the ```json line
+        if lines[start_idx].strip().startswith('json'):
+            start_idx += 1
+        # Find the closing ```
+        for i in range(len(lines) - 1, -1, -1):
+            if lines[i].strip() == '```':
+                end_idx = i
+                break
+        json_str = '\n'.join(lines[start_idx:end_idx])
+
+    data = json.loads(json_str)
+    week = data.get('week', 'Unknown')
+    games = data.get('games', [])
+
+    print(f"Parsed {len(games)} games from JSON")
+
+    # Sort games chronologically (Thursday first, Monday last)
+    games = sort_games_chronologically(games)
+    print("Games sorted chronologically")
+
+    # Format games into HTML
+    games_html = '\n\n'.join([format_game_html(game) for game in games])
+
+    # Calculate game count and other stats
+    game_count = len(games)
+
+    # Count upsets (games with upset badge)
+    upset_count = sum(1 for game in games if 'badges' in game and 'upset' in game.get('badges', []))
+
+    # Create complete newsletter HTML with enhanced header
+    newsletter_html = f"""    <header class="newsletter-header">
+        <h1 class="newsletter-title">🏈 ReplAI Review</h1>
+        <div class="newsletter-subtitle">Week {week} - 2025 NFL Season</div>
+        <div class="newsletter-meta">
+            <span>🎮 {game_count} Games</span>
+            <span>⭐ {upset_count} Upsets</span>
+        </div>
+    </header>
+
+    <main class="games-container">
+{games_html}
+    </main>"""
+
+    return newsletter_html, game_count
+
+
+def wrap_newsletter_html(newsletter_content: str, week: int) -> str:
+    """
+    Wrap the newsletter content in a complete HTML document.
+
+    Args:
+        newsletter_content: The newsletter content
+        week: NFL week number
+
+    Returns:
+        Complete HTML document
+    """
+    # Check if already a complete HTML document
+    if newsletter_content.strip().lower().startswith('<!doctype html') or \
+       newsletter_content.strip().lower().startswith('<html'):
+        return newsletter_content
+
+    # Read CSS from the playground file to keep styles in sync
+    wrapped = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReplAI Review - Week {week}</title>
+    <style>
+        /* CSS Variables for Theme */
+        :root {{
+            --nfl-navy: #013369;
+            --nfl-red: #D50A0A;
+            --nfl-green: #00B140;
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6c757d;
+            --border-light: #e9ecef;
+            --accent-gold: #FFB612;
+            --winner-color: #00B140;
+            --loser-color: #999;
+        }}
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {{
+            :root {{
+                --background: #1a1a1a;
+                --card-bg: #2d2d2d;
+                --text-primary: #e0e0e0;
+                --text-secondary: #a0a0a0;
+                --border-light: #404040;
+                --nfl-navy: #4A90E2;
+            }}
+        }}
+
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }}
+
+        /* Enhanced Header */
+        .newsletter-header {{
+            text-align: center;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 4px solid var(--nfl-navy);
+            background: linear-gradient(135deg, var(--nfl-navy) 0%, #024a9c 100%);
+            color: white;
+            padding: 40px 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(1, 51, 105, 0.2);
+        }}
+
+        .newsletter-title {{
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }}
+
+        .newsletter-subtitle {{
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }}
+
+        .newsletter-meta {{
+            font-size: 0.95em;
+            opacity: 0.85;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }}
+
+        .newsletter-meta span {{
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }}
+
+        /* Game Cards */
+        .games-container {{
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }}
+
+        .game {{
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }}
+
+        .game:hover {{
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }}
+
+        /* Game Badges */
+        .game-badges {{
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }}
+
+        .badge {{
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }}
+
+        .badge-nailbiter {{
+            background-color: #FFF3CD;
+            color: #856404;
+        }}
+
+        .badge-comeback {{
+            background-color: #FFE5E5;
+            color: #D50A0A;
+        }}
+
+        .badge-blowout {{
+            background-color: #E8F4F8;
+            color: #0066CC;
+        }}
+
+        .badge-upset {{
+            background-color: #F3E5F5;
+            color: #7B1FA2;
+        }}
+
+        .badge-game-of-week {{
+            background-color: var(--accent-gold);
+            color: #000;
+        }}
+
+        /* Game Header */
+        .game-header {{
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--border-light);
+        }}
+
+        .game-meta {{
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }}
+
+        .game-meta span {{
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }}
+
+        /* Matchup Display */
+        .matchup {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 16px;
+        }}
+
+        .team-section {{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            max-width: 200px;
+        }}
+
+        .team-section.winner .team-name {{
+            color: var(--winner-color);
+            font-weight: 800;
+        }}
+
+        .team-section.winner .score {{
+            color: var(--winner-color);
+        }}
+
+        .team-section.loser .team-name {{
+            color: var(--loser-color);
+            font-weight: 600;
+        }}
+
+        .team-section.loser .score {{
+            color: var(--loser-color);
+        }}
+
+        .team-logo-container {{
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+
+        .team-icon {{
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }}
+
+        .team-info {{
+            text-align: center;
+        }}
+
+        .team-name {{
+            font-weight: 700;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }}
+
+        .team-record {{
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }}
+
+        .score {{
+            font-size: 2.5em;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }}
+
+        .vs-divider {{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+        }}
+
+        .at-symbol {{
+            font-size: 0.9em;
+            font-weight: 600;
+        }}
+
+        .score-divider {{
+            width: 40px;
+            height: 2px;
+            background-color: var(--border-light);
+        }}
+
+        /* Summary */
+        .summary {{
+            font-size: 1em;
+            line-height: 1.7;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }}
+
+        .summary strong {{
+            color: var(--nfl-navy);
+            font-weight: 700;
+        }}
+
+        .stat-highlight {{
+            background-color: #FFF8E1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }}
+
+        @media (prefers-color-scheme: dark) {{
+            .stat-highlight {{
+                background-color: #4a4a2a;
+            }}
+        }}
+
+        /* Footer Actions */
+        .game-footer {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
+        }}
+
+        .recap-link {{
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: var(--nfl-navy);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }}
+
+        .recap-link:hover {{
+            background-color: #024a9c;
+            transform: translateX(2px);
+        }}
+
+        .recap-link:focus {{
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }}
+
+        .recap-link::after {{
+            content: "→";
+            font-size: 1.2em;
+        }}
+
+        /* Responsive Design */
+        @media (min-width: 1024px) {{
+            .games-container {{
+                grid-template-columns: repeat(2, 1fr);
+            }}
+        }}
+
+        @media (max-width: 640px) {{
+            body {{
+                padding: 16px;
+            }}
+
+            .newsletter-title {{
+                font-size: 2em;
+            }}
+
+            .newsletter-subtitle {{
+                font-size: 1em;
+            }}
+
+            .game {{
+                padding: 20px;
+            }}
+
+            .matchup {{
+                flex-direction: column;
+                gap: 8px;
+            }}
+
+            .score {{
+                font-size: 2em;
+            }}
+
+            .team-name {{
+                font-size: 1em;
+            }}
+
+            .vs-divider {{
+                flex-direction: row;
+            }}
+
+            .score-divider {{
+                width: 2px;
+                height: 40px;
+            }}
+
+            .game-footer {{
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }}
+
+            .recap-link {{
+                justify-content: center;
+            }}
+        }}
+
+        /* Print Styles */
+        @media print {{
+            body {{
+                background-color: white;
+                color: black;
+            }}
+
+            .game {{
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }}
+
+            .recap-link {{
+                background-color: white;
+                color: black;
+                border: 1px solid black;
+            }}
+        }}
+
+        /* Focus Styles for Accessibility */
+        *:focus {{
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }}
+
+        /* Loading Animation */
+        @keyframes fadeIn {{
+            from {{
+                opacity: 0;
+                transform: translateY(10px);
+            }}
+            to {{
+                opacity: 1;
+                transform: translateY(0);
+            }}
+        }}
+
+        .game {{
+            animation: fadeIn 0.5s ease-out;
+        }}
+    </style>
+</head>
+<body>
+{newsletter_content}
+</body>
+</html>"""
+
+    return wrapped
+
+
+def update_index_html(web_dir: Path, newsletter_filename: str, year: int, week: int) -> None:
+    """
+    Update index.html to point to the latest newsletter if it's newer.
+
+    Args:
+        web_dir: Web directory path
+        newsletter_filename: New newsletter filename (e.g., "2025-week09.html")
+        year: Year of the new newsletter
+        week: Week number of the new newsletter
+    """
+    index_file = web_dir / "index.html"
+
+    if not index_file.exists():
+        print(f"Warning: {index_file} not found, skipping index update")
+        return
+
+    # Read current index.html
+    with open(index_file, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    # Extract current newsletter filename from iframe src
+    match = re.search(r'<iframe\s+[^>]*src="([^"]+)"', content)
+
+    if not match:
+        print("Warning: Could not find iframe in index.html, skipping update")
+        return
+
+    current_filename = match.group(1)
+
+    # Extract year and week from current filename (format: YYYY-weekWW.html)
+    current_match = re.match(r'(\d{4})-week(\d{2})\.html', current_filename)
+
+    if not current_match:
+        print(f"Warning: Current iframe src '{current_filename}' doesn't match expected format")
+        return
+
+    current_year = int(current_match.group(1))
+    current_week = int(current_match.group(2))
+
+    # Check if new newsletter is newer
+    if year > current_year or (year == current_year and week > current_week):
+        # Update the iframe src
+        updated_content = content.replace(
+            f'src="{current_filename}"',
+            f'src="{newsletter_filename}"'
+        )
+
+        with open(index_file, 'w', encoding='utf-8') as f:
+            f.write(updated_content)
+
+        print(f"Updated index.html: {current_filename} → {newsletter_filename}")
+    else:
+        print(f"Index.html already points to week {current_week}, not updating")
+
+
+def update_archive_json(web_dir: Path, year: int, week: int,
+                        newsletter_filename: str, game_count: int) -> None:
+    """
+    Update archive.json with the new newsletter information.
+
+    Args:
+        web_dir: Web directory path
+        year: Year of the newsletter
+        week: Week number
+        newsletter_filename: Filename of the newsletter
+        game_count: Number of games in the newsletter
+    """
+    archive_file = web_dir / "archive.json"
+
+    # Read existing archive or create new structure
+    if archive_file.exists():
+        with open(archive_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    else:
+        data = {"latest": {}, "weeks": []}
+
+    # Create new entry
+    new_entry = {
+        "year": year,
+        "week": week,
+        "filename": newsletter_filename,
+        "date": datetime.now().strftime("%Y-%m-%d"),
+        "games": game_count
+    }
+
+    # Update latest
+    data["latest"] = {
+        "year": year,
+        "week": week,
+        "filename": newsletter_filename
+    }
+
+    # Check if this week already exists in archive
+    existing_index = None
+    for i, entry in enumerate(data["weeks"]):
+        if entry["year"] == year and entry["week"] == week:
+            existing_index = i
+            break
+
+    if existing_index is not None:
+        # Update existing entry
+        data["weeks"][existing_index] = new_entry
+        print(f"Updated existing archive entry for week {week}")
+    else:
+        # Add new entry at the beginning (most recent first)
+        data["weeks"].insert(0, new_entry)
+        print(f"Added new archive entry for week {week}")
+
+    # Save archive.json
+    with open(archive_file, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2)
+
+    print(f"Archive updated: {archive_file}")
+
+
+def main():
+    """Main execution function."""
+    parser = argparse.ArgumentParser(
+        description='Format NFL newsletter from JSON to HTML'
+    )
+    parser.add_argument(
+        '--week',
+        type=int,
+        help='Specific week number to process (overrides auto-calculation)'
+    )
+    parser.add_argument(
+        '--config',
+        default='config.yaml',
+        help='Path to configuration file (default: config.yaml)'
+    )
+    parser.add_argument(
+        '--json-file',
+        help='Path to JSON file (overrides automatic path resolution)'
+    )
+
+    args = parser.parse_args()
+
+    # Load configuration
+    try:
+        config = load_config(args.config)
+    except FileNotFoundError:
+        print(f"Error: Configuration file '{args.config}' not found")
+        sys.exit(1)
+
+    # Determine target week
+    week_calculator = create_week_calculator(
+        season_start_date=config['nfl_season']['season_start_date'],
+        manual_week=args.week
+    )
+    target_week = week_calculator.get_week()
+
+    print(f"Formatting newsletter for week: {target_week}")
+
+    # Determine JSON file path
+    year = config['nfl_season']['year']
+    if args.json_file:
+        json_file = Path(args.json_file)
+    else:
+        tmp_week_dir = Path(config['storage']['tmp_dir']) / f"{year}-week{target_week:02d}"
+        json_file = tmp_week_dir / "newsletter.json"
+
+    print(f"Input JSON: {json_file}")
+
+    # Read JSON file
+    if not json_file.exists():
+        print(f"Error: JSON file not found: {json_file}")
+        print(f"Have you run generate_json.py first?")
+        sys.exit(1)
+
+    try:
+        with open(json_file, 'r', encoding='utf-8') as f:
+            json_content = f.read()
+    except Exception as e:
+        print(f"Error reading JSON file: {e}")
+        sys.exit(1)
+
+    # Parse and format JSON
+    try:
+        newsletter_content, game_count = parse_and_format_json(json_content, target_week)
+    except json.JSONDecodeError as e:
+        print(f"Error parsing JSON: {e}")
+        print(f"JSON file: {json_file}")
+        print(f"Error at line {e.lineno}, column {e.colno}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error formatting newsletter: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+    # Wrap in complete HTML
+    complete_html = wrap_newsletter_html(newsletter_content, target_week)
+
+    # Save to web directory
+    web_dir = Path(config['storage']['web_dir'])
+    web_dir.mkdir(parents=True, exist_ok=True)
+
+    newsletter_filename = f"{year}-week{target_week:02d}.html"
+    output_file = web_dir / newsletter_filename
+
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(complete_html)
+
+    # Update index.html to point to latest newsletter
+    update_index_html(web_dir, newsletter_filename, year, target_week)
+
+    # Update archive.json with new newsletter
+    update_archive_json(web_dir, year, target_week, newsletter_filename, game_count)
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"Summary:")
+    print(f"  Week: {target_week}")
+    print(f"  Games: {game_count}")
+    print(f"  Newsletter file: {output_file}")
+    print(f"  File size: {output_file.stat().st_size:,} bytes")
+    print(f"{'='*60}")
+    print(f"\nNewsletter formatted successfully!")
+    print(f"Open in browser: file://{output_file.absolute()}")
+
+
+if __name__ == "__main__":
+    main()
