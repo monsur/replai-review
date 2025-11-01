@@ -440,10 +440,11 @@ def main():
 
     # Determine JSON file path
     year = config['nfl_season']['year']
+    tmp_week_dir = Path(config['storage']['tmp_dir']) / f"{year}-week{target_week:02d}"
+
     if args.json_file:
         json_file = Path(args.json_file)
     else:
-        tmp_week_dir = Path(config['storage']['tmp_dir']) / f"{year}-week{target_week:02d}"
         json_file = tmp_week_dir / "newsletter.json"
 
     print(f"Input JSON: {json_file}")
@@ -468,9 +469,25 @@ def main():
         print(f"Error parsing JSON: {e}")
         print(f"JSON file: {json_file}")
         print(f"Error at line {e.lineno}, column {e.colno}")
+
+        # Save debug file to tmp directory
+        tmp_week_dir.mkdir(parents=True, exist_ok=True)
+        debug_file = tmp_week_dir / "newsletter_debug.json"
+        with open(debug_file, 'w', encoding='utf-8') as f:
+            f.write(json_content)
+        print(f"Raw JSON saved to {debug_file} for debugging")
+
         sys.exit(1)
     except Exception as e:
         print(f"Error parsing newsletter data: {e}")
+
+        # Save debug file to tmp directory
+        tmp_week_dir.mkdir(parents=True, exist_ok=True)
+        debug_file = tmp_week_dir / "newsletter_debug.json"
+        with open(debug_file, 'w', encoding='utf-8') as f:
+            f.write(json_content)
+        print(f"Raw JSON saved to {debug_file} for debugging")
+
         import traceback
         traceback.print_exc()
         sys.exit(1)

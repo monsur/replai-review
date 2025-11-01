@@ -189,6 +189,19 @@ def main():
         )
     except Exception as e:
         print(f"Error generating JSON: {e}")
+
+        # Try to save partial output to debug file if it exists
+        try:
+            # Check if there's any response to save
+            if hasattr(e, 'response') and e.response:
+                tmp_week_dir.mkdir(parents=True, exist_ok=True)
+                debug_file = tmp_week_dir / "newsletter_debug.json"
+                with open(debug_file, 'w', encoding='utf-8') as f:
+                    f.write(str(e.response))
+                print(f"Partial response saved to {debug_file} for debugging")
+        except:
+            pass  # If debug save fails, just continue with error
+
         sys.exit(1)
 
     # Summary
