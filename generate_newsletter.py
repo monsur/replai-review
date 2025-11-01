@@ -411,8 +411,10 @@ def main():
     # Wrap in complete HTML if needed
     complete_html = wrap_newsletter_html(newsletter_content, target_week)
 
-    # Save newsletter
-    output_file = week_dir / config['storage']['newsletter_filename']
+    # Save newsletter with dynamic filename: YYYY-weekWW.html
+    year = config['nfl_season']['year']
+    newsletter_filename = f"{year}-week{target_week:02d}.html"
+    output_file = week_dir / newsletter_filename
 
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(complete_html)

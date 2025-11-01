@@ -28,7 +28,7 @@ football/
     └── week_X/                # Generated for each week
         ├── recaps/            # Downloaded recap HTML files
         ├── combined.html      # Combined and cleaned recaps
-        └── newsletter.html    # Final newsletter
+        └── YYYY-weekWW.html   # Final newsletter (e.g., 2025-week08.html)
 ```
 
 ## Installation
@@ -129,7 +129,7 @@ python generate_newsletter.py --week 8
 python generate_newsletter.py --week 8 --provider claude
 ```
 
-**Output**: Creates `output/week_X/newsletter.html` - the final newsletter ready to view or distribute.
+**Output**: Creates `output/week_X/YYYY-weekWW.html` (e.g., `2025-week08.html`) - the final newsletter ready to view or distribute.
 
 ### View the Newsletter
 
@@ -137,13 +137,13 @@ Open the generated newsletter in your browser:
 
 ```bash
 # macOS
-open output/week_8/newsletter.html
+open output/week_8/2025-week08.html
 
 # Linux
-xdg-open output/week_8/newsletter.html
+xdg-open output/week_8/2025-week08.html
 
 # Windows
-start output/week_8/newsletter.html
+start output/week_8/2025-week08.html
 ```
 
 ## Configuration
@@ -165,7 +165,7 @@ storage:
   base_dir: "output"  # Where week_X folders are created
   recap_subdir: "recaps"
   combined_filename: "combined.html"
-  newsletter_filename: "newsletter.html"
+  # Newsletter filename is dynamically generated as: YYYY-weekWW.html
 ```
 
 ### AI Provider Settings
@@ -271,7 +271,7 @@ cd /path/to/football
 python fetch_recaps.py && \
 python process_recaps.py && \
 python generate_newsletter.py
-echo "Newsletter generated: week_$(date +\%U)/newsletter.html"
+echo "Newsletter generated: week_$(date +\%U)/$(date +\%Y)-week$(date +\%U).html"
 ```
 
 ## Troubleshooting
@@ -318,10 +318,10 @@ Generate newsletters with different providers for the same week:
 
 ```bash
 python generate_newsletter.py --week 8 --provider claude
-mv output/week_8/newsletter.html output/week_8/newsletter_claude.html
+mv output/week_8/2025-week08.html output/week_8/2025-week08-claude.html
 
 python generate_newsletter.py --week 8 --provider openai
-mv output/week_8/newsletter.html output/week_8/newsletter_openai.html
+mv output/week_8/2025-week08.html output/week_8/2025-week08-openai.html
 
 python generate_newsletter.py --week 8 --provider gemini
 ```
