@@ -8,10 +8,11 @@ nfl_season:
 
 # File Storage
 storage:
-  base_dir: "output"  # Base directory for storing week folders
-  recap_subdir: "recaps"  # Subdirectory within week folder for recap files
-  combined_filename: "combined.html"  # Combined recaps file
-  newsletter_filename: "newsletter.html"  # Final newsletter file
+  web_dir: "web"  # Public-facing files (newsletters, team logos)
+  tmp_dir: "tmp"  # Temporary processing files (recaps, combined.html, debug files)
+  recap_subdir: "recaps"  # Subdirectory within tmp/week_X for recap files
+  combined_filename: "combined.html"  # Combined recaps file in tmp/week_X/
+  # newsletter_filename is dynamically generated as: YYYY-weekWW.html and saved to web/
 
 # ESPN Configuration
 espn:

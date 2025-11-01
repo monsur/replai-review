@@ -9,8 +9,5 @@ __pycache__/
 # Temporary processing files
 tmp/
 
-# Generated newsletters (but keep team_logos)
-web/*.html
-
 # Personal scratch doc
 thoughts.txt

@@ -25,7 +25,7 @@ football/
 ├── requirements.txt            # Python dependencies
 ├── README.md                  # This file
 ├── web/                       # Public-facing files
-│   ├── team_logos/           # Team logo images
+│   ├── images/               # Team logo images
 │   ├── 2025-week08.html     # Generated newsletters
 │   └── 2025-week09.html
 └── tmp/                       # Temporary processing files

@@ -224,7 +224,7 @@ def main():
     print("=" * 60)
 
     # Create directories
-    logos_dir = Path("team_logos")
+    logos_dir = Path("web/images")
     logos_dir.mkdir(exist_ok=True)
 
     print(f"\n1. Downloading team logos to {logos_dir}/")

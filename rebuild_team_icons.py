@@ -6,9 +6,9 @@ Rebuild team_icons.json to use file paths instead of data URIs.
 import json
 from pathlib import Path
 
-# Get all PNG files in team_logos directory
-team_logos_dir = Path("team_logos")
-png_files = sorted(team_logos_dir.glob("*.png"))
+# Get all PNG files in web/images directory
+images_dir = Path("web/images")
+png_files = sorted(images_dir.glob("*.png"))
 
 # Build the team_icons dictionary
 team_icons = {}
@@ -17,7 +17,7 @@ for png_file in png_files:
     abbr = png_file.stem  # Get filename without extension
     team_icons[abbr] = {
         "abbreviation": abbr,
-        "icon_file_path": f"../team_logos/{png_file.name}"
+        "icon_file_path": f"../images/{png_file.name}"
     }
 
 # Write to team_icons.json
