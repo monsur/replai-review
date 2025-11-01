@@ -284,7 +284,7 @@ def generate_newsletter(
     recap_content: str,
     week: int,
     output_dir: Path
-) -> str:
+) -> tuple[str, int]:
     """
     Generate newsletter using AI provider.
 
@@ -296,7 +296,7 @@ def generate_newsletter(
         output_dir: Output directory path
 
     Returns:
-        Generated newsletter HTML
+        Tuple of (Generated newsletter HTML, game count)
     """
     print("Generating newsletter with AI...")
     print(f"Input size: {len(recap_content):,} characters")
@@ -373,7 +373,7 @@ GAME RECAPS:
 {games_html}
     </main>"""
 
-        return newsletter_html
+        return newsletter_html, game_count
 
     except json.JSONDecodeError as e:
         print(f"Error parsing JSON: {e}")
@@ -907,6 +907,66 @@ def wrap_newsletter_html(newsletter_content: str, week: int) -> str:
     return wrapped
 
 
+def update_archive_json(web_dir: Path, year: int, week: int,
+                        newsletter_filename: str, game_count: int) -> None:
+    """
+    Update archive.json with the new newsletter information.
+
+    Args:
+        web_dir: Web directory path
+        year: Year of the newsletter
+        week: Week number
+        newsletter_filename: Filename of the newsletter
+        game_count: Number of games in the newsletter
+    """
+    archive_file = web_dir / "archive.json"
+
+    # Read existing archive or create new structure
+    if archive_file.exists():
+        with open(archive_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    else:
+        data = {"latest": {}, "weeks": []}
+
+    # Create new entry
+    new_entry = {
+        "year": year,
+        "week": week,
+        "filename": newsletter_filename,
+        "date": datetime.now().strftime("%Y-%m-%d"),
+        "games": game_count
+    }
+
+    # Update latest
+    data["latest"] = {
+        "year": year,
+        "week": week,
+        "filename": newsletter_filename
+    }
+
+    # Check if this week already exists in archive
+    existing_index = None
+    for i, entry in enumerate(data["weeks"]):
+        if entry["year"] == year and entry["week"] == week:
+            existing_index = i
+            break
+
+    if existing_index is not None:
+        # Update existing entry
+        data["weeks"][existing_index] = new_entry
+        print(f"Updated existing archive entry for week {week}")
+    else:
+        # Add new entry at the beginning (most recent first)
+        data["weeks"].insert(0, new_entry)
+        print(f"Added new archive entry for week {week}")
+
+    # Save archive.json
+    with open(archive_file, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2)
+
+    print(f"Archive updated: {archive_file}")
+
+
 def main():
     """Main execution function."""
     parser = argparse.ArgumentParser(
@@ -983,7 +1043,7 @@ def main():
 
     # Generate newsletter
     try:
-        newsletter_content = generate_newsletter(
+        newsletter_content, game_count = generate_newsletter(
             ai_provider,
             prompt,
             recap_content,
@@ -1009,6 +1069,9 @@ def main():
 
     # Update index.html to point to latest newsletter
     update_index_html(web_dir, newsletter_filename, year, target_week)
+
+    # Update archive.json with new newsletter
+    update_archive_json(web_dir, year, target_week, newsletter_filename, game_count)
 
     # Summary
     print(f"\n{'='*60}")

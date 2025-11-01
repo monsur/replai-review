@@ -12,21 +12,23 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background-color: #f8f9fa;
             color: #333;
         }
 
         .header {
-            background-color: #013369;
+            background: linear-gradient(135deg, #013369 0%, #024a9c 100%);
             color: white;
             padding: 40px 20px;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .header h1 {
             font-size: 3em;
             margin-bottom: 10px;
+            font-weight: 800;
         }
 
         .header p {
@@ -44,8 +46,8 @@
             background-color: white;
             padding: 30px;
             margin-bottom: 40px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .about h2 {
@@ -60,24 +62,179 @@
             font-size: 1.1em;
         }
 
-        .newsletter-embed {
+        /* Newsletter Navigation */
+        .newsletter-section {
             background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
         }
 
-        .newsletter-embed h2 {
-            color: #013369;
-            margin-bottom: 20px;
-            font-size: 1.8em;
+        .newsletter-navigation {
+            background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+            border-bottom: 2px solid #e9ecef;
+            padding: 20px 30px;
+        }
+
+        .current-week-display {
             text-align: center;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #013369;
+            margin-bottom: 16px;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: 2px solid #013369;
+            background-color: white;
+            color: #013369;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #013369;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(1, 51, 105, 0.2);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: #ccc;
+            color: #999;
+        }
+
+        .nav-btn.fullscreen {
+            background-color: #00B140;
+            border-color: #00B140;
+            color: white;
+        }
+
+        .nav-btn.fullscreen:hover {
+            background-color: #009935;
+            border-color: #009935;
+        }
+
+        /* Archive Dropdown */
+        .archive-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-btn {
+            padding: 10px 20px;
+            border: 2px solid #013369;
+            background-color: white;
+            color: #013369;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-btn:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 8px;
+            background-color: white;
+            min-width: 220px;
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            z-index: 1000;
+            border: 1px solid #e9ecef;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .season-group {
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .season-group:last-child {
+            border-bottom: none;
+        }
+
+        .season-header {
+            background-color: #f8f9fa;
+            padding: 10px 16px;
+            font-weight: 700;
+            color: #013369;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .week-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.95em;
+        }
+
+        .week-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .week-item.current {
+            background-color: #e3f2fd;
+            font-weight: 600;
+            color: #013369;
+        }
+
+        .week-badge {
+            background-color: #FFB612;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Newsletter Embed */
+        .newsletter-embed {
+            padding: 20px;
         }
 
         iframe {
             width: 100%;
             height: 800px;
-            border: 1px solid #ddd;
+            border: none;
             border-radius: 4px;
         }
 
@@ -87,11 +244,58 @@
             color: #666;
             font-size: 0.9em;
         }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav-controls {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .nav-btn, .dropdown-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .archive-dropdown {
+                width: 100%;
+            }
+
+            .dropdown-content {
+                width: 100%;
+            }
+
+            iframe {
+                height: 600px;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>ReplAI Review</h1>
+        <h1>🏈 ReplAI Review</h1>
         <p>Your AI-Powered NFL Weekly Newsletter</p>
     </div>
 
@@ -115,14 +319,262 @@
             </ul>
         </div>
 
-        <div class="newsletter-embed">
-            <h2>Latest Newsletter</h2>
-            <iframe src="2025-week08.html" title="Latest ReplAI Review Newsletter"></iframe>
+        <div class="newsletter-section">
+            <div class="newsletter-navigation">
+                <div class="current-week-display" id="currentWeekDisplay">
+                    📅 Week 8, 2025 Season
+                </div>
+
+                <div class="nav-controls">
+                    <button class="nav-btn prev" id="prevWeek" onclick="navigateWeek('prev')">
+                        ← Previous
+                    </button>
+
+                    <div class="archive-dropdown">
+                        <button class="dropdown-btn" onclick="toggleArchive()">
+                            Archive <span id="dropdownArrow">▼</span>
+                        </button>
+                        <div class="dropdown-content" id="archiveDropdown">
+                            <!-- Generated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <a href="#" class="nav-btn fullscreen" id="fullscreenLink" target="_blank">
+                        Full Screen ↗
+                    </a>
+
+                    <button class="nav-btn next" id="nextWeek" onclick="navigateWeek('next')">
+                        Next →
+                    </button>
+                </div>
+            </div>
+
+            <div class="newsletter-embed">
+                <iframe id="newsletterFrame" src="2025-week08.html" title="ReplAI Review Newsletter"></iframe>
+            </div>
         </div>
     </div>
 
     <div class="footer">
         <p>ReplAI Review &copy; 2025 | AI-Generated NFL Summaries</p>
     </div>
+
+    <script>
+        let archive = null;
+        let currentYear = null;
+        let currentWeek = null;
+
+        // Load archive data from archive.json
+        async function loadArchiveData() {
+            try {
+                const response = await fetch('archive.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load archive.json');
+                }
+                archive = await response.json();
+
+                // Set defaults from archive
+                currentYear = archive.latest.year;
+                currentWeek = archive.latest.week;
+
+                return true;
+            } catch (error) {
+                console.error('Error loading archive:', error);
+                // Fallback to hardcoded data for development
+                archive = {
+                    latest: {
+                        year: 2025,
+                        week: 8,
+                        filename: '2025-week08.html'
+                    },
+                    weeks: [
+                        { year: 2025, week: 8, filename: '2025-week08.html', date: '2025-10-27', games: 13 },
+                        { year: 2025, week: 7, filename: '2025-week07.html', date: '2025-10-20', games: 15 }
+                    ]
+                };
+                currentYear = archive.latest.year;
+                currentWeek = archive.latest.week;
+                return false;
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load archive data first
+            await loadArchiveData();
+
+            // Check URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const yearParam = urlParams.get('year');
+            const weekParam = urlParams.get('week');
+
+            if (yearParam && weekParam) {
+                currentYear = parseInt(yearParam);
+                currentWeek = parseInt(weekParam);
+            }
+
+            loadWeek(currentYear, currentWeek);
+            generateArchiveDropdown();
+        });
+
+        // Load a specific week
+        function loadWeek(year, week) {
+            currentYear = year;
+            currentWeek = week;
+
+            const filename = `${year}-week${String(week).padStart(2, '0')}.html`;
+            const iframe = document.getElementById('newsletterFrame');
+            const display = document.getElementById('currentWeekDisplay');
+            const fullscreenLink = document.getElementById('fullscreenLink');
+
+            // Update iframe
+            iframe.src = filename;
+
+            // Update display
+            display.textContent = `📅 Week ${week}, ${year} Season`;
+
+            // Update fullscreen link
+            fullscreenLink.href = filename;
+
+            // Update URL without reloading page
+            const newUrl = `${window.location.pathname}?year=${year}&week=${week}`;
+            window.history.pushState({ year, week }, '', newUrl);
+
+            // Update navigation buttons
+            updateNavigationButtons();
+
+            // Close dropdown if open
+            document.getElementById('archiveDropdown').classList.remove('show');
+            document.getElementById('dropdownArrow').textContent = '▼';
+        }
+
+        // Navigate to previous/next week
+        function navigateWeek(direction) {
+            const currentIndex = archive.weeks.findIndex(
+                w => w.year === currentYear && w.week === currentWeek
+            );
+
+            if (currentIndex === -1) return;
+
+            let targetIndex;
+            if (direction === 'prev') {
+                targetIndex = currentIndex + 1; // Next in array is previous in time
+            } else {
+                targetIndex = currentIndex - 1; // Previous in array is next in time
+            }
+
+            if (targetIndex >= 0 && targetIndex < archive.weeks.length) {
+                const targetWeek = archive.weeks[targetIndex];
+                loadWeek(targetWeek.year, targetWeek.week);
+            }
+        }
+
+        // Update navigation button states
+        function updateNavigationButtons() {
+            const currentIndex = archive.weeks.findIndex(
+                w => w.year === currentYear && w.week === currentWeek
+            );
+
+            const prevBtn = document.getElementById('prevWeek');
+            const nextBtn = document.getElementById('nextWeek');
+
+            // Disable prev if at oldest week
+            prevBtn.disabled = currentIndex >= archive.weeks.length - 1;
+
+            // Disable next if at latest week
+            nextBtn.disabled = currentIndex <= 0;
+        }
+
+        // Toggle archive dropdown
+        function toggleArchive() {
+            const dropdown = document.getElementById('archiveDropdown');
+            const arrow = document.getElementById('dropdownArrow');
+
+            dropdown.classList.toggle('show');
+            arrow.textContent = dropdown.classList.contains('show') ? '▲' : '▼';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.archive-dropdown');
+            if (!dropdown.contains(event.target)) {
+                document.getElementById('archiveDropdown').classList.remove('show');
+                document.getElementById('dropdownArrow').textContent = '▼';
+            }
+        });
+
+        // Generate archive dropdown content
+        function generateArchiveDropdown() {
+            const dropdownContent = document.getElementById('archiveDropdown');
+
+            // Group weeks by year/season
+            const groupedWeeks = {};
+            archive.weeks.forEach(week => {
+                if (!groupedWeeks[week.year]) {
+                    groupedWeeks[week.year] = [];
+                }
+                groupedWeeks[week.year].push(week);
+            });
+
+            // Generate HTML
+            let html = '';
+            Object.keys(groupedWeeks).sort((a, b) => b - a).forEach(year => {
+                html += `<div class="season-group">`;
+                html += `<div class="season-header">${year} Season</div>`;
+
+                groupedWeeks[year].forEach(week => {
+                    const isCurrent = week.year === currentYear && week.week === currentWeek;
+                    const isLatest = week.year === archive.latest.year &&
+                                   week.week === archive.latest.week;
+
+                    html += `<div class="week-item ${isCurrent ? 'current' : ''}"
+                                  onclick="loadWeek(${week.year}, ${week.week})">`;
+                    html += `<span>Week ${week.week}</span>`;
+                    if (isLatest) {
+                        html += `<span class="week-badge">Latest</span>`;
+                    }
+                    html += `</div>`;
+                });
+
+                html += `</div>`;
+            });
+
+            dropdownContent.innerHTML = html;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            // Don't interfere if user is typing in an input
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            switch(event.key) {
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    if (!document.getElementById('prevWeek').disabled) {
+                        navigateWeek('prev');
+                    }
+                    break;
+                case 'ArrowRight':
+                    event.preventDefault();
+                    if (!document.getElementById('nextWeek').disabled) {
+                        navigateWeek('next');
+                    }
+                    break;
+                case 'Home':
+                    event.preventDefault();
+                    loadWeek(archive.latest.year, archive.latest.week);
+                    break;
+            }
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function(event) {
+            if (event.state) {
+                loadWeek(event.state.year, event.state.week);
+            }
+        });
+    </script>
 </body>
 </html>
