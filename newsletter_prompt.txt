@@ -68,7 +68,6 @@ Include the full URL in the recap_url field.
 
 SUMMARY GUIDELINES (2-4 sentences, max 150 words):
 - Lead with the star player(s) and their standout performance (use <strong> tags for player names)
-- Include specific stats using <span class="stat-highlight"> tags for key numbers (e.g., <span class="stat-highlight">244 passing yards</span>)
 - Highlight the game's key storyline (comeback, streak, milestone, etc.)
 - Brief context about team performance or streaks
 - Avoid repeating information already in the score display (don't repeat team records)
