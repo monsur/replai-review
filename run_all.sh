@@ -3,23 +3,42 @@
 #
 # This script runs all three scripts in sequence to generate a complete ReplAI Review newsletter.
 # Usage:
-#   ./run_all.sh              # Auto-detect week
-#   ./run_all.sh 8            # Specify week number
-#   ./run_all.sh 8 openai     # Specify week and AI provider
+#   ./run_all.sh                    # Auto-detect week
+#   ./run_all.sh 8                  # Specify week number (positional)
+#   ./run_all.sh 8 openai           # Specify week and AI provider (positional)
+#   ./run_all.sh --week 8           # Specify week number (flag-based)
+#   ./run_all.sh --week 8 --provider openai  # Flag-based with provider
 
 set -e  # Exit on error
 
 WEEK=""
 PROVIDER=""
 
-# Parse arguments
-if [ ! -z "$1" ]; then
-    WEEK="--week $1"
-fi
-
-if [ ! -z "$2" ]; then
-    PROVIDER="--provider $2"
-fi
+# Parse arguments - support both positional and flag-based
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --week)
+            WEEK="--week $2"
+            shift 2
+            ;;
+        --provider)
+            PROVIDER="--provider $2"
+            shift 2
+            ;;
+        *)
+            # Positional argument handling
+            if [ -z "$WEEK" ]; then
+                WEEK="--week $1"
+                shift
+            elif [ -z "$PROVIDER" ]; then
+                PROVIDER="--provider $1"
+                shift
+            else
+                shift
+            fi
+            ;;
+    esac
+done
 
 echo "=================================="
 echo "ReplAI Review Generator"
