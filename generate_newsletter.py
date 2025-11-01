@@ -11,6 +11,7 @@ This script:
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -187,6 +188,61 @@ GAME RECAPS:
     except Exception as e:
         print(f"Error formatting newsletter: {e}")
         sys.exit(1)
+
+
+def update_index_html(web_dir: Path, newsletter_filename: str, year: int, week: int) -> None:
+    """
+    Update index.html to point to the latest newsletter if it's newer.
+
+    Args:
+        web_dir: Web directory path
+        newsletter_filename: New newsletter filename (e.g., "2025-week09.html")
+        year: Year of the new newsletter
+        week: Week number of the new newsletter
+    """
+    index_file = web_dir / "index.html"
+
+    if not index_file.exists():
+        print(f"Warning: {index_file} not found, skipping index update")
+        return
+
+    # Read current index.html
+    with open(index_file, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    # Extract current newsletter filename from iframe src
+    match = re.search(r'<iframe\s+src="([^"]+)"', content)
+
+    if not match:
+        print("Warning: Could not find iframe in index.html, skipping update")
+        return
+
+    current_filename = match.group(1)
+
+    # Extract year and week from current filename (format: YYYY-weekWW.html)
+    current_match = re.match(r'(\d{4})-week(\d{2})\.html', current_filename)
+
+    if not current_match:
+        print(f"Warning: Current iframe src '{current_filename}' doesn't match expected format")
+        return
+
+    current_year = int(current_match.group(1))
+    current_week = int(current_match.group(2))
+
+    # Check if new newsletter is newer
+    if year > current_year or (year == current_year and week > current_week):
+        # Update the iframe src
+        updated_content = content.replace(
+            f'<iframe src="{current_filename}"',
+            f'<iframe src="{newsletter_filename}"'
+        )
+
+        with open(index_file, 'w', encoding='utf-8') as f:
+            f.write(updated_content)
+
+        print(f"Updated index.html: {current_filename} → {newsletter_filename}")
+    else:
+        print(f"Index.html already points to week {current_week}, not updating")
 
 
 def wrap_newsletter_html(newsletter_content: str, week: int) -> str:
@@ -390,6 +446,9 @@ def main():
 
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(complete_html)
+
+    # Update index.html to point to latest newsletter
+    update_index_html(web_dir, newsletter_filename, year, target_week)
 
     # Summary
     print(f"\n{'='*60}")
