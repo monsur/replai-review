@@ -75,27 +75,100 @@ def format_game_html(game: dict) -> str:
     away_icon = f"images/{game['away_abbr']}.png"
     home_icon = f"images/{game['home_abbr']}.png"
 
-    # Add ESPN recap link if available
-    recap_link = ""
-    if 'recap_url' in game and game['recap_url']:
-        recap_link = f' <a href="{game["recap_url"]}" class="recap-link" target="_blank">Read full recap →</a>'
+    # Determine winner and loser
+    away_score = int(game['away_score'])
+    home_score = int(game['home_score'])
+    away_winner = away_score > home_score
+    home_winner = home_score > away_score
 
-    return f"""    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="{away_icon}" alt="{game['away_abbr']}" class="team-icon">
-                <span class="team-name">{game['away_team']}</span>
-                <span class="score">{game['away_score']}</span>
-                <span class="at">@</span>
-                <span class="score">{game['home_score']}</span>
-                <span class="team-name">{game['home_team']}</span>
-                <img src="{home_icon}" alt="{game['home_abbr']}" class="team-icon">
+    away_class = "winner" if away_winner else "loser"
+    home_class = "winner" if home_winner else "loser"
+
+    # Format badges
+    badges_html = ""
+    if 'badges' in game and game['badges']:
+        badge_items = []
+        badge_map = {
+            'nail-biter': ('badge-nailbiter', '🎯 Nail-Biter'),
+            'comeback': ('badge-comeback', '🔥 Comeback'),
+            'blowout': ('badge-blowout', '💥 Blowout'),
+            'upset': ('badge-upset', '⬆️ Upset'),
+            'game-of-week': ('badge-game-of-week', '🏆 Game of the Week')
+        }
+        for badge in game['badges']:
+            if badge in badge_map:
+                css_class, label = badge_map[badge]
+                badge_items.append(f'<span class="badge {css_class}">{label}</span>')
+
+        if badge_items:
+            badges_html = f"""
+            <div class="game-badges">
+                {' '.join(badge_items)}
+            </div>"""
+
+    # Format game metadata
+    game_meta_items = []
+    if 'game_date' in game and game['game_date']:
+        game_meta_items.append(f'<span>📅 {game["game_date"]}</span>')
+    if 'stadium' in game and game['stadium']:
+        game_meta_items.append(f'<span>📍 {game["stadium"]}</span>')
+    if 'tv_network' in game and game['tv_network']:
+        game_meta_items.append(f'<span>📺 {game["tv_network"]}</span>')
+
+    game_meta_html = ""
+    if game_meta_items:
+        game_meta_html = f"""
+                <div class="game-meta">
+                    {' '.join(game_meta_items)}
+                </div>"""
+
+    # Format team records
+    away_record = f'<div class="team-record">({game["away_record"]})</div>' if 'away_record' in game and game['away_record'] else ''
+    home_record = f'<div class="team-record">({game["home_record"]})</div>' if 'home_record' in game and game['home_record'] else ''
+
+    return f"""        <article class="game">{badges_html}
+            <div class="game-header">{game_meta_html}
+
+                <div class="matchup">
+                    <div class="team-section {away_class}">
+                        <div class="team-logo-container">
+                            <img src="{away_icon}" alt="{game['away_team']}" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">{game['away_team']}</div>
+                            {away_record}
+                        </div>
+                        <div class="score">{game['away_score']}</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section {home_class}">
+                        <div class="team-logo-container">
+                            <img src="{home_icon}" alt="{game['home_team']}" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">{game['home_team']}</div>
+                            {home_record}
+                        </div>
+                        <div class="score">{game['home_score']}</div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="summary">
-            {game['summary']}{recap_link}
-        </div>
-    </div>"""
+
+            <div class="summary">
+                {game['summary']}
+            </div>
+
+            <div class="game-footer">
+                <a href="{game.get('recap_url', '#')}" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>"""
 
 
 def generate_newsletter(
@@ -169,10 +242,25 @@ GAME RECAPS:
         # Format games into HTML
         games_html = '\n\n'.join([format_game_html(game) for game in games])
 
-        # Create complete newsletter HTML
-        newsletter_html = f"""<h1>ReplAI Review - Week {week}</h1>
+        # Calculate game count and other stats
+        game_count = len(games)
 
-{games_html}"""
+        # Count upsets (games with upset badge)
+        upset_count = sum(1 for game in games if 'badges' in game and 'upset' in game.get('badges', []))
+
+        # Create complete newsletter HTML with enhanced header
+        newsletter_html = f"""    <header class="newsletter-header">
+        <h1 class="newsletter-title">🏈 ReplAI Review</h1>
+        <div class="newsletter-subtitle">Week {week} - 2025 NFL Season</div>
+        <div class="newsletter-meta">
+            <span>🎮 {game_count} Games</span>
+            <span>⭐ {upset_count} Upsets</span>
+        </div>
+    </header>
+
+    <main class="games-container">
+{games_html}
+    </main>"""
 
         return newsletter_html
 
@@ -269,78 +357,439 @@ def wrap_newsletter_html(newsletter_content: str, week: int) -> str:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReplAI Review - Week {week}</title>
     <style>
+        /* CSS Variables for Theme */
+        :root {{
+            --nfl-navy: #013369;
+            --nfl-red: #D50A0A;
+            --nfl-green: #00B140;
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6c757d;
+            --border-light: #e9ecef;
+            --accent-gold: #FFB612;
+            --winner-color: #00B140;
+            --loser-color: #999;
+        }}
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {{
+            :root {{
+                --background: #1a1a1a;
+                --card-bg: #2d2d2d;
+                --text-primary: #e0e0e0;
+                --text-secondary: #a0a0a0;
+                --border-light: #404040;
+                --nfl-navy: #4A90E2;
+            }}
+        }}
+
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+
         body {{
-            font-family: Arial, sans-serif;
-            max-width: 900px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            padding: 32px 24px;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.7;
         }}
-        h1 {{
-            color: #013369;
+
+        /* Enhanced Header */
+        .newsletter-header {{
             text-align: center;
-            margin-bottom: 40px;
-            font-size: 2.5em;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 4px solid var(--nfl-navy);
+            background: linear-gradient(135deg, var(--nfl-navy) 0%, #024a9c 100%);
+            color: white;
+            padding: 40px 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(1, 51, 105, 0.2);
         }}
+
+        .newsletter-title {{
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }}
+
+        .newsletter-subtitle {{
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }}
+
+        .newsletter-meta {{
+            font-size: 0.95em;
+            opacity: 0.85;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }}
+
+        .newsletter-meta span {{
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }}
+
+        /* Game Cards */
+        .games-container {{
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }}
+
         .game {{
-            background-color: white;
-            padding: 25px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }}
+
+        .game:hover {{
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }}
+
+        /* Game Badges */
+        .game-badges {{
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }}
+
+        .badge {{
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }}
+
+        .badge-nailbiter {{
+            background-color: #FFF3CD;
+            color: #856404;
+        }}
+
+        .badge-comeback {{
+            background-color: #FFE5E5;
+            color: #D50A0A;
+        }}
+
+        .badge-blowout {{
+            background-color: #E8F4F8;
+            color: #0066CC;
+        }}
+
+        .badge-upset {{
+            background-color: #F3E5F5;
+            color: #7B1FA2;
+        }}
+
+        .badge-game-of-week {{
+            background-color: var(--accent-gold);
+            color: #000;
+        }}
+
+        /* Game Header */
         .game-header {{
-            margin-bottom: 15px;
-            border-bottom: 2px solid #013369;
-            padding-bottom: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--border-light);
         }}
+
+        .game-meta {{
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }}
+
+        .game-meta span {{
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }}
+
+        /* Matchup Display */
         .matchup {{
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            font-size: 1.1em;
+            gap: 16px;
+            margin-top: 16px;
         }}
+
+        .team-section {{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            max-width: 200px;
+        }}
+
+        .team-section.winner .team-name {{
+            color: var(--winner-color);
+            font-weight: 800;
+        }}
+
+        .team-section.winner .score {{
+            color: var(--winner-color);
+        }}
+
+        .team-section.loser .team-name {{
+            color: var(--loser-color);
+            font-weight: 600;
+        }}
+
+        .team-section.loser .score {{
+            color: var(--loser-color);
+        }}
+
+        .team-logo-container {{
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+
         .team-icon {{
-            width: 28px;
-            height: 28px;
+            width: 48px;
+            height: 48px;
             object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }}
+
+        .team-info {{
+            text-align: center;
+        }}
+
         .team-name {{
-            font-weight: bold;
-            color: #013369;
+            font-weight: 700;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
         }}
+
+        .team-record {{
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }}
+
         .score {{
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #333;
+            font-size: 2.5em;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
         }}
-        .at {{
-            color: #666;
-            font-size: 0.9em;
+
+        .vs-divider {{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
         }}
-        .summary {{
-            font-size: 0.95em;
-            line-height: 1.6;
-            color: #333;
-        }}
-        .recap-link {{
-            display: inline-block;
-            margin-left: 8px;
-            color: #013369;
-            text-decoration: none;
+
+        .at-symbol {{
             font-size: 0.9em;
             font-weight: 600;
         }}
+
+        .score-divider {{
+            width: 40px;
+            height: 2px;
+            background-color: var(--border-light);
+        }}
+
+        /* Summary */
+        .summary {{
+            font-size: 1em;
+            line-height: 1.7;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }}
+
+        .summary strong {{
+            color: var(--nfl-navy);
+            font-weight: 700;
+        }}
+
+        .stat-highlight {{
+            background-color: #FFF8E1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }}
+
+        @media (prefers-color-scheme: dark) {{
+            .stat-highlight {{
+                background-color: #4a4a2a;
+            }}
+        }}
+
+        /* Footer Actions */
+        .game-footer {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
+        }}
+
+        .recap-link {{
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: var(--nfl-navy);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }}
+
         .recap-link:hover {{
-            text-decoration: underline;
+            background-color: #024a9c;
+            transform: translateX(2px);
+        }}
+
+        .recap-link:focus {{
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }}
+
+        .recap-link::after {{
+            content: "→";
+            font-size: 1.2em;
+        }}
+
+        /* Responsive Design */
+        @media (min-width: 1024px) {{
+            .games-container {{
+                grid-template-columns: repeat(2, 1fr);
+            }}
+        }}
+
+        @media (max-width: 640px) {{
+            body {{
+                padding: 16px;
+            }}
+
+            .newsletter-title {{
+                font-size: 2em;
+            }}
+
+            .newsletter-subtitle {{
+                font-size: 1em;
+            }}
+
+            .game {{
+                padding: 20px;
+            }}
+
+            .matchup {{
+                flex-direction: column;
+                gap: 8px;
+            }}
+
+            .score {{
+                font-size: 2em;
+            }}
+
+            .team-name {{
+                font-size: 1em;
+            }}
+
+            .vs-divider {{
+                flex-direction: row;
+            }}
+
+            .score-divider {{
+                width: 2px;
+                height: 40px;
+            }}
+
+            .game-footer {{
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }}
+
+            .recap-link {{
+                justify-content: center;
+            }}
+        }}
+
+        /* Print Styles */
+        @media print {{
+            body {{
+                background-color: white;
+                color: black;
+            }}
+
+            .game {{
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }}
+
+            .recap-link {{
+                background-color: white;
+                color: black;
+                border: 1px solid black;
+            }}
+        }}
+
+        /* Focus Styles for Accessibility */
+        *:focus {{
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }}
+
+        /* Loading Animation */
+        @keyframes fadeIn {{
+            from {{
+                opacity: 0;
+                transform: translateY(10px);
+            }}
+            to {{
+                opacity: 1;
+                transform: translateY(0);
+            }}
+        }}
+
+        .game {{
+            animation: fadeIn 0.5s ease-out;
         }}
     </style>
 </head>
 <body>
-    <div class="newsletter">
-        {newsletter_content}
-    </div>
+{newsletter_content}
 </body>
 </html>"""
 

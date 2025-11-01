@@ -4,7 +4,6 @@ OUTPUT FORMAT:
 
 Generate a JSON object with the following structure:
 
-```json
 {
   "week": 8,
   "games": [
@@ -12,15 +11,20 @@ Generate a JSON object with the following structure:
       "away_team": "New York Jets",
       "away_abbr": "NYJ",
       "away_score": 39,
+      "away_record": "4-4",
       "home_team": "Cincinnati Bengals",
       "home_abbr": "CIN",
       "home_score": 38,
+      "home_record": "3-5",
+      "game_date": "Sun 10/26 1:00PM ET",
+      "stadium": "Paycor Stadium",
+      "tv_network": "CBS",
+      "badges": ["nail-biter", "comeback"],
       "summary": "Summary text here (2-4 sentences)",
       "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401671760"
     }
   ]
 }
-```
 
 TEAM ABBREVIATIONS:
 Map team names to their standard NFL abbreviations. Use these exact abbreviations for the away_abbr and home_abbr fields:
@@ -38,6 +42,23 @@ NFC West: ARI (Cardinals), LAR (Rams), SF (49ers), SEA (Seahawks)
 These abbreviations map to team icon files using the pattern: images/{TEAM_ABB}.png
 For example: CHI → images/CHI.png, NYJ → images/NYJ.png
 
+GAME METADATA:
+- game_date: Extract or infer the game date and time in format "Day MM/DD H:MMAM/PM ET" (e.g., "Sun 10/26 1:00PM ET", "Thu 10/23 8:15PM ET")
+- stadium: Extract the stadium name from the recap
+- tv_network: Extract the TV network (CBS, FOX, NBC, ESPN, Prime Video, etc.)
+- away_record: Extract or infer the team's record at the time of the game (e.g., "4-4")
+- home_record: Extract or infer the team's record at the time of the game (e.g., "3-5")
+
+GAME BADGES:
+Analyze each game and assign appropriate badges based on these criteria:
+- "nail-biter": Final score differential is 3 points or less
+- "comeback": Team was trailing significantly (10+ points) and won
+- "blowout": Score differential is 21+ points
+- "upset": Significant underdog won (mention in recap of upset/surprise)
+- "game-of-week": Most exciting or significant game of the week
+
+Include 0-2 badges per game in the badges array. Use badge names exactly as shown above.
+
 RECAP URL:
 Extract the ESPN game URL from the recap content. Look for links in the format:
 https://www.espn.com/nfl/recap/_/gameId/{GAMEID}
@@ -46,11 +67,11 @@ https://www.espn.com/nfl/game/_/gameId/{GAMEID}
 Include the full URL in the recap_url field.
 
 SUMMARY GUIDELINES (2-4 sentences, max 150 words):
-- Lead with the star player(s) and their standout performance
-- Include specific stats (yards, TDs, completion percentages)
+- Lead with the star player(s) and their standout performance (use <strong> tags for player names)
+- Include specific stats using <span class="stat-highlight"> tags for key numbers (e.g., <span class="stat-highlight">244 passing yards</span>)
 - Highlight the game's key storyline (comeback, streak, milestone, etc.)
-- Brief context - team record
-- Avoid repeating information already in the score display
+- Brief context about team performance or streaks
+- Avoid repeating information already in the score display (don't repeat team records)
 
 WRITING STYLE:
 - Use active voice and engaging verbs (dominated, exploded, bounced back)

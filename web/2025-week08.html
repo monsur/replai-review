@@ -5,298 +5,1085 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReplAI Review - Week 8</title>
     <style>
+        /* CSS Variables for Theme */
+        :root {
+            --nfl-navy: #013369;
+            --nfl-red: #D50A0A;
+            --nfl-green: #00B140;
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6c757d;
+            --border-light: #e9ecef;
+            --accent-gold: #FFB612;
+            --winner-color: #00B140;
+            --loser-color: #999;
+        }
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: #1a1a1a;
+                --card-bg: #2d2d2d;
+                --text-primary: #e0e0e0;
+                --text-secondary: #a0a0a0;
+                --border-light: #404040;
+                --nfl-navy: #4A90E2;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            padding: 32px 24px;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.7;
         }
-        h1 {
-            color: #013369;
+
+        /* Enhanced Header */
+        .newsletter-header {
             text-align: center;
-            margin-bottom: 40px;
-            font-size: 2.5em;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 4px solid var(--nfl-navy);
+            background: linear-gradient(135deg, var(--nfl-navy) 0%, #024a9c 100%);
+            color: white;
+            padding: 40px 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(1, 51, 105, 0.2);
         }
+
+        .newsletter-title {
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .newsletter-subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .newsletter-meta {
+            font-size: 0.95em;
+            opacity: 0.85;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .newsletter-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Game Cards */
+        .games-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+
         .game {
-            background-color: white;
-            padding: 25px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
+
+        .game:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        /* Game Badges */
+        .game-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-nailbiter {
+            background-color: #FFF3CD;
+            color: #856404;
+        }
+
+        .badge-comeback {
+            background-color: #FFE5E5;
+            color: #D50A0A;
+        }
+
+        .badge-blowout {
+            background-color: #E8F4F8;
+            color: #0066CC;
+        }
+
+        .badge-upset {
+            background-color: #F3E5F5;
+            color: #7B1FA2;
+        }
+
+        .badge-game-of-week {
+            background-color: var(--accent-gold);
+            color: #000;
+        }
+
+        /* Game Header */
         .game-header {
-            margin-bottom: 15px;
-            border-bottom: 2px solid #013369;
-            padding-bottom: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--border-light);
         }
+
+        .game-meta {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .game-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Matchup Display */
         .matchup {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            font-size: 1.1em;
+            gap: 16px;
+            margin-top: 16px;
         }
+
+        .team-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .team-section.winner .team-name {
+            color: var(--winner-color);
+            font-weight: 800;
+        }
+
+        .team-section.winner .score {
+            color: var(--winner-color);
+        }
+
+        .team-section.loser .team-name {
+            color: var(--loser-color);
+            font-weight: 600;
+        }
+
+        .team-section.loser .score {
+            color: var(--loser-color);
+        }
+
+        .team-logo-container {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .team-icon {
-            width: 28px;
-            height: 28px;
+            width: 48px;
+            height: 48px;
             object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
+
+        .team-info {
+            text-align: center;
+        }
+
         .team-name {
-            font-weight: bold;
-            color: #013369;
+            font-weight: 700;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
         }
+
+        .team-record {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
         .score {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #333;
+            font-size: 2.5em;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
         }
-        .at {
-            color: #666;
-            font-size: 0.9em;
+
+        .vs-divider {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
         }
-        .summary {
-            font-size: 0.95em;
-            line-height: 1.6;
-            color: #333;
-        }
-        .recap-link {
-            display: inline-block;
-            margin-left: 8px;
-            color: #013369;
-            text-decoration: none;
+
+        .at-symbol {
             font-size: 0.9em;
             font-weight: 600;
         }
+
+        .score-divider {
+            width: 40px;
+            height: 2px;
+            background-color: var(--border-light);
+        }
+
+        /* Summary */
+        .summary {
+            font-size: 1em;
+            line-height: 1.7;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .summary strong {
+            color: var(--nfl-navy);
+            font-weight: 700;
+        }
+
+        .stat-highlight {
+            background-color: #FFF8E1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .stat-highlight {
+                background-color: #4a4a2a;
+            }
+        }
+
+        /* Footer Actions */
+        .game-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .recap-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: var(--nfl-navy);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
         .recap-link:hover {
-            text-decoration: underline;
+            background-color: #024a9c;
+            transform: translateX(2px);
+        }
+
+        .recap-link:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        .recap-link::after {
+            content: "→";
+            font-size: 1.2em;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 1024px) {
+            .games-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 16px;
+            }
+
+            .newsletter-title {
+                font-size: 2em;
+            }
+
+            .newsletter-subtitle {
+                font-size: 1em;
+            }
+
+            .game {
+                padding: 20px;
+            }
+
+            .matchup {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .score {
+                font-size: 2em;
+            }
+
+            .team-name {
+                font-size: 1em;
+            }
+
+            .vs-divider {
+                flex-direction: row;
+            }
+
+            .score-divider {
+                width: 2px;
+                height: 40px;
+            }
+
+            .game-footer {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+
+            .recap-link {
+                justify-content: center;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+            }
+
+            .game {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            .recap-link {
+                background-color: white;
+                color: black;
+                border: 1px solid black;
+            }
+        }
+
+        /* Focus Styles for Accessibility */
+        *:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+
+        /* Loading Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .game {
+            animation: fadeIn 0.5s ease-out;
         }
     </style>
 </head>
 <body>
-    <div class="newsletter">
-        <h1>ReplAI Review - Week 8</h1>
+    <header class="newsletter-header">
+        <h1 class="newsletter-title">🏈 ReplAI Review</h1>
+        <div class="newsletter-subtitle">Week 9 - 2025 NFL Season</div>
+        <div class="newsletter-meta">
+            <span>🎮 13 Games</span>
+            <span>⭐ 0 Upsets</span>
+        </div>
+    </header>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/NYJ.png" alt="NYJ" class="team-icon">
-                <span class="team-name">New York Jets</span>
-                <span class="score">39</span>
-                <span class="at">@</span>
-                <span class="score">38</span>
-                <span class="team-name">Cincinnati Bengals</span>
-                <img src="images/CIN.png" alt="CIN" class="team-icon">
+    <main class="games-container">
+        <article class="game">
+            <div class="game-badges">
+                <span class="badge badge-nailbiter">🎯 Nail-Biter</span> <span class="badge badge-comeback">🔥 Comeback</span>
             </div>
-        </div>
-        <div class="summary">
-            Justin Fields bounced back from a rough week to lead the Jets to their first win under coach Aaron Glenn, rallying from a 31-16 deficit entering the fourth quarter. Breece Hall dominated with 133 rushing yards and two second-half touchdowns, plus a clutch 4-yard TD pass to Mason Taylor with 1:54 remaining. The Jets (1-7) racked up 502 total yards—including a season-high 254 on the ground—while the Bengals (3-5) fell to 3-5 with Joe Flacco throwing two TDs but unable to close out the comeback. <a href="https://www.espn.com/nfl/recap/_/gameId/401772758" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Sun 10/27 1:00PM ET</span> <span>📍 Paycor Stadium</span> <span>📺 CBS</span>
+                </div>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/CHI.png" alt="CHI" class="team-icon">
-                <span class="team-name">Chicago Bears</span>
-                <span class="score">16</span>
-                <span class="at">@</span>
-                <span class="score">30</span>
-                <span class="team-name">Baltimore Ravens</span>
-                <img src="images/BAL.png" alt="BAL" class="team-icon">
-            </div>
-        </div>
-        <div class="summary">
-            Tyler Huntley delivered a gutsy performance in place of injured Lamar Jackson, completing 17 of 22 passes for 186 yards and accounting for two touchdowns as the Ravens snapped a four-game losing streak. Derrick Henry rushed for two scores and moved past Walter Payton for fifth all-time with 112 career touchdowns. The Ravens (2-5) dominated despite Chicago's early offensive prowess, holding the Bears (4-3) without a second-half score until the fourth quarter to end their four-game winning streak. <a href="https://www.espn.com/nfl/recap/_/gameId/401772759" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
+                <div class="matchup">
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/NYJ.png" alt="New York Jets" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">New York Jets</div>
+                            <div class="team-record">(1-7)</div>
+                        </div>
+                        <div class="score">39</div>
+                    </div>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/MIA.png" alt="MIA" class="team-icon">
-                <span class="team-name">Miami Dolphins</span>
-                <span class="score">34</span>
-                <span class="at">@</span>
-                <span class="score">10</span>
-                <span class="team-name">Atlanta Falcons</span>
-                <img src="images/ATL.png" alt="ATL" class="team-icon">
-            </div>
-        </div>
-        <div class="summary">
-            Tua Tagovailoa shook off illness and a swollen eye to deliver a season-best performance, throwing four touchdown passes while wearing a new helmet visor. The Dolphins (2-6) dominated a short-handed Falcons squad missing Michael Penix Jr., Drake London, and Zach Harrison, outgaining Atlanta 338-213 and ending a three-game losing streak. Tagovailoa completed 20 of 26 passes for 205 yards with scoring strikes to Jaylen Waddle, De'Von Achane, Malik Washington, and Ollie Gordon II. <a href="https://www.espn.com/nfl/recap/_/gameId/401772760" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/TEN.png" alt="TEN" class="team-icon">
-                <span class="team-name">Tennessee Titans</span>
-                <span class="score">14</span>
-                <span class="at">@</span>
-                <span class="score">38</span>
-                <span class="team-name">Indianapolis Colts</span>
-                <img src="images/IND.png" alt="IND" class="team-icon">
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/CIN.png" alt="Cincinnati Bengals" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Cincinnati Bengals</div>
+                            <div class="team-record">(3-5)</div>
+                        </div>
+                        <div class="score">38</div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="summary">
-            Jonathan Taylor continued his elite run with three more touchdowns on just 12 carries for 153 yards, becoming the first player in NFL history to score three times in three consecutive games against the same opponent. Daniel Jones threw three TD passes as the Colts (7-1) posted their second rout of Tennessee this season with dominant complementary football on both sides. The Titans (1-7) fell to interim coach Mike McCoy with six of their seven losses coming by double digits. <a href="https://www.espn.com/nfl/recap/_/gameId/401772761" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/DAL.png" alt="DAL" class="team-icon">
-                <span class="team-name">Dallas Cowboys</span>
-                <span class="score">24</span>
-                <span class="at">@</span>
-                <span class="score">44</span>
-                <span class="team-name">Denver Broncos</span>
-                <img src="images/DEN.png" alt="DEN" class="team-icon">
+            <div class="summary">
+                <strong>Justin Fields</strong> led an emotional Jets comeback from a <span class="stat-highlight">31-16 deficit</span>, completing <span class="stat-highlight">21 of 32 passes for 244 yards</span>. <strong>Breece Hall</strong> dominated the second half with <span class="stat-highlight">18 carries for 133 yards and two rushing TDs</span>, plus a 4-yard TD pass with 1:54 left to seal the Jets' first win under coach Aaron Glenn after an 0-7 start.
             </div>
-        </div>
-        <div class="summary">
-            Three rookies led Denver's offensive explosion as the Broncos extended their home winning streak to nine games and won their fifth straight. R.J. Harvey scored three touchdowns, Bo Nix threw four TD passes including a first career score to Pat Bryant, and Jahdae Barron picked off Dak Prescott for his first professional interception. The Broncos (6-2) scored on seven of eight possessions after halftime while J.K. Dobbins rushed for 111 yards against Dallas (3-4-1), who haven't beaten Denver since 1995. <a href="https://www.espn.com/nfl/recap/_/gameId/401772762" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/WAS.png" alt="WAS" class="team-icon">
-                <span class="team-name">Washington Commanders</span>
-                <span class="score">7</span>
-                <span class="at">@</span>
-                <span class="score">28</span>
-                <span class="team-name">Kansas City Chiefs</span>
-                <img src="images/KC.png" alt="KC" class="team-icon">
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772758" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
             </div>
-        </div>
-        <div class="summary">
-            Patrick Mahomes threw three touchdown passes while bouncing back from two early interceptions to lead the Chiefs' dominant second-half takeover at Arrowhead Stadium. Kareem Hunt scored twice, and Travis Kelce caught his record-tying 83rd career TD pass as Kansas City (5-3) extended its winning streak over Washington to nine straight games. Marcus Mariota had 213 yards for the Commanders (3-5), but Washington's offense couldn't keep pace after a strange first half marked by five empty drives from both teams. <a href="https://www.espn.com/nfl/recap/_/gameId/401772817" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
+        </article>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/BUF.png" alt="BUF" class="team-icon">
-                <span class="team-name">Buffalo Bills</span>
-                <span class="score">40</span>
-                <span class="at">@</span>
-                <span class="score">9</span>
-                <span class="team-name">Carolina Panthers</span>
-                <img src="images/CAR.png" alt="CAR" class="team-icon">
-            </div>
-        </div>
-        <div class="summary">
-            Josh Allen returned from the bye week in dominant form, helping the Bills (6-2) rout the Panthers behind James Cook's career-high 216 rushing yards and two touchdowns. Allen accounted for three scores and set an NFL record as the first player to run and throw a touchdown in 46 consecutive games, breaking Cam Newton's mark. The Bills defense sacked Andy Dalton seven times as Carolina (4-4) saw its three-game winning streak end, with three starting offensive linemen leaving injured. <a href="https://www.espn.com/nfl/recap/_/gameId/401772865" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
+        <article class="game">
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Sun 10/27 1:00PM ET</span> <span>📍 M&T Bank Stadium</span> <span>📺 CBS</span>
+                </div>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/SF.png" alt="SF" class="team-icon">
-                <span class="team-name">San Francisco 49ers</span>
-                <span class="score">15</span>
-                <span class="at">@</span>
-                <span class="score">26</span>
-                <span class="team-name">Houston Texans</span>
-                <img src="images/HOU.png" alt="HOU" class="team-icon">
-            </div>
-        </div>
-        <div class="summary">
-            C.J. Stroud threw for a season-high 318 yards with two touchdowns, spreading the ball to nine different receivers in Nico Collins' absence after a concussion. Xavier Hutchinson led the group with 69 receiving yards and a score, while rookie Jaylin Noel added 63 yards as the Texans (3-4) bounced back from a loss with excellent complementary football. Mac Jones struggled for the 49ers (5-3), managing just 193 yards as Houston's defense contained Christian McCaffrey to just 68 total yards. <a href="https://www.espn.com/nfl/recap/_/gameId/401772866" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
+                <div class="matchup">
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/CHI.png" alt="Chicago Bears" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Chicago Bears</div>
+                            <div class="team-record">(4-3)</div>
+                        </div>
+                        <div class="score">16</div>
+                    </div>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/NYG.png" alt="NYG" class="team-icon">
-                <span class="team-name">New York Giants</span>
-                <span class="score">20</span>
-                <span class="at">@</span>
-                <span class="score">38</span>
-                <span class="team-name">Philadelphia Eagles</span>
-                <img src="images/PHI.png" alt="PHI" class="team-icon">
-            </div>
-        </div>
-        <div class="summary">
-            Saquon Barkley exploded for 150 yards and a 65-yard touchdown on his opening carry before leaving with a groin injury, showcasing the form that made him a 2,000-yard rusher last season. Jalen Hurts threw four touchdown passes as the Eagles (6-2) dominated with 277 rushing yards to even the season series with New York. The Eagles' offense looks sharp entering the bye week with this dominant performance, while Barkley should have extra time to recover with Philadelphia's upcoming rest. <a href="https://www.espn.com/nfl/recap/_/gameId/401772867" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/CLE.png" alt="CLE" class="team-icon">
-                <span class="team-name">Cleveland Browns</span>
-                <span class="score">13</span>
-                <span class="at">@</span>
-                <span class="score">32</span>
-                <span class="team-name">New England Patriots</span>
-                <img src="images/NE.png" alt="NE" class="team-icon">
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/BAL.png" alt="Baltimore Ravens" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Baltimore Ravens</div>
+                            <div class="team-record">(2-5)</div>
+                        </div>
+                        <div class="score">30</div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="summary">
-            Drake Maye threw three second-half touchdown passes to lead the Patriots' comeback from an early deficit, improving to 5-0 at home since the bye week. Maye finished 18 of 24 for 282 yards while the defense forced two interceptions as New England (6-2) extended its home winning streak and won their sixth straight over Cleveland. Myles Garrett recorded a franchise-record five sacks, but the Browns (2-6) extended their road losing streak to 12 games with rookie Dillon Gabriel struggling at 21 of 35 for 156 yards. <a href="https://www.espn.com/nfl/recap/_/gameId/401772868" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/TB.png" alt="TB" class="team-icon">
-                <span class="team-name">Tampa Bay Buccaneers</span>
-                <span class="score">23</span>
-                <span class="at">@</span>
-                <span class="score">3</span>
-                <span class="team-name">New Orleans Saints</span>
-                <img src="images/NO.png" alt="NO" class="team-icon">
+            <div class="summary">
+                <strong>Derrick Henry</strong> rushed for <span class="stat-highlight">two touchdowns</span> as Baltimore snapped a four-game losing streak. Backup QB <strong>Tyler Huntley</strong> excelled without injured starter Lamar Jackson, going <span class="stat-highlight">17 for 22 for 186 yards</span> with an interception from <strong>Caleb Williams</strong> setting up a clinching TD pass to <strong>Charlie Kolar</strong>.
             </div>
-        </div>
-        <div class="summary">
-            Anthony Nelson had one of the best defensive performances of the season with an interception for a touchdown, two sacks, and a forced fumble as the Buccaneers (6-2) dominated the hapless Saints. Sean Tucker scored on a fourth-down run while Antoine Winfield Jr. added two takeaways in a four-turnover game for Tampa Bay. The Saints (1-7) benched Spencer Rattler for rookie Tyler Shough late in the third quarter but couldn't generate any offensive spark in a lopsided loss. <a href="https://www.espn.com/nfl/recap/_/gameId/401772869" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/GB.png" alt="GB" class="team-icon">
-                <span class="team-name">Green Bay Packers</span>
-                <span class="score">35</span>
-                <span class="at">@</span>
-                <span class="score">25</span>
-                <span class="team-name">Pittsburgh Steelers</span>
-                <img src="images/PIT.png" alt="PIT" class="team-icon">
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772759" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
             </div>
-        </div>
-        <div class="summary">
-            Jordan Love outdueled his mentor Aaron Rodgers in a passing-of-the-torch moment, completing 29 of 35 for 360 yards and three touchdowns with a franchise record-tying 20 straight completions. Tucker Kraft caught seven passes for a career-high 143 yards and two scores as Green Bay (5-1-1) erased a nine-point deficit to win at Pittsburgh for the first time since 1970. Rodgers threw two TDs but managed just 219 yards as the Steelers (4-3) couldn't keep pace with the Packers' explosive second-half offense. <a href="https://www.espn.com/nfl/recap/_/gameId/401772925" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
+        </article>
 
-    <div class="game">
-        <div class="game-header">
-            <div class="matchup">
-                <img src="images/MIN.png" alt="MIN" class="team-icon">
-                <span class="team-name">Minnesota Vikings</span>
-                <span class="score">10</span>
-                <span class="at">@</span>
-                <span class="score">37</span>
-                <span class="team-name">Los Angeles Chargers</span>
-                <img src="images/LAC.png" alt="LAC" class="team-icon">
+        <article class="game">
+            <div class="game-badges">
+                <span class="badge badge-blowout">💥 Blowout</span>
             </div>
-        </div>
-        <div class="summary">
-            Justin Herbert threw three touchdown passes and rushed for 62 yards as the Chargers bounced back impressively from a blowout loss, posting 30 points or more for the first time while not punting once. The Chargers (5-3) led 21-3 at halftime against Minnesota, dominating on short rest after Sunday's defeat. The Vikings (3-4) managed just 12 first downs and saw Carson Wentz struggle with five sacks on the road, losing consecutive games for the first time this season. <a href="https://www.espn.com/nfl/recap/_/gameId/401772942" class="recap-link" target="_blank">Read full recap →</a>
-        </div>
-    </div>
-    </div>
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Sun 10/27 1:00PM ET</span> <span>📍 Mercedes-Benz Stadium</span> <span>📺 FOX</span>
+                </div>
+
+                <div class="matchup">
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/MIA.png" alt="Miami Dolphins" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Miami Dolphins</div>
+                            <div class="team-record">(2-6)</div>
+                        </div>
+                        <div class="score">34</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/ATL.png" alt="Atlanta Falcons" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Atlanta Falcons</div>
+                            <div class="team-record">(3-4)</div>
+                        </div>
+                        <div class="score">10</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                <strong>Tua Tagovailoa</strong> bounced back impressively after three interceptions in consecutive games, throwing <span class="stat-highlight">four touchdown passes</span> despite an eye injury that required antibiotics and a protective visor. The Dolphins dominated short-handed Atlanta, holding the Falcons to their lowest point total while outgaining them <span class="stat-highlight">338-213</span>.
+            </div>
+
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772760" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>
+
+        <article class="game">
+            <div class="game-badges">
+                <span class="badge badge-blowout">💥 Blowout</span>
+            </div>
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Sun 10/27 1:00PM ET</span> <span>📍 Lucas Oil Stadium</span> <span>📺 CBS</span>
+                </div>
+
+                <div class="matchup">
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/TEN.png" alt="Tennessee Titans" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Tennessee Titans</div>
+                            <div class="team-record">(1-7)</div>
+                        </div>
+                        <div class="score">14</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/IND.png" alt="Indianapolis Colts" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Indianapolis Colts</div>
+                            <div class="team-record">(7-1)</div>
+                        </div>
+                        <div class="score">38</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                <strong>Jonathan Taylor</strong> continued his historic run with <span class="stat-highlight">three more touchdowns on just 12 carries for 153 yards</span>, becoming the first player ever to score three times in three consecutive games against the same team. <strong>Daniel Jones</strong> threw <span class="stat-highlight">three TD passes</span> as the Colts swept Tennessee with dominant performances.
+            </div>
+
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772761" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>
+
+        <article class="game">
+            <div class="game-badges">
+                <span class="badge badge-blowout">💥 Blowout</span>
+            </div>
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Sun 10/27 1:00PM ET</span> <span>📍 Empower Field at Mile High</span> <span>📺 FOX</span>
+                </div>
+
+                <div class="matchup">
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/DAL.png" alt="Dallas Cowboys" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Dallas Cowboys</div>
+                            <div class="team-record">(3-4-1)</div>
+                        </div>
+                        <div class="score">24</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/DEN.png" alt="Denver Broncos" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Denver Broncos</div>
+                            <div class="team-record">(6-2)</div>
+                        </div>
+                        <div class="score">44</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                Denver's rookies shined as <strong>R.J. Harvey</strong> scored <span class="stat-highlight">three times</span> and <strong>Bo Nix</strong> threw <span class="stat-highlight">four touchdown passes</span> in a dominant display. The Broncos scored on <span class="stat-highlight">seven of their next eight possessions</span> after the opening series, extending their home winning streak to nine games with first-rounder <strong>Jahdae Barron</strong> adding a pick-six.
+            </div>
+
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772762" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>
+
+        <article class="game">
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Mon 10/28 8:15PM ET</span> <span>📍 Arrowhead Stadium</span> <span>📺 ESPN</span>
+                </div>
+
+                <div class="matchup">
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/WAS.png" alt="Washington Commanders" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Washington Commanders</div>
+                            <div class="team-record">(3-5)</div>
+                        </div>
+                        <div class="score">7</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/KC.png" alt="Kansas City Chiefs" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Kansas City Chiefs</div>
+                            <div class="team-record">(5-3)</div>
+                        </div>
+                        <div class="score">28</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                <strong>Patrick Mahomes</strong> overcame two early interceptions to dominate the second half, finishing with <span class="stat-highlight">299 passing yards and three touchdown passes</span>. <strong>Travis Kelce</strong> caught his record-tying 83rd TD for the Chiefs, who exploded for 21 unanswered points after halftime against the Commanders' hapless offense.
+            </div>
+
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772817" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>
+
+        <article class="game">
+            <div class="game-badges">
+                <span class="badge badge-blowout">💥 Blowout</span>
+            </div>
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Sun 10/27 1:00PM ET</span> <span>📍 Bank of America Stadium</span> <span>📺 FOX</span>
+                </div>
+
+                <div class="matchup">
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/BUF.png" alt="Buffalo Bills" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Buffalo Bills</div>
+                            <div class="team-record">(6-2)</div>
+                        </div>
+                        <div class="score">40</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/CAR.png" alt="Carolina Panthers" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Carolina Panthers</div>
+                            <div class="team-record">(4-4)</div>
+                        </div>
+                        <div class="score">9</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                <strong>Josh Allen</strong> extended his perfect record coming off bye weeks while <strong>James Cook</strong> dominated with <span class="stat-highlight">216 rushing yards and two touchdowns</span>, becoming the third Bills RB to rush for 200+ yards and two TDs. Buffalo's defense sacked backup QB <strong>Andy Dalton</strong> <span class="stat-highlight">seven times</span> in a dominant defensive performance.
+            </div>
+
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772865" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>
+
+        <article class="game">
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Sun 10/27 1:00PM ET</span> <span>📍 NRG Stadium</span> <span>📺 CBS</span>
+                </div>
+
+                <div class="matchup">
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/SF.png" alt="San Francisco 49ers" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">San Francisco 49ers</div>
+                            <div class="team-record">(5-3)</div>
+                        </div>
+                        <div class="score">15</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/HOU.png" alt="Houston Texans" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Houston Texans</div>
+                            <div class="team-record">(3-4)</div>
+                        </div>
+                        <div class="score">26</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                <strong>C.J. Stroud</strong> showcased his versatility without star receiver Nico Collins, distributing passes to <span class="stat-highlight">nine different receivers</span> for a season-high <span class="stat-highlight">318 yards and two touchdowns</span>. The Texans dominated early and finished strong behind a defense that intercepted backup <strong>Mac Jones</strong> in the end zone to seal the victory.
+            </div>
+
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772866" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>
+
+        <article class="game">
+            <div class="game-badges">
+                <span class="badge badge-blowout">💥 Blowout</span>
+            </div>
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Sun 10/27 1:00PM ET</span> <span>📍 Lincoln Financial Field</span> <span>📺 FOX</span>
+                </div>
+
+                <div class="matchup">
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/NYG.png" alt="New York Giants" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">New York Giants</div>
+                            <div class="team-record">(2-6)</div>
+                        </div>
+                        <div class="score">20</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/PHI.png" alt="Philadelphia Eagles" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Philadelphia Eagles</div>
+                            <div class="team-record">(6-2)</div>
+                        </div>
+                        <div class="score">38</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                <strong>Saquon Barkley</strong> torched his former team with a <span class="stat-highlight">65-yard TD on his first carry</span> and <span class="stat-highlight">150 rushing yards</span> before a groin injury. <strong>Jalen Hurts</strong> threw <span class="stat-highlight">four touchdown passes</span> as the Eagles' offense exploded, running for <span class="stat-highlight">277 yards</span> to dominate the NFC East rival.
+            </div>
+
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772867" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>
+
+        <article class="game">
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Sun 10/27 1:00PM ET</span> <span>📍 Gillette Stadium</span> <span>📺 CBS</span>
+                </div>
+
+                <div class="matchup">
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/CLE.png" alt="Cleveland Browns" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Cleveland Browns</div>
+                            <div class="team-record">(2-6)</div>
+                        </div>
+                        <div class="score">13</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/NE.png" alt="New England Patriots" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">New England Patriots</div>
+                            <div class="team-record">(6-2)</div>
+                        </div>
+                        <div class="score">32</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                <strong>Drake Maye</strong> threw <span class="stat-highlight">three second-half touchdown passes</span> as New England erased an early deficit for their fifth straight win. Despite <strong>Myles Garrett</strong> recording a franchise-record <span class="stat-highlight">five sacks</span>, the Browns' road struggles continued with a <span class="stat-highlight">12-game losing streak</span> away from home.
+            </div>
+
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772868" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>
+
+        <article class="game">
+            <div class="game-badges">
+                <span class="badge badge-blowout">💥 Blowout</span>
+            </div>
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Sun 10/27 1:00PM ET</span> <span>📍 Caesars Superdome</span> <span>📺 FOX</span>
+                </div>
+
+                <div class="matchup">
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/TB.png" alt="Tampa Bay Buccaneers" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Tampa Bay Buccaneers</div>
+                            <div class="team-record">(6-2)</div>
+                        </div>
+                        <div class="score">23</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/NO.png" alt="New Orleans Saints" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">New Orleans Saints</div>
+                            <div class="team-record">(1-7)</div>
+                        </div>
+                        <div class="score">3</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                <strong>Anthony Nelson</strong> had a career day with an interception for a touchdown, <span class="stat-highlight">two sacks and a forced fumble</span> in a dominant defensive performance. Tampa Bay forced <span class="stat-highlight">four turnovers</span> while the Saints' offense sputtered around backup QBs <strong>Spencer Rattler</strong> and <strong>Tyler Shough</strong>, both struggling to move the ball.
+            </div>
+
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772869" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>
+
+        <article class="game">
+            <div class="game-badges">
+                <span class="badge badge-game-of-week">🏆 Game of the Week</span>
+            </div>
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Sun 10/27 8:20PM ET</span> <span>📍 Acrisure Stadium</span> <span>📺 NBC</span>
+                </div>
+
+                <div class="matchup">
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/GB.png" alt="Green Bay Packers" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Green Bay Packers</div>
+                            <div class="team-record">(5-1-1)</div>
+                        </div>
+                        <div class="score">35</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/PIT.png" alt="Pittsburgh Steelers" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Pittsburgh Steelers</div>
+                            <div class="team-record">(4-3)</div>
+                        </div>
+                        <div class="score">25</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                <strong>Jordan Love</strong> announced his arrival as Aaron Rodgers' successor with a masterclass performance, throwing <span class="stat-highlight">360 yards and three touchdowns</span> while completing a franchise-record-tying <span class="stat-highlight">20 consecutive passes</span>. <strong>Tucker Kraft</strong> caught <span class="stat-highlight">seven passes for 143 yards and two TDs</span> as the Packers won their first game in Pittsburgh since 1970.
+            </div>
+
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772925" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>
+
+        <article class="game">
+            <div class="game-badges">
+                <span class="badge badge-blowout">💥 Blowout</span>
+            </div>
+            <div class="game-header">
+                <div class="game-meta">
+                    <span>📅 Thu 10/31 8:15PM ET</span> <span>📍 SoFi Stadium</span> <span>📺 NBC</span>
+                </div>
+
+                <div class="matchup">
+                    <div class="team-section loser">
+                        <div class="team-logo-container">
+                            <img src="images/MIN.png" alt="Minnesota Vikings" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Minnesota Vikings</div>
+                            <div class="team-record">(3-4)</div>
+                        </div>
+                        <div class="score">10</div>
+                    </div>
+
+                    <div class="vs-divider">
+                        <span class="at-symbol">@</span>
+                        <div class="score-divider"></div>
+                    </div>
+
+                    <div class="team-section winner">
+                        <div class="team-logo-container">
+                            <img src="images/LAC.png" alt="Los Angeles Chargers" class="team-icon">
+                        </div>
+                        <div class="team-info">
+                            <div class="team-name">Los Angeles Chargers</div>
+                            <div class="team-record">(5-3)</div>
+                        </div>
+                        <div class="score">37</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary">
+                <strong>Justin Herbert</strong> bounced back from a disappointing loss with <span class="stat-highlight">227 passing yards and three touchdowns</span>, also rushing for 62 yards. The Chargers dominated from start to finish without punting, scoring <span class="stat-highlight">30+ points for the first time</span> while the Vikings managed just 12 first downs.
+            </div>
+
+            <div class="game-footer">
+                <a href="https://www.espn.com/nfl/recap/_/gameId/401772942" class="recap-link" target="_blank" rel="noopener noreferrer">
+                    Read Full Recap
+                </a>
+            </div>
+        </article>
+    </main>
 </body>
 </html>
