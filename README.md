@@ -24,7 +24,7 @@ football/
 ├── generate_newsletter.py      # Script 3: Generate newsletter with AI
 ├── requirements.txt            # Python dependencies
 ├── README.md                  # This file
-├── web/                       # Public-facing files
+├── docs/                      # Public-facing files (GitHub Pages ready)
 │   ├── images/               # Team logo images
 │   ├── 2025-week08.html     # Generated newsletters
 │   └── 2025-week09.html
@@ -153,7 +153,7 @@ python format_newsletter.py --week 8
 python format_newsletter.py --json-file tmp/2025-week08/newsletter.json
 ```
 
-**Output**: Creates `web/YYYY-weekWW.html` (e.g., `web/2025-week08.html`) - the final newsletter ready to view or distribute. Also updates `web/index.html` and `web/archive.json`.
+**Output**: Creates `docs/YYYY-weekWW.html` (e.g., `docs/2025-week08.html`) - the final newsletter ready to view or distribute. Also updates `docs/index.html` and `docs/archive.json`.
 
 ### View the Newsletter
 
@@ -161,13 +161,13 @@ Open the generated newsletter in your browser:
 
 ```bash
 # macOS
-open web/2025-week08.html
+open docs/2025-week08.html
 
 # Linux
-xdg-open web/2025-week08.html
+xdg-open docs/2025-week08.html
 
 # Windows
-start web/2025-week08.html
+start docs/2025-week08.html
 ```
 
 ### Benefits of the Split Workflow
@@ -236,7 +236,7 @@ Update `season_start_date` at the beginning of each NFL season.
 
 ```yaml
 storage:
-  web_dir: "web"      # Public-facing files (newsletters, team logos)
+  docs_dir: "docs"    # Public-facing files (newsletters, team logos) - GitHub Pages ready
   tmp_dir: "tmp"      # Temporary processing files
   recap_subdir: "recaps"
   combined_filename: "combined.html"
@@ -346,7 +346,7 @@ cd /path/to/football
 python fetch_recaps.py && \
 python process_recaps.py && \
 python generate_newsletter.py
-echo "Newsletter generated: web/$(date +\%Y)-week$(date +\%U).html"
+echo "Newsletter generated: docs/$(date +\%Y)-week$(date +\%U).html"
 ```
 
 ## Troubleshooting
@@ -393,10 +393,10 @@ Generate newsletters with different providers for the same week:
 
 ```bash
 python generate_newsletter.py --week 8 --provider claude
-mv web/2025-week08.html web/2025-week08-claude.html
+mv docs/2025-week08.html docs/2025-week08-claude.html
 
 python generate_newsletter.py --week 8 --provider openai
-mv web/2025-week08.html web/2025-week08-openai.html
+mv docs/2025-week08.html docs/2025-week08-openai.html
 
 python generate_newsletter.py --week 8 --provider gemini
 ```

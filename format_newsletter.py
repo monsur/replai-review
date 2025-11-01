@@ -7,7 +7,7 @@ This script:
 2. Parses and validates the JSON
 3. Formats games into HTML
 4. Wraps in complete HTML document
-5. Saves to web/YYYY-weekWW.html
+5. Saves to docs/YYYY-weekWW.html
 6. Updates index.html with latest newsletter
 7. Updates archive.json with newsletter metadata
 """
@@ -285,17 +285,17 @@ def render_newsletter(template_data: dict, template_file: str = "newsletter_temp
     return template.render(**template_data)
 
 
-def update_index_html(web_dir: Path, newsletter_filename: str, year: int, week: int) -> None:
+def update_index_html(docs_dir: Path, newsletter_filename: str, year: int, week: int) -> None:
     """
     Update index.html to point to the latest newsletter if it's newer.
 
     Args:
-        web_dir: Web directory path
+        docs_dir: Documentation directory path
         newsletter_filename: New newsletter filename (e.g., "2025-week09.html")
         year: Year of the new newsletter
         week: Week number of the new newsletter
     """
-    index_file = web_dir / "index.html"
+    index_file = docs_dir / "index.html"
 
     if not index_file.exists():
         print(f"Warning: {index_file} not found, skipping index update")
@@ -340,19 +340,19 @@ def update_index_html(web_dir: Path, newsletter_filename: str, year: int, week: 
         print(f"Index.html already points to week {current_week}, not updating")
 
 
-def update_archive_json(web_dir: Path, year: int, week: int,
+def update_archive_json(docs_dir: Path, year: int, week: int,
                         newsletter_filename: str, game_count: int) -> None:
     """
     Update archive.json with the new newsletter information.
 
     Args:
-        web_dir: Web directory path
+        docs_dir: Documentation directory path
         year: Year of the newsletter
         week: Week number
         newsletter_filename: Filename of the newsletter
         game_count: Number of games in the newsletter
     """
-    archive_file = web_dir / "archive.json"
+    archive_file = docs_dir / "archive.json"
 
     # Read existing archive or create new structure
     if archive_file.exists():
@@ -484,21 +484,21 @@ def main():
         traceback.print_exc()
         sys.exit(1)
 
-    # Save to web directory
-    web_dir = Path(config['storage']['web_dir'])
-    web_dir.mkdir(parents=True, exist_ok=True)
+    # Save to docs directory
+    docs_dir = Path(config['storage']['docs_dir'])
+    docs_dir.mkdir(parents=True, exist_ok=True)
 
     newsletter_filename = f"{year}-week{target_week:02d}.html"
-    output_file = web_dir / newsletter_filename
+    output_file = docs_dir / newsletter_filename
 
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(complete_html)
 
     # Update index.html to point to latest newsletter
-    update_index_html(web_dir, newsletter_filename, year, target_week)
+    update_index_html(docs_dir, newsletter_filename, year, target_week)
 
     # Update archive.json with new newsletter
-    update_archive_json(web_dir, year, target_week, newsletter_filename, game_count)
+    update_archive_json(docs_dir, year, target_week, newsletter_filename, game_count)
 
     # Summary
     print(f"\n{'='*60}")
