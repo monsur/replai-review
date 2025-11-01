@@ -23,8 +23,20 @@ Generate a JSON object with the following structure:
 ```
 
 TEAM ABBREVIATIONS:
-Map team names to standard abbreviations: NYJ (Jets), CIN (Bengals), BUF (Bills), MIA (Dolphins), NE (Patriots), etc.
-Use the team_icons data provided to find the correct abbreviation for each team.
+Map team names to their standard NFL abbreviations. Use these exact abbreviations for the away_abbr and home_abbr fields:
+
+AFC East: BUF (Bills), MIA (Dolphins), NE (Patriots), NYJ (Jets)
+AFC North: BAL (Ravens), CIN (Bengals), CLE (Browns), PIT (Steelers)
+AFC South: HOU (Texans), IND (Colts), JAX (Jaguars), TEN (Titans)
+AFC West: DEN (Broncos), KC (Chiefs), LAC (Chargers), LV (Raiders)
+
+NFC East: DAL (Cowboys), NYG (Giants), PHI (Eagles), WAS (Commanders)
+NFC North: CHI (Bears), DET (Lions), GB (Packers), MIN (Vikings)
+NFC South: ATL (Falcons), CAR (Panthers), NO (Saints), TB (Buccaneers)
+NFC West: ARI (Cardinals), LAR (Rams), SF (49ers), SEA (Seahawks)
+
+These abbreviations map to team icon files using the pattern: images/{TEAM_ABB}.png
+For example: CHI → images/CHI.png, NYJ → images/NYJ.png
 
 RECAP URL:
 Extract the ESPN game URL from the recap content. Look for links in the format:

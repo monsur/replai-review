@@ -40,20 +40,6 @@ def load_prompt(prompt_file: str) -> str:
         return f.read().strip()
 
 
-def load_team_icons(icons_file: str = "team_icons.json") -> dict:
-    """
-    Load team icons from JSON file.
-
-    Args:
-        icons_file: Path to the team icons JSON file
-
-    Returns:
-        Dictionary of team icons data
-    """
-    with open(icons_file, 'r', encoding='utf-8') as f:
-        return json.load(f)
-
-
 def read_combined_recaps(combined_file: Path) -> str:
     """
     Read the combined recaps file.
@@ -74,19 +60,19 @@ def read_combined_recaps(combined_file: Path) -> str:
         return f.read()
 
 
-def format_game_html(game: dict, team_icons: dict) -> str:
+def format_game_html(game: dict) -> str:
     """
     Format a single game's data into HTML.
 
     Args:
         game: Dictionary with game data
-        team_icons: Dictionary of team icons data
 
     Returns:
         HTML string for the game
     """
-    away_icon = team_icons.get(game['away_abbr'], {}).get('icon_file_path', '')
-    home_icon = team_icons.get(game['home_abbr'], {}).get('icon_file_path', '')
+    # Use consistent pattern: images/{TEAM_ABB}.png
+    away_icon = f"images/{game['away_abbr']}.png"
+    home_icon = f"images/{game['home_abbr']}.png"
 
     # Add ESPN recap link if available
     recap_link = ""
@@ -115,7 +101,6 @@ def generate_newsletter(
     ai_provider,
     prompt: str,
     recap_content: str,
-    team_icons: dict,
     week: int,
     output_dir: Path
 ) -> str:
@@ -126,7 +111,6 @@ def generate_newsletter(
         ai_provider: AIProvider instance
         prompt: System prompt for the AI
         recap_content: Combined recap content
-        team_icons: Dictionary of team icons data
         week: Week number
         output_dir: Output directory path
 
@@ -136,12 +120,9 @@ def generate_newsletter(
     print("Generating newsletter with AI...")
     print(f"Input size: {len(recap_content):,} characters")
 
-    # Create the user message with team icons data
+    # Create the user message
     user_message = f"""
 Here are the NFL game recaps from this week. Please generate a newsletter following the guidelines in the system prompt.
-
-TEAM ICONS DATA (use abbreviations to map teams):
-{json.dumps(team_icons, indent=2)}
 
 GAME RECAPS:
 {recap_content}
@@ -185,7 +166,7 @@ GAME RECAPS:
         print(f"Parsed {len(games)} games from JSON")
 
         # Format games into HTML
-        games_html = '\n\n'.join([format_game_html(game, team_icons) for game in games])
+        games_html = '\n\n'.join([format_game_html(game) for game in games])
 
         # Create complete newsletter HTML
         newsletter_html = f"""<h1>ReplAI Review - Week {week}</h1>
@@ -384,24 +365,12 @@ def main():
         print(f"Error: Prompt file '{prompt_file}' not found")
         sys.exit(1)
 
-    # Load team icons
-    try:
-        team_icons = load_team_icons()
-        print(f"Loaded {len(team_icons)} team icons")
-    except FileNotFoundError:
-        print("Warning: team_icons.json not found, proceeding without icons")
-        team_icons = {}
-    except Exception as e:
-        print(f"Warning: Error loading team icons: {e}")
-        team_icons = {}
-
     # Generate newsletter
     try:
         newsletter_content = generate_newsletter(
             ai_provider,
             prompt,
             recap_content,
-            team_icons,
             target_week,
             tmp_week_dir
         )
