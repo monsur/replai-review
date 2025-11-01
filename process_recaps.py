@@ -252,7 +252,8 @@ def main():
     print(f"Processing week: {target_week}")
 
     # Locate recaps directory
-    week_dir = Path(config['storage']['base_dir']) / f"week_{target_week}"
+    year = config['nfl_season']['year']
+    week_dir = Path(config['storage']['tmp_dir']) / f"{year}-week{target_week:02d}"
     recaps_dir = week_dir / config['storage']['recap_subdir']
 
     if not recaps_dir.exists():

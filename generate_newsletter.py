@@ -349,9 +349,10 @@ def main():
 
     print(f"Generating newsletter for week: {target_week}")
 
-    # Locate combined recaps file
-    week_dir = Path(config['storage']['base_dir']) / f"week_{target_week}"
-    combined_file = week_dir / config['storage']['combined_filename']
+    # Locate combined recaps file in tmp directory
+    year = config['nfl_season']['year']
+    tmp_week_dir = Path(config['storage']['tmp_dir']) / f"{year}-week{target_week:02d}"
+    combined_file = tmp_week_dir / config['storage']['combined_filename']
 
     print(f"Input file: {combined_file}")
 
@@ -402,7 +403,7 @@ def main():
             recap_content,
             team_icons,
             target_week,
-            week_dir
+            tmp_week_dir
         )
     except Exception as e:
         print(f"Error generating newsletter: {e}")
@@ -411,10 +412,12 @@ def main():
     # Wrap in complete HTML if needed
     complete_html = wrap_newsletter_html(newsletter_content, target_week)
 
-    # Save newsletter with dynamic filename: YYYY-weekWW.html
-    year = config['nfl_season']['year']
+    # Save newsletter to web directory with dynamic filename: YYYY-weekWW.html
+    web_dir = Path(config['storage']['web_dir'])
+    web_dir.mkdir(parents=True, exist_ok=True)
+
     newsletter_filename = f"{year}-week{target_week:02d}.html"
-    output_file = week_dir / newsletter_filename
+    output_file = web_dir / newsletter_filename
 
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(complete_html)

@@ -30,19 +30,20 @@ def load_config(config_path: str = "config.yaml") -> dict:
         return yaml.safe_load(f)
 
 
-def create_week_directory(base_dir: str, week: int, recap_subdir: str) -> Path:
+def create_week_directory(tmp_dir: str, week: int, year: int, recap_subdir: str) -> Path:
     """
     Create directory structure for storing week's recaps.
 
     Args:
-        base_dir: Base directory for storage
+        tmp_dir: Temporary directory for intermediate files
         week: NFL week number
+        year: NFL season year
         recap_subdir: Subdirectory name for recaps
 
     Returns:
         Path to the recaps directory
     """
-    week_dir = Path(base_dir) / f"week_{week}"
+    week_dir = Path(tmp_dir) / f"{year}-week{week:02d}"
     recaps_dir = week_dir / recap_subdir
 
     recaps_dir.mkdir(parents=True, exist_ok=True)
@@ -228,8 +229,9 @@ def main():
 
     # Create output directory
     recaps_dir = create_week_directory(
-        config['storage']['base_dir'],
+        config['storage']['tmp_dir'],
         target_week,
+        config['nfl_season']['year'],
         config['storage']['recap_subdir']
     )
 

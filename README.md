@@ -24,11 +24,15 @@ football/
 ├── generate_newsletter.py      # Script 3: Generate newsletter with AI
 ├── requirements.txt            # Python dependencies
 ├── README.md                  # This file
-└── output/                    # Output directory
-    └── week_X/                # Generated for each week
+├── web/                       # Public-facing files
+│   ├── team_logos/           # Team logo images
+│   ├── 2025-week08.html     # Generated newsletters
+│   └── 2025-week09.html
+└── tmp/                       # Temporary processing files
+    └── 2025-weekWW/          # Format: YYYY-weekWW (e.g., 2025-week08)
         ├── recaps/            # Downloaded recap HTML files
         ├── combined.html      # Combined and cleaned recaps
-        └── YYYY-weekWW.html   # Final newsletter (e.g., 2025-week08.html)
+        └── newsletter_week_8.json  # AI-generated JSON (debug)
 ```
 
 ## Installation
@@ -92,7 +96,7 @@ python fetch_recaps.py --week 8
 python fetch_recaps.py --config my_config.yaml
 ```
 
-**Output**: Creates `output/week_X/recaps/` directory with HTML files for each game.
+**Output**: Creates `tmp/YYYY-weekWW/recaps/` directory (e.g., `tmp/2025-week08/recaps/`) with HTML files for each game.
 
 ### Script 2: Process Recaps
 
@@ -109,7 +113,7 @@ python process_recaps.py --week 8
 python process_recaps.py --config my_config.yaml
 ```
 
-**Output**: Creates `output/week_X/combined.html` with cleaned and combined recaps.
+**Output**: Creates `tmp/YYYY-weekWW/combined.html` (e.g., `tmp/2025-week08/combined.html`) with cleaned and combined recaps.
 
 ### Script 3: Generate Newsletter
 
@@ -129,7 +133,7 @@ python generate_newsletter.py --week 8
 python generate_newsletter.py --week 8 --provider claude
 ```
 
-**Output**: Creates `output/week_X/YYYY-weekWW.html` (e.g., `2025-week08.html`) - the final newsletter ready to view or distribute.
+**Output**: Creates `web/YYYY-weekWW.html` (e.g., `web/2025-week08.html`) - the final newsletter ready to view or distribute.
 
 ### View the Newsletter
 
@@ -137,13 +141,13 @@ Open the generated newsletter in your browser:
 
 ```bash
 # macOS
-open output/week_8/2025-week08.html
+open web/2025-week08.html
 
 # Linux
-xdg-open output/week_8/2025-week08.html
+xdg-open web/2025-week08.html
 
 # Windows
-start output/week_8/2025-week08.html
+start web/2025-week08.html
 ```
 
 ## Configuration
@@ -162,7 +166,8 @@ Update `season_start_date` at the beginning of each NFL season.
 
 ```yaml
 storage:
-  base_dir: "output"  # Where week_X folders are created
+  web_dir: "web"      # Public-facing files (newsletters, team logos)
+  tmp_dir: "tmp"      # Temporary processing files
   recap_subdir: "recaps"
   combined_filename: "combined.html"
   # Newsletter filename is dynamically generated as: YYYY-weekWW.html
@@ -271,7 +276,7 @@ cd /path/to/football
 python fetch_recaps.py && \
 python process_recaps.py && \
 python generate_newsletter.py
-echo "Newsletter generated: week_$(date +\%U)/$(date +\%Y)-week$(date +\%U).html"
+echo "Newsletter generated: web/$(date +\%Y)-week$(date +\%U).html"
 ```
 
 ## Troubleshooting
@@ -318,10 +323,10 @@ Generate newsletters with different providers for the same week:
 
 ```bash
 python generate_newsletter.py --week 8 --provider claude
-mv output/week_8/2025-week08.html output/week_8/2025-week08-claude.html
+mv web/2025-week08.html web/2025-week08-claude.html
 
 python generate_newsletter.py --week 8 --provider openai
-mv output/week_8/2025-week08.html output/week_8/2025-week08-openai.html
+mv web/2025-week08.html web/2025-week08-openai.html
 
 python generate_newsletter.py --week 8 --provider gemini
 ```
