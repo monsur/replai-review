@@ -45,21 +45,22 @@ or
 https://www.espn.com/nfl/game/_/gameId/{GAMEID}
 Include the full URL in the recap_url field.
 
-SUMMARY CONTENT FORMULA (3-5 sentences, max 150 words):
-
-Sentence 1: Lead with the star player and their key stats/achievements
-Sentence 2: Describe the decisive moment or key play
-Sentence 3: Brief context - team record (optional, only if space)
+SUMMARY GUIDELINES (2-4 sentences, max 150 words):
+- Lead with the star player(s) and their standout performance
+- Include specific stats (yards, TDs, completion percentages)
+- Highlight the game's key storyline (comeback, streak, milestone, etc.)
+- Brief context - team record
+- Avoid repeating information already in the score display
 
 WRITING STYLE:
 - Use active voice and engaging verbs (dominated, exploded, bounced back)
-- Include specific stats (yards, TDs, completion percentages)
 - Every sentence must add new information
 - Vary sentence structure for readability
 
 CRITICAL REQUIREMENTS:
 - Generate data for ALL games in the recap content
 - Do not skip any games
+- Every game must include a valid recap_url
 - Output ONLY valid JSON, no other text
 
 TONE: Informational and succinct
