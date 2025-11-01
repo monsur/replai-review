@@ -13,6 +13,7 @@ import argparse
 import json
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -39,6 +40,112 @@ def load_prompt(prompt_file: str) -> str:
     """
     with open(prompt_file, 'r', encoding='utf-8') as f:
         return f.read().strip()
+
+
+def parse_game_datetime(game_date: str) -> datetime:
+    """
+    Parse game date string to datetime for sorting.
+
+    Args:
+        game_date: Date string in format "Day MM/DD H:MMAM/PM ET"
+                   (e.g., "Thu 10/23 8:15PM ET")
+
+    Returns:
+        datetime object for sorting
+    """
+    try:
+        # Extract the date and time parts
+        # Format: "Day MM/DD H:MMAM/PM ET"
+        parts = game_date.split()
+        if len(parts) < 3:
+            # If format is unexpected, return a default datetime
+            return datetime.min
+
+        # Day name (Mon, Tue, etc.) - parts[0]
+        # Date (MM/DD) - parts[1]
+        # Time (H:MMAM/PM) - parts[2]
+        # Timezone (ET) - parts[3] (ignored for sorting within same week)
+
+        day_of_week = parts[0].lower()
+        date_str = parts[1]  # MM/DD
+        time_str = parts[2]  # H:MMAM/PM
+
+        # Map day names to sort order (Thu=0, Fri=1, Sat=2, Sun=3, Mon=4, Tue=5, Wed=6)
+        day_order = {
+            'thu': 0, 'thursday': 0,
+            'fri': 1, 'friday': 1,
+            'sat': 2, 'saturday': 2,
+            'sun': 3, 'sunday': 3,
+            'mon': 4, 'monday': 4,
+            'tue': 5, 'tuesday': 5,
+            'wed': 6, 'wednesday': 6
+        }
+
+        # Parse time (handle both 12:00PM and 12:00AM formats)
+        time_upper = time_str.upper()
+        # Parse the time
+        if 'AM' in time_upper:
+            time_part = time_upper.replace('AM', '')
+            is_pm = False
+        elif 'PM' in time_upper:
+            time_part = time_upper.replace('PM', '')
+            is_pm = True
+        else:
+            # Default to PM if not specified
+            time_part = time_str
+            is_pm = True
+
+        # Split hours and minutes
+        if ':' in time_part:
+            hour_str, min_str = time_part.split(':')
+            hour = int(hour_str)
+            minute = int(min_str)
+        else:
+            hour = int(time_part)
+            minute = 0
+
+        # Convert to 24-hour format
+        if is_pm and hour != 12:
+            hour += 12
+        elif not is_pm and hour == 12:
+            hour = 0
+
+        # Get day order (default to Sunday if not found)
+        day_num = day_order.get(day_of_week, 3)
+
+        # Parse month and day from date_str
+        month_day = date_str.split('/')
+        if len(month_day) == 2:
+            month = int(month_day[0])
+            day = int(month_day[1])
+        else:
+            month = 1
+            day = 1
+
+        # Create a sortable datetime (use a dummy year)
+        # We'll use day_num as the primary sort key and time as secondary
+        return datetime(2025, month, day, hour, minute)
+
+    except (ValueError, IndexError, AttributeError):
+        # If parsing fails, return minimum datetime to sort to beginning
+        return datetime.min
+
+
+def sort_games_chronologically(games: list) -> list:
+    """
+    Sort games in chronological order.
+
+    Args:
+        games: List of game dictionaries
+
+    Returns:
+        Sorted list of games (earliest first)
+    """
+    def get_sort_key(game):
+        game_date = game.get('game_date', '')
+        return parse_game_datetime(game_date)
+
+    return sorted(games, key=get_sort_key)
 
 
 def read_combined_recaps(combined_file: Path) -> str:
@@ -238,6 +345,10 @@ GAME RECAPS:
         games = data.get('games', [])
 
         print(f"Parsed {len(games)} games from JSON")
+
+        # Sort games chronologically (Thursday first, Monday last)
+        games = sort_games_chronologically(games)
+        print("Games sorted chronologically")
 
         # Format games into HTML
         games_html = '\n\n'.join([format_game_html(game) for game in games])

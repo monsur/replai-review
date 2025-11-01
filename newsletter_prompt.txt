@@ -81,7 +81,8 @@ WRITING STYLE:
 CRITICAL REQUIREMENTS:
 - Generate data for ALL games in the recap content
 - Do not skip any games
-- Every game must include a valid recap_url
+- Every game must include a valid recap_url and game_date
+- Games will be automatically sorted chronologically by the system (Thursday to Monday)
 - Output ONLY valid JSON, no other text
 
 TONE: Informational and succinct
