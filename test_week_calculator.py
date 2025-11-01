@@ -26,62 +26,73 @@ class TestDateBasedWeekCalculator(unittest.TestCase):
         self.calculator = DateBasedWeekCalculator("2024-09-05")
 
     def test_week_1_thursday(self):
-        """Test Week 1 on Thursday (opening day)."""
+        """Test Week 1 on Thursday (opening day - incomplete)."""
         test_date = datetime(2024, 9, 5)  # Thursday
         week = self.calculator.get_week(test_date)
+        # Week 1 just started, so return 1 (clamped minimum)
         self.assertEqual(week, 1)
 
     def test_week_1_sunday(self):
-        """Test Week 1 on Sunday."""
+        """Test Week 1 on Sunday (incomplete week)."""
         test_date = datetime(2024, 9, 8)  # Sunday
         week = self.calculator.get_week(test_date)
+        # Week 1 still in progress, but clamped to minimum 1
         self.assertEqual(week, 1)
 
     def test_week_1_monday(self):
-        """Test Week 1 on Monday Night Football."""
+        """Test Week 1 on Monday Night Football (incomplete week)."""
         test_date = datetime(2024, 9, 9)  # Monday
         week = self.calculator.get_week(test_date)
-        # Monday is still Week 1 (part of Thu-Wed cycle)
+        # Week 1 still in progress (MNF tonight), but clamped to minimum 1
         self.assertEqual(week, 1)
 
     def test_week_1_tuesday(self):
-        """Test Tuesday of Week 1."""
+        """Test Tuesday of Week 1 (week now complete)."""
         test_date = datetime(2024, 9, 10)  # Tuesday
         week = self.calculator.get_week(test_date)
-        # Still Week 1 (part of Thu-Wed cycle)
+        # Week 1 is complete (MNF was yesterday)
         self.assertEqual(week, 1)
 
     def test_week_1_wednesday(self):
-        """Test Wednesday of Week 1 (last day of week)."""
+        """Test Wednesday of Week 1 (week complete)."""
         test_date = datetime(2024, 9, 11)  # Wednesday
         week = self.calculator.get_week(test_date)
-        # Still Week 1 (last day of Thu-Wed cycle)
+        # Week 1 is complete
         self.assertEqual(week, 1)
 
     def test_week_2_thursday(self):
-        """Test Week 2 Thursday (should return Week 2)."""
+        """Test Week 2 Thursday (Week 2 in progress, return Week 1)."""
         test_date = datetime(2024, 9, 12)  # Thursday
         week = self.calculator.get_week(test_date)
-        # Thursday starts new week
-        self.assertEqual(week, 2)
+        # Week 2 just started (TNF tonight), so return Week 1 (last complete)
+        self.assertEqual(week, 1)
 
     def test_week_8_thursday(self):
-        """Test Week 8 Thursday."""
+        """Test Week 8 Thursday (Week 8 in progress, return Week 7)."""
         test_date = datetime(2024, 10, 24)  # Thursday, Week 8
         week = self.calculator.get_week(test_date)
-        self.assertEqual(week, 8)
+        # Week 8 just started (TNF tonight), so return Week 7 (last complete)
+        self.assertEqual(week, 7)
 
     def test_week_8_sunday(self):
-        """Test Week 8 Sunday."""
+        """Test Week 8 Sunday (Week 8 in progress, return Week 7)."""
         test_date = datetime(2024, 10, 27)  # Sunday, Week 8
         week = self.calculator.get_week(test_date)
-        self.assertEqual(week, 8)
+        # Week 8 still in progress (games today), so return Week 7 (last complete)
+        self.assertEqual(week, 7)
+
+    def test_week_8_monday(self):
+        """Test Week 8 Monday (Week 8 in progress, return Week 7)."""
+        test_date = datetime(2024, 10, 28)  # Monday, Week 8
+        week = self.calculator.get_week(test_date)
+        # Week 8 still in progress (MNF tonight), so return Week 7 (last complete)
+        self.assertEqual(week, 7)
 
     def test_week_8_tuesday_returns_week_8(self):
-        """Test Tuesday of Week 8."""
+        """Test Tuesday of Week 8 (Week 8 complete)."""
         test_date = datetime(2024, 10, 29)  # Tuesday of Week 8
         week = self.calculator.get_week(test_date)
-        # Tuesday is part of Week 8 (Thu-Wed cycle)
+        # Week 8 is complete (MNF was yesterday)
         self.assertEqual(week, 8)
 
     def test_week_calculation_mid_season(self):
@@ -89,14 +100,16 @@ class TestDateBasedWeekCalculator(unittest.TestCase):
         # Week 10 started Thursday, Nov 7
         test_date = datetime(2024, 11, 10)  # Sunday, Week 10
         week = self.calculator.get_week(test_date)
-        self.assertEqual(week, 10)
+        # Week 10 in progress on Sunday, so return Week 9 (last complete)
+        self.assertEqual(week, 9)
 
     def test_week_calculation_late_season(self):
         """Test week calculation late in season."""
         # Week 17 starts around Dec 26
         test_date = datetime(2024, 12, 29)  # Sunday, Week 17
         week = self.calculator.get_week(test_date)
-        self.assertEqual(week, 17)
+        # Week 17 in progress on Sunday, so return Week 16 (last complete)
+        self.assertEqual(week, 16)
 
     def test_week_never_below_1(self):
         """Test that week number never goes below 1."""
@@ -113,14 +126,20 @@ class TestDateBasedWeekCalculator(unittest.TestCase):
         self.assertGreaterEqual(week, 1)
 
     def test_all_days_of_week_pattern(self):
-        """Test that all days Thu-Wed return the same week."""
+        """Test that Thu-Mon return previous week, Tue-Wed return current week."""
         base_date = datetime(2024, 9, 12)  # Thursday, Week 2
 
-        # All days Thursday through Wednesday should return Week 2
-        for days_offset in range(7):  # Thu, Fri, Sat, Sun, Mon, Tue, Wed
+        # Days Thursday through Monday should return Week 1 (Week 2 in progress)
+        for days_offset in range(5):  # Thu, Fri, Sat, Sun, Mon
             test_date = base_date + timedelta(days=days_offset)
             week = self.calculator.get_week(test_date)
-            self.assertEqual(week, 2, f"Failed for {test_date.strftime('%A')}")
+            self.assertEqual(week, 1, f"Failed for {test_date.strftime('%A')} - expected Week 1 (Week 2 in progress)")
+
+        # Days Tuesday and Wednesday should return Week 2 (Week 2 complete)
+        for days_offset in range(5, 7):  # Tue, Wed
+            test_date = base_date + timedelta(days=days_offset)
+            week = self.calculator.get_week(test_date)
+            self.assertEqual(week, 2, f"Failed for {test_date.strftime('%A')} - expected Week 2 (Week 2 complete)")
 
 
 class TestManualWeekCalculator(unittest.TestCase):
@@ -179,10 +198,11 @@ class TestEdgeCases(unittest.TestCase):
     """Test edge cases and boundary conditions."""
 
     def test_season_start_is_week_1(self):
-        """Test that season start date is always Week 1."""
+        """Test that season start date returns Week 1 (clamped minimum)."""
         calculator = DateBasedWeekCalculator("2024-09-05")
-        season_start = datetime(2024, 9, 5)
+        season_start = datetime(2024, 9, 5)  # Thursday
         week = calculator.get_week(season_start)
+        # Week 1 just started, would return Week 0 but clamped to 1
         self.assertEqual(week, 1)
 
     def test_day_before_season_start(self):
@@ -207,6 +227,7 @@ class TestEdgeCases(unittest.TestCase):
         calculator = DateBasedWeekCalculator("2023-09-07")
         test_date = datetime(2023, 9, 10)  # Sunday of Week 1
         week = calculator.get_week(test_date)
+        # Week 1 in progress on Sunday, would return Week 0 but clamped to 1
         self.assertEqual(week, 1)
 
     def test_manual_week_zero(self):
@@ -228,19 +249,20 @@ class TestRealWorldScenarios(unittest.TestCase):
         # Newsletter typically generated Tuesday after Monday Night Football
         calculator = DateBasedWeekCalculator("2024-09-05")
 
-        # Tuesday, October 29, 2024 - Week 8 (games from Thu Oct 24 - Mon Oct 28)
-        # Tuesday is still part of Week 8's Thu-Wed cycle
+        # Tuesday, October 29, 2024 - Week 8 is complete (MNF was Mon Oct 28)
         tuesday_morning = datetime(2024, 10, 29)
         week = calculator.get_week(tuesday_morning)
+        # Week 8 complete, return Week 8
         self.assertEqual(week, 8)
 
     def test_newsletter_generation_wednesday(self):
         """Test newsletter generation on Wednesday (last day of week)."""
         calculator = DateBasedWeekCalculator("2024-09-05")
 
-        # Wednesday Oct 30 is the last day of Week 8's Thu-Wed cycle
+        # Wednesday Oct 30 - Week 8 is complete
         wednesday = datetime(2024, 10, 30)
         week = calculator.get_week(wednesday)
+        # Week 8 complete, return Week 8
         self.assertEqual(week, 8)
 
     def test_manual_override_for_past_week(self):
@@ -254,16 +276,17 @@ class TestRealWorldScenarios(unittest.TestCase):
         """Test week progression throughout entire season."""
         calculator = DateBasedWeekCalculator("2024-09-05")
 
-        # Test a Thursday from each week
+        # Test a Thursday from each week (returns previous week since incomplete)
+        # except Week 1 Thursday which is clamped to 1
         expected_weeks = [
-            (datetime(2024, 9, 5), 1),   # Week 1 Thursday
-            (datetime(2024, 9, 12), 2),  # Week 2 Thursday
-            (datetime(2024, 9, 19), 3),  # Week 3 Thursday
-            (datetime(2024, 9, 26), 4),  # Week 4 Thursday
-            (datetime(2024, 10, 3), 5),  # Week 5 Thursday
-            (datetime(2024, 10, 10), 6), # Week 6 Thursday
-            (datetime(2024, 10, 17), 7), # Week 7 Thursday
-            (datetime(2024, 10, 24), 8), # Week 8 Thursday
+            (datetime(2024, 9, 5), 1),   # Week 1 Thursday (clamped to 1)
+            (datetime(2024, 9, 12), 1),  # Week 2 Thursday (returns Week 1)
+            (datetime(2024, 9, 19), 2),  # Week 3 Thursday (returns Week 2)
+            (datetime(2024, 9, 26), 3),  # Week 4 Thursday (returns Week 3)
+            (datetime(2024, 10, 3), 4),  # Week 5 Thursday (returns Week 4)
+            (datetime(2024, 10, 10), 5), # Week 6 Thursday (returns Week 5)
+            (datetime(2024, 10, 17), 6), # Week 7 Thursday (returns Week 6)
+            (datetime(2024, 10, 24), 7), # Week 8 Thursday (returns Week 7)
         ]
 
         for test_date, expected_week in expected_weeks:
