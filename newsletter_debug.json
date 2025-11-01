@@ -1,0 +1,122 @@
+```json
+{
+  "week": 8,
+  "games": [
+    {
+      "away_team": "New York Jets",
+      "away_abbr": "NYJ",
+      "away_score": 39,
+      "home_team": "Cincinnati Bengals",
+      "home_abbr": "CIN",
+      "home_score": 38,
+      "summary": "Breece Hall exploded for 133 rushing yards and two second-half touchdowns, also throwing a decisive 4-yard TD pass with 1:54 remaining. The Jets amassed 502 yards of offense, including 254 on the ground, mounting a stunning 39-38 comeback victory. New York, trailing 31-16 after three quarters, secured their first win of the season to improve to 1-7.",
+      "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401772758"
+    },
+    {
+      "away_team": "Chicago Bears",
+      "away_abbr": "CHI",
+      "away_score": 16,
+      "home_team": "Baltimore Ravens",
+      "home_abbr": "BAL",
+      "home_score": 30,
+      "summary": "Derrick Henry powered the Ravens with two rushing touchdowns, while Tyler Huntley impressed, completing 17 of 22 passes for 186 yards and adding 53 rushing yards. Huntley threw a crucial 10-yard touchdown after a Bears' interception in the fourth quarter. The Ravens secured a 30-16 victory, snapping a four-game losing streak and ending Chicago's four-game winning run.",
+      "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401772759"
+    },
+    {
+      "away_team": "Miami Dolphins",
+      "away_abbr": "MIA",
+      "away_score": 34,
+      "home_team": "Atlanta Falcons",
+      "home_abbr": "ATL",
+      "home_score": 10,
+      "summary": "Tua Tagovailoa threw a season-high four touchdown passes, completing 20 of 26 for 205 yards, ending his interception spree with a stellar performance. The Dolphins offense outgained the Falcons 338-213, while the defense contained Bijan Robinson to 25 rushing yards. Miami dominated Atlanta 34-10, snapping their three-game losing streak and improving to 2-6.",
+      "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401772760"
+    },
+    {
+      "away_team": "Tennessee Titans",
+      "away_abbr": "TEN",
+      "away_score": 14,
+      "home_team": "Indianapolis Colts",
+      "home_abbr": "IND",
+      "home_score": 38,
+      "summary": "Jonathan Taylor had a historic day, scoring three touchdowns on just 12 carries for 153 rushing yards. He became the first player to score three times in three consecutive games against the same team, including an 80-yard run and a 19-yard receiving score. The Colts routed the Titans 38-14, improving to an NFL-best 7-1 and sweeping the season series.",
+      "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401772761"
+    },
+    {
+      "away_team": "Dallas Cowboys",
+      "away_abbr": "DAL",
+      "away_score": 24,
+      "home_team": "Denver Broncos",
+      "home_abbr": "DEN",
+      "home_score": 44,
+      "summary": "Rookie R.J. Harvey exploded for three touchdowns, while Bo Nix threw four scoring passes, including Pat Bryant's first NFL touchdown. J.K. Dobbins added 111 rushing yards on 15 carries as the Broncos dominated the Cowboys 44-24. Denver extended its NFL-best home winning streak to nine games, improving to 6-2 on the season.",
+      "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401772762"
+    },
+    {
+      "away_team": "Washington Commanders",
+      "away_abbr": "WAS",
+      "away_score": 7,
+      "home_team": "Kansas City Chiefs",
+      "home_abbr": "KC",
+      "home_score": 28,
+      "summary": "Patrick Mahomes rebounded from two early interceptions to throw for 299 yards and three touchdowns, with Kareem Hunt scoring twice. Mahomes connected with Travis Kelce for a record-tying 83rd career touchdown, solidifying the Chiefs' second-half surge. Kansas City pulled away from a halftime tie to defeat the Commanders 28-7, securing their ninth consecutive win over Washington and improving to 5-3.",
+      "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401772817"
+    },
+    {
+      "away_team": "Buffalo Bills",
+      "away_abbr": "BUF",
+      "away_score": 40,
+      "home_team": "Carolina Panthers",
+      "home_abbr": "CAR",
+      "home_score": 9,
+      "summary": "James Cook exploded for a career-high 216 rushing yards and two touchdowns, while Josh Allen accounted for three scores (one passing, two rushing). Allen set an NFL record with his 46th game featuring both a rushing and passing touchdown. The Bills dominated the Panthers 40-9, returning from their bye week with an impressive victory and improving to 8-0 post-bye under Allen.",
+      "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401772865"
+    },
+    {
+      "away_team": "San Francisco 49ers",
+      "away_abbr": "SF",
+      "away_score": 15,
+      "home_team": "Houston Texans",
+      "home_abbr": "HOU",
+      "home_score": 26,
+      "summary": "C.J. Stroud delivered a season-high 318 passing yards and two touchdowns, distributing the ball effectively to nine different receivers. Xavier Hutchinson contributed with a career-high 69 receiving yards and a score, including a 30-yard touchdown grab. The Texans secured a 26-15 victory over the 49ers, bouncing back to 3-4 and sealing the win with a late interception.",
+      "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401772866"
+    },
+    {
+      "away_team": "New York Giants",
+      "away_abbr": "NYG",
+      "away_score": 20,
+      "home_team": "Philadelphia Eagles",
+      "home_abbr": "PHI",
+      "home_score": 38,
+      "summary": "Saquon Barkley ignited the Eagles' offense with a 65-yard touchdown run on his first carry, finishing with 150 rushing yards and a receiving touchdown. Jalen Hurts added four scoring passes, contributing to the Eagles' dominant 277-yard rushing performance. Philadelphia defeated the Giants 38-20, evening the season series at 6-2 and showcasing their offense's return to form.",
+      "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401772867"
+    },
+    {
+      "away_team": "Cleveland Browns",
+      "away_abbr": "CLE",
+      "away_score": 13,
+      "home_team": "New England Patriots",
+      "home_abbr": "NE",
+      "home_score": 32,
+      "summary": "Drake Maye spearheaded the Patriots' comeback, throwing three second-half touchdown passes and finishing with 282 yards on 18 of 24 completions. Despite Myles Garrett's franchise-record five sacks for the Browns, New England's offense found its rhythm. The Patriots rolled to a 32-13 victory, marking their fifth consecutive win and pushing their record to 6-2.",
+      "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401772868"
+    },
+    {
+      "away_team": "Tampa Bay Buccaneers",
+      "away_abbr": "TB",
+      "away_score": 23,
+      "home_team": "New Orleans Saints",
+      "home_abbr": "NO",
+      "home_score": 3,
+      "summary": "Anthony Nelson delivered an incredible performance with an interception returned for a touchdown, a forced fumble, and two sacks. The Buccaneers' defense dominated, forcing four turnovers and holding the Saints to just three points. Tampa Bay routed New Orleans 23-3, improving to 6-2 while the Saints fell to a dismal 1-7 record.",
+      "recap_url": "https://www.espn.com/nfl/recap/_/gameId/401772869"
+    },
+    {
+      "away_team": "Green Bay Packers",
+      "away_abbr": "GB",
+      "away_score": 35,
+      "home_team": "Pittsburgh Steelers",
+      "home_abbr": "PIT",
+      "home_score": 25,
+      "summary": "Jordan Love shined, passing for 360 yards and three touchdowns, completing an impressive 29 of 35 attempts, including a franchise-record 20 consecutive completions. Tight end Tucker Kraft contributed with a career-high 143 receiving yards and

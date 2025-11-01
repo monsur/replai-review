@@ -189,12 +189,48 @@ class GeminiProvider(AIProvider):
         # Gemini combines system prompt and content in a single prompt
         full_prompt = f"{prompt}\n\n{content}"
 
+        import google.generativeai as genai
+
+        # Configure safety settings to be less restrictive
+        safety_settings = [
+            {
+                "category": "HARM_CATEGORY_HARASSMENT",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_HATE_SPEECH",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                "threshold": "BLOCK_NONE"
+            }
+        ]
+
         response = self.client.generate_content(
             full_prompt,
             generation_config={
                 'max_output_tokens': self.max_tokens,
-            }
+            },
+            safety_settings=safety_settings
         )
+
+        # Check if content was blocked
+        if not response.parts:
+            finish_reasons = {
+                0: "FINISH_REASON_UNSPECIFIED",
+                1: "STOP (completed normally)",
+                2: "MAX_TOKENS (hit token limit)",
+                3: "SAFETY (blocked by safety filters)",
+                4: "RECITATION (blocked for copyright)",
+                5: "OTHER"
+            }
+            reason = finish_reasons.get(response.candidates[0].finish_reason, "UNKNOWN")
+            raise ValueError(f"Gemini blocked response. Finish reason: {reason}. Try adjusting safety settings or using a different model.")
 
         return response.text
 
