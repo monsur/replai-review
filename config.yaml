@@ -24,24 +24,24 @@ ai:
 
   # Claude (Anthropic) Configuration
   claude:
-    api_key: "YOUR_CLAUDE_API_KEY_HERE"  # Or set ANTHROPIC_API_KEY env var
-    model: "claude-3-5-sonnet-20241022"
+    api_key: "YOUR_API_KEY_HERE"  # Or set ANTHROPIC_API_KEY env var
+    model: "claude-haiku-4-5-20251001"
     max_tokens: 4096
 
   # OpenAI Configuration
   openai:
-    api_key: "YOUR_OPENAI_API_KEY_HERE"  # Or set OPENAI_API_KEY env var
+    api_key: "YOUR_API_KEY_HERE"  # Or set OPENAI_API_KEY env var
     model: "gpt-4o"
     max_tokens: 4096
 
   # Google Gemini Configuration
   gemini:
-    api_key: "YOUR_GEMINI_API_KEY_HERE"  # Or set GOOGLE_API_KEY env var
-    model: "gemini-1.5-pro"
-    max_tokens: 4096
+    api_key: "YOUR_API_KEY_HERE"  # Or set GOOGLE_API_KEY env var
+    model: "gemini-2.5-flash"
+    max_tokens: 16384
 
 # Newsletter Branding
-newsletter_name: "NFL ReplAI"
+newsletter_name: "ReplAI Review"
 newsletter_tagline: "AI-Powered NFL Recaps"
 
 # Newsletter Generation Prompt
