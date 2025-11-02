@@ -62,6 +62,79 @@
             font-size: 1.1em;
         }
 
+        /* Subscribe Section */
+        .subscribe {
+            background: linear-gradient(135deg, #013369 0%, #024a9c 100%);
+            color: white;
+            padding: 40px 30px;
+            margin-bottom: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(1, 51, 105, 0.3);
+            text-align: center;
+        }
+
+        .subscribe h2 {
+            font-size: 2em;
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+
+        .subscribe p {
+            font-size: 1.1em;
+            margin-bottom: 24px;
+            opacity: 0.95;
+        }
+
+        .subscribe-form {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .subscribe-form input[type="email"] {
+            flex: 1;
+            min-width: 250px;
+            padding: 14px 18px;
+            border: 2px solid white;
+            border-radius: 8px;
+            font-size: 1em;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .subscribe-form input[type="email"]:focus {
+            border-color: #FFB612;
+            box-shadow: 0 0 0 3px rgba(255, 182, 18, 0.3);
+        }
+
+        .subscribe-form input[type="submit"] {
+            padding: 14px 32px;
+            background-color: #00B140;
+            color: white;
+            border: 2px solid #00B140;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .subscribe-form input[type="submit"]:hover {
+            background-color: #009935;
+            border-color: #009935;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 185, 64, 0.4);
+        }
+
+        .subscribe-note {
+            margin-top: 16px;
+            font-size: 0.9em;
+            opacity: 0.85;
+        }
+
         /* Newsletter Navigation */
         .newsletter-section {
             background-color: white;
@@ -251,6 +324,21 @@
                 font-size: 2em;
             }
 
+            .subscribe h2 {
+                font-size: 1.5em;
+            }
+
+            .subscribe-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .subscribe-form input[type="email"],
+            .subscribe-form input[type="submit"] {
+                width: 100%;
+                min-width: auto;
+            }
+
             .nav-controls {
                 flex-direction: column;
                 width: 100%;
@@ -317,6 +405,29 @@
                 <li>Team records and historical context</li>
                 <li>Direct links back to full ESPN recaps</li>
             </ul>
+        </div>
+
+        <div class="subscribe">
+            <h2>📬 Subscribe to ReplAI Review</h2>
+            <p>Get AI-powered NFL recaps delivered to your inbox every Tuesday</p>
+            <form
+                class="subscribe-form"
+                action="https://buttondown.email/api/emails/embed-subscribe/replai-review"
+                method="post"
+                target="popupwindow"
+                onsubmit="window.open('https://buttondown.email/replai-review', 'popupwindow')"
+            >
+                <input
+                    type="email"
+                    name="email"
+                    id="bd-email"
+                    placeholder="Enter your email address"
+                    required
+                    aria-label="Email address"
+                />
+                <input type="submit" value="Subscribe" />
+            </form>
+            <p class="subscribe-note">Free • Unsubscribe anytime • Powered by Buttondown</p>
         </div>
 
         <div class="newsletter-section">

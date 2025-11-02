@@ -461,6 +461,96 @@ Check the Actions tab to see workflow runs, logs, and any errors. If generation 
 - If you want to generate a specific week, you'll need to run the scripts locally with the `--week` flag
 - The workflow commits with a bot account, so commits will show as "github-actions[bot]"
 
+## Email Distribution (Optional)
+
+The project supports automatic email distribution via **Buttondown** - a simple, developer-friendly newsletter service.
+
+### Why Buttondown?
+
+- **Free for up to 100 subscribers**
+- Simple API (perfect for automation)
+- Handles subscriber management, unsubscribes, and spam compliance
+- Clean, minimal interface
+- Embeddable signup forms
+
+### Setup Email Distribution
+
+1. **Sign up for Buttondown**
+   - Go to [buttondown.email](https://buttondown.email)
+   - Create a free account
+   - Choose your newsletter name (e.g., "replai-review")
+
+2. **Get your API key**
+   - Go to Settings → API
+   - Copy your API key
+
+3. **Add API key to GitHub Secrets**
+   - Go to your repository Settings → Secrets and variables → Actions
+   - Click "New repository secret"
+   - Name: `BUTTONDOWN_API_KEY`
+   - Value: Your Buttondown API key
+
+4. **Configure GitHub Pages URL** (required for images in email)
+   - Make sure `github_pages_url` is set in your `config.yaml`:
+   ```yaml
+   github_pages_url: "https://[username].github.io/[repo-name]"
+   ```
+
+5. **Done!** The workflow will now automatically email your newsletter to subscribers when it's generated.
+
+### How Email Distribution Works
+
+When the GitHub Actions workflow runs:
+1. Generates the newsletter (as usual)
+2. If there's a new newsletter AND `BUTTONDOWN_API_KEY` is configured:
+   - Sends the newsletter to all Buttondown subscribers
+   - Uses the HTML file with absolute image URLs
+3. Subscribers receive the email automatically
+
+### Add Signup Form to Your Site
+
+Buttondown provides embeddable signup forms. Add this to your `docs/index.html` or create a separate signup page:
+
+```html
+<form
+  action="https://buttondown.email/api/emails/embed-subscribe/[your-username]"
+  method="post"
+  target="popupwindow"
+>
+  <label for="bd-email">Subscribe to ReplAI Review:</label>
+  <input type="email" name="email" id="bd-email" placeholder="Enter your email" required />
+  <input type="submit" value="Subscribe" />
+</form>
+```
+
+Replace `[your-username]` with your Buttondown username.
+
+### Managing Subscribers
+
+All subscriber management happens in Buttondown:
+- View subscribers
+- Manually add/remove subscribers
+- See email statistics (opens, clicks)
+- Manage unsubscribes automatically
+
+### Cost
+
+- **Free**: Up to 100 subscribers
+- **$9/month**: Up to 1,000 subscribers
+- **$29/month**: Up to 10,000 subscribers
+
+Perfect for starting out - upgrade only when you grow!
+
+### Testing Email Sending
+
+To test email distribution without waiting for Tuesday:
+1. Go to Actions tab
+2. Click "Generate Weekly NFL Newsletter"
+3. Click "Run workflow"
+4. The workflow will generate the latest newsletter and send it via email (if configured)
+
+**Note:** If a newsletter for the current week already exists, it won't send again (prevents duplicate emails).
+
 ## License
 
 This project is provided as-is for personal use.
