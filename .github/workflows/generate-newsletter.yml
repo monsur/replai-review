@@ -122,14 +122,22 @@ jobs:
           echo "=========================================="
 
           # Send newsletter via Buttondown API (JSON format)
-          # Read HTML file and escape it for JSON using jq
-          HTML_BODY=$(jq -Rs . < "$NEWSLETTER_FILE")
+          # Create JSON payload file (avoids "Argument list too long" error)
+          PAYLOAD_FILE=$(mktemp)
+          jq -n \
+            --arg subject "🏈 ReplAI Review - Week $WEEK" \
+            --rawfile body "$NEWSLETTER_FILE" \
+            --arg email_type "public" \
+            '{subject: $subject, body: $body, email_type: $email_type}' > "$PAYLOAD_FILE"
 
           RESPONSE=$(curl -s -w "\n%{http_code}" \
             https://api.buttondown.email/v1/emails \
             -H "Authorization: Token $BUTTONDOWN_API_KEY" \
             -H "Content-Type: application/json" \
-            -d "{\"subject\":\"🏈 ReplAI Review - Week $WEEK\",\"body\":$HTML_BODY,\"email_type\":\"public\"}")
+            -d @"$PAYLOAD_FILE")
+
+          # Clean up temp file
+          rm -f "$PAYLOAD_FILE"
 
           HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
           BODY=$(echo "$RESPONSE" | head -n-1)
