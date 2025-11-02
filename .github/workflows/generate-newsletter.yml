@@ -9,6 +9,9 @@ on:
   # Allow manual triggering from GitHub UI
   workflow_dispatch:
 
+permissions:
+  contents: write  # Allow the workflow to push commits
+
 jobs:
   generate:
     runs-on: ubuntu-latest
