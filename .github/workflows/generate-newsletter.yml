@@ -124,7 +124,7 @@ jobs:
           # Send newsletter via Buttondown API
           RESPONSE=$(curl -s -w "\n%{http_code}" \
             https://api.buttondown.email/v1/emails \
-            -u "$BUTTONDOWN_API_KEY:" \
+            -H "Authorization: Token $BUTTONDOWN_API_KEY" \
             -F "subject=🏈 ReplAI Review - Week $WEEK" \
             -F "body=<$NEWSLETTER_FILE" \
             -F "email_type=public")
