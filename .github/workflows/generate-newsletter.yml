@@ -101,10 +101,16 @@ jobs:
           git push
 
       - name: Send newsletter via Buttondown
-        if: steps.git-check.outputs.has_changes == 'true' && secrets.BUTTONDOWN_API_KEY != ''
+        if: steps.git-check.outputs.has_changes == 'true'
         env:
           BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
         run: |
+          # Check if API key is configured
+          if [ -z "$BUTTONDOWN_API_KEY" ]; then
+            echo "⏭️ Skipping email send (BUTTONDOWN_API_KEY not configured)"
+            exit 0
+          fi
+
           WEEK="${{ steps.week-info.outputs.week }}"
           YEAR="${{ steps.week-info.outputs.year }}"
           NEWSLETTER_FILE="docs/${YEAR}-week$(printf '%02d' $WEEK).html"
@@ -154,10 +160,8 @@ jobs:
 
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📧 Email" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ steps.git-check.outputs.has_changes }}" == "true" ] && [ -n "${{ secrets.BUTTONDOWN_API_KEY }}" ]; then
-            echo "✅ Newsletter sent via Buttondown" >> $GITHUB_STEP_SUMMARY
-          elif [ -z "${{ secrets.BUTTONDOWN_API_KEY }}" ]; then
-            echo "⏭️ Skipped (BUTTONDOWN_API_KEY not configured)" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.git-check.outputs.has_changes }}" == "true" ]; then
+            echo "✅ Newsletter sent via Buttondown (if configured)" >> $GITHUB_STEP_SUMMARY
           else
             echo "⏭️ Skipped (no new newsletter)" >> $GITHUB_STEP_SUMMARY
           fi
