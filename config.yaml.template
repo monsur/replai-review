@@ -1,0 +1,55 @@
+# NFL Newsletter Generator Configuration
+
+# NFL Season Configuration
+nfl_season:
+  year: 2025
+  # First game of the season (Thursday Night Football, Week 1)
+  season_start_date: "2025-09-04"
+
+# File Storage
+storage:
+  docs_dir: "docs"  # Public-facing files (newsletters, team logos) - GitHub Pages ready
+  tmp_dir: "tmp"  # Temporary processing files (recaps, combined.html, debug files)
+  recap_subdir: "recaps"  # Subdirectory within tmp/week_X for recap files
+  combined_filename: "combined.html"  # Combined recaps file in tmp/week_X/
+  # newsletter_filename is dynamically generated as: YYYY-weekWW.html and saved to docs/
+
+# ESPN Configuration
+espn:
+  scoreboard_url: "https://www.espn.com/nfl/scoreboard"
+
+# AI Provider Configuration
+# Set the active provider: "claude", "openai", or "gemini"
+ai:
+  active_provider: "claude"
+
+  # Claude (Anthropic) Configuration
+  claude:
+    api_key: "YOUR_CLAUDE_API_KEY_HERE"  # Or set ANTHROPIC_API_KEY env var
+    model: "claude-haiku-4-5-20251001"
+    max_tokens: 8192
+
+  # OpenAI Configuration
+  openai:
+    api_key: "YOUR_OPENAI_API_KEY_HERE"  # Or set OPENAI_API_KEY env var
+    model: "gpt-4o"
+    max_tokens: 4096
+
+  # Google Gemini Configuration
+  gemini:
+    api_key: "YOUR_GOOGLE_API_KEY_HERE"  # Or set GOOGLE_API_KEY env var
+    model: "gemini-2.5-flash"
+    max_tokens: 16384
+
+# Newsletter Branding
+newsletter_name: "ReplAI Review"
+newsletter_tagline: "AI-Powered NFL Recaps"
+
+# Newsletter Generation Prompt
+# Path to the prompt file (relative to this config file)
+newsletter_prompt_file: "newsletter_prompt.txt"
+
+# GitHub Pages URL (for email version with absolute image URLs)
+# Format: https://username.github.io/repo-name
+# Leave empty if not using GitHub Pages
+github_pages_url: ""
