@@ -41,22 +41,22 @@ class ClaudeProvider(AIProvider):
     Uses the Anthropic API to generate newsletter content.
     """
 
-    def __init__(self, api_key: str, model: str, max_tokens: int):
+    def __init__(self, model: str, max_tokens: int):
         """
         Initialize Claude provider.
 
         Args:
-            api_key: Anthropic API key
             model: Model name (e.g., "claude-3-5-sonnet-20241022")
             max_tokens: Maximum tokens to generate
         """
-        self.api_key = api_key or os.environ.get('ANTHROPIC_API_KEY')
+        self.api_key = os.environ.get('ANTHROPIC_API_KEY')
         self.model = model
         self.max_tokens = max_tokens
 
         if not self.api_key:
             raise ValueError(
-                "Claude API key not found. Set it in config.yaml or ANTHROPIC_API_KEY env var"
+                "Claude API key not found. Please set the ANTHROPIC_API_KEY environment variable.\n"
+                "Example: export ANTHROPIC_API_KEY='your-key-here'"
             )
 
         try:
@@ -93,22 +93,22 @@ class OpenAIProvider(AIProvider):
     Uses the OpenAI API to generate newsletter content.
     """
 
-    def __init__(self, api_key: str, model: str, max_tokens: int):
+    def __init__(self, model: str, max_tokens: int):
         """
         Initialize OpenAI provider.
 
         Args:
-            api_key: OpenAI API key
             model: Model name (e.g., "gpt-4o")
             max_tokens: Maximum tokens to generate
         """
-        self.api_key = api_key or os.environ.get('OPENAI_API_KEY')
+        self.api_key = os.environ.get('OPENAI_API_KEY')
         self.model = model
         self.max_tokens = max_tokens
 
         if not self.api_key:
             raise ValueError(
-                "OpenAI API key not found. Set it in config.yaml or OPENAI_API_KEY env var"
+                "OpenAI API key not found. Please set the OPENAI_API_KEY environment variable.\n"
+                "Example: export OPENAI_API_KEY='your-key-here'"
             )
 
         try:
@@ -155,22 +155,22 @@ class GeminiProvider(AIProvider):
     Uses the Google Gemini API to generate newsletter content.
     """
 
-    def __init__(self, api_key: str, model: str, max_tokens: int):
+    def __init__(self, model: str, max_tokens: int):
         """
         Initialize Gemini provider.
 
         Args:
-            api_key: Google API key
             model: Model name (e.g., "gemini-1.5-pro")
             max_tokens: Maximum tokens to generate
         """
-        self.api_key = api_key or os.environ.get('GOOGLE_API_KEY')
+        self.api_key = os.environ.get('GOOGLE_API_KEY')
         self.model = model
         self.max_tokens = max_tokens
 
         if not self.api_key:
             raise ValueError(
-                "Gemini API key not found. Set it in config.yaml or GOOGLE_API_KEY env var"
+                "Gemini API key not found. Please set the GOOGLE_API_KEY environment variable.\n"
+                "Example: export GOOGLE_API_KEY='your-key-here'"
             )
 
         try:
@@ -253,19 +253,16 @@ def create_ai_provider(provider_name: str, config: dict) -> AIProvider:
 
     if provider_name == "claude":
         return ClaudeProvider(
-            api_key=config.get('api_key'),
             model=config['model'],
             max_tokens=config['max_tokens']
         )
     elif provider_name == "openai":
         return OpenAIProvider(
-            api_key=config.get('api_key'),
             model=config['model'],
             max_tokens=config['max_tokens']
         )
     elif provider_name == "gemini":
         return GeminiProvider(
-            api_key=config.get('api_key'),
             model=config['model'],
             max_tokens=config['max_tokens']
         )

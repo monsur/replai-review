@@ -1,7 +1,5 @@
-# API keys (never commit real keys!)
-# config.yaml contains real API keys and should NOT be committed
-# Use config.yaml.template for version control (committed with placeholder keys)
-config.yaml
+# Environment variables (never commit real API keys!)
+.env
 
 .DS_Store
 __pycache__/

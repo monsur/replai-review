@@ -16,6 +16,11 @@ jobs:
   generate:
     runs-on: ubuntu-latest
 
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -37,22 +42,6 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-
-      - name: Create config.yaml with API keys
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-        run: |
-          # Copy template and inject API keys from secrets
-          cp config.yaml.template config.yaml
-
-          # Replace placeholder API keys with actual secrets
-          sed -i "s/YOUR_CLAUDE_API_KEY_HERE/$ANTHROPIC_API_KEY/" config.yaml
-          sed -i "s/YOUR_OPENAI_API_KEY_HERE/$OPENAI_API_KEY/" config.yaml
-          sed -i "s/YOUR_GOOGLE_API_KEY_HERE/$GOOGLE_API_KEY/" config.yaml
-
-          echo "✅ Config file created with API keys from secrets"
 
       - name: Generate newsletter
         run: |

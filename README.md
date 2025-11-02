@@ -49,27 +49,40 @@ football/
    - OpenAI: `pip install openai`
    - Gemini: `pip install google-generativeai`
 
-3. **Configure the application**:
+3. **Set up API keys**:
 
-   First, create your config file from the template:
+   API keys must be set as environment variables. Create a `.env` file from the template:
    ```bash
-   cp config.yaml.template config.yaml
+   cp .env.template .env
    ```
 
-   Then edit `config.yaml` and update:
+   Edit `.env` and add your API keys, then source it:
+   ```bash
+   source .env
+   ```
+
+   Or set environment variables directly:
+   ```bash
+   export ANTHROPIC_API_KEY="your-anthropic-key-here"
+   export OPENAI_API_KEY="your-openai-key-here"
+   export GOOGLE_API_KEY="your-google-key-here"
+   ```
+
+   You only need to set the API key for the provider you're using.
+
+   **Where to get API keys**:
+   - Claude: [console.anthropic.com](https://console.anthropic.com/)
+   - OpenAI: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+   - Gemini: [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+
+4. **Configure the application**:
+
+   Edit `config.yaml` to update:
    - `nfl_season.year`: Current NFL season year
    - `nfl_season.season_start_date`: First game date of the season
    - `ai.active_provider`: Your preferred AI provider (`claude`, `openai`, or `gemini`)
-   - `ai.[provider].api_key`: Your API key (or set as environment variable)
 
-   **API Key Options**:
-   - Set in `config.yaml` (e.g., `api_key: "your-key-here"`)
-   - Or use environment variables:
-     - Claude: `export ANTHROPIC_API_KEY="your-key"`
-     - OpenAI: `export OPENAI_API_KEY="your-key"`
-     - Gemini: `export GOOGLE_API_KEY="your-key"`
-
-   **Note**: `config.yaml` is gitignored to protect your API keys. Never commit this file with real keys!
+   **Note**: API keys are NOT stored in `config.yaml` - they must be set as environment variables for security.
 
 ## Usage
 
@@ -256,18 +269,20 @@ storage:
 ai:
   active_provider: "claude"  # claude, openai, or gemini
 
+  # API keys must be set via environment variables:
+  # - ANTHROPIC_API_KEY for Claude
+  # - OPENAI_API_KEY for OpenAI
+  # - GOOGLE_API_KEY for Gemini
+
   claude:
-    api_key: "YOUR_CLAUDE_API_KEY_HERE"
     model: "claude-3-5-sonnet-20241022"
     max_tokens: 4096
 
   openai:
-    api_key: "YOUR_OPENAI_API_KEY_HERE"
     model: "gpt-4o"
     max_tokens: 4096
 
   gemini:
-    api_key: "YOUR_GEMINI_API_KEY_HERE"
     model: "gemini-1.5-pro"
     max_tokens: 4096
 ```
@@ -364,7 +379,7 @@ echo "Newsletter generated: docs/$(date +\%Y)-week$(date +\%U).html"
 
 ### API key errors
 - **Cause**: Missing or invalid API key
-- **Solution**: Set API key in `config.yaml` or as environment variable
+- **Solution**: Set the required environment variable (ANTHROPIC_API_KEY, OPENAI_API_KEY, or GOOGLE_API_KEY). Use `source .env` if you created a `.env` file.
 
 ### Import errors
 - **Cause**: Missing dependencies
@@ -421,7 +436,7 @@ The project includes a GitHub Actions workflow that automatically generates news
    - `OPENAI_API_KEY` - Your OpenAI API key (if using OpenAI)
    - `GOOGLE_API_KEY` - Your Google API key (if using Gemini)
 
-   You only need to add the secret for the AI provider configured in `config.yaml`.
+   You only need to add the secret for the AI provider configured in `config.yaml`. The workflow will automatically expose these secrets as environment variables for the Python scripts.
 
 3. **Enable GitHub Pages** (optional but recommended):
    - Go to Settings → Pages
@@ -570,6 +585,7 @@ Suggestions and improvements welcome! Key areas for enhancement:
 
 Check that:
 1. Dependencies are installed: `pip install -r requirements.txt`
-2. Config file is properly configured with API keys
-3. Season start date is correct for current NFL season
-4. You have an active internet connection for scraping ESPN
+2. API keys are set as environment variables (use `source .env` or `export` commands)
+3. Config file is properly configured with season settings
+4. Season start date is correct for current NFL season
+5. You have an active internet connection for scraping ESPN

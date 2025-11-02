@@ -24,20 +24,20 @@ ai:
   active_provider: "claude"
 
   # Claude (Anthropic) Configuration
+  # API key must be set via ANTHROPIC_API_KEY environment variable
   claude:
-    api_key: "YOUR_CLAUDE_API_KEY_HERE"  # Or set ANTHROPIC_API_KEY env var
     model: "claude-haiku-4-5-20251001"
     max_tokens: 8192
 
   # OpenAI Configuration
+  # API key must be set via OPENAI_API_KEY environment variable
   openai:
-    api_key: "YOUR_OPENAI_API_KEY_HERE"  # Or set OPENAI_API_KEY env var
     model: "gpt-4o"
     max_tokens: 4096
 
   # Google Gemini Configuration
+  # API key must be set via GOOGLE_API_KEY environment variable
   gemini:
-    api_key: "YOUR_GOOGLE_API_KEY_HERE"  # Or set GOOGLE_API_KEY env var
     model: "gemini-2.5-flash"
     max_tokens: 16384
 
