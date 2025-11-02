@@ -450,7 +450,7 @@ def main():
         handle_fatal_error(f"Failed to read JSON file: {json_file}", e)
 
     # Get GitHub Pages URL for absolute image paths (required for email)
-    github_pages_url = config.get('github_pages_url', '').rstrip('/')
+    github_pages_url = (config.github_pages_url or '').rstrip('/')
     if not github_pages_url:
         print("Warning: github_pages_url not configured in config.yaml")
         print("Images will use relative paths (won't work in email)")
@@ -488,7 +488,7 @@ def main():
         handle_fatal_error("Failed to render newsletter template", e)
 
     # Save to docs directory
-    docs_dir = Path(config['storage']['docs_dir'])
+    docs_dir = Path(config.storage.docs_dir)
     docs_dir.mkdir(parents=True, exist_ok=True)
 
     newsletter_filename = f"{year}-week{target_week:02d}.html"

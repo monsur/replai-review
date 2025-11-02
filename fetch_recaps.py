@@ -208,17 +208,17 @@ def main():
 
     # Create output directory
     recaps_dir = create_week_directory(
-        config['storage']['tmp_dir'],
+        config.storage.tmp_dir,
         target_week,
         year,
-        config['storage']['recap_subdir']
+        config.storage.recap_subdir
     )
 
     print(f"Output directory: {recaps_dir}")
 
     # Build scoreboard URL
     scoreboard_url = build_scoreboard_url(
-        config['espn']['scoreboard_url'],
+        config.espn.scoreboard_url,
         year,
         target_week
     )

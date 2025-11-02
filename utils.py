@@ -12,27 +12,37 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 import yaml
+from pydantic import ValidationError
 
 from week_calculator import WeekCalculator, create_week_calculator
+from models import Config
+from exceptions import ConfigurationException
 
 
-def load_config(config_path: str = "config.yaml") -> dict:
+def load_config(config_path: str = "config.yaml") -> Config:
     """
-    Load configuration from YAML file.
+    Load and validate configuration from YAML file.
 
     Args:
         config_path: Path to the configuration file
 
     Returns:
-        Dictionary containing configuration
+        Validated Config model instance
 
     Raises:
         FileNotFoundError: If config file doesn't exist
         yaml.YAMLError: If config file is invalid YAML
+        ConfigurationException: If config validation fails
     """
     try:
         with open(config_path, 'r') as f:
-            return yaml.safe_load(f)
+            config_dict = yaml.safe_load(f)
+
+        # Validate using Pydantic
+        config = Config.from_yaml_dict(config_dict)
+
+        return config
+
     except FileNotFoundError:
         handle_fatal_error(
             f"Configuration file not found: {config_path}",
@@ -43,44 +53,57 @@ def load_config(config_path: str = "config.yaml") -> dict:
             f"Invalid YAML in configuration file: {config_path}",
             e
         )
+    except ValidationError as e:
+        # Format validation errors nicely
+        error_messages = []
+        for error in e.errors():
+            field = ' -> '.join(str(x) for x in error['loc'])
+            message = error['msg']
+            error_messages.append(f"{field}: {message}")
+
+        formatted_errors = '\n  '.join(error_messages)
+        handle_fatal_error(
+            f"Invalid configuration in {config_path}:\n  {formatted_errors}",
+            ConfigurationException(f"Config validation failed: {formatted_errors}")
+        )
 
 
-def get_week_directory_path(config: dict, year: int, week: int) -> Path:
+def get_week_directory_path(config: Config, year: int, week: int) -> Path:
     """
     Get the path to a week's directory in the tmp folder.
 
     Args:
-        config: Configuration dictionary
+        config: Validated configuration model
         year: NFL season year
         week: NFL week number
 
     Returns:
         Path object pointing to the week directory (e.g., tmp/2025-week08)
     """
-    tmp_dir = config['storage']['tmp_dir']
+    tmp_dir = config.storage.tmp_dir
     return Path(tmp_dir) / f"{year}-week{week:02d}"
 
 
 def setup_week_calculator(
-    config: dict,
+    config: Config,
     manual_week: Optional[int] = None
 ) -> Tuple[int, int, WeekCalculator]:
     """
     Create week calculator and determine target week and year.
 
     Args:
-        config: Configuration dictionary
+        config: Validated configuration model
         manual_week: Optional manual week override
 
     Returns:
         Tuple of (week, year, week_calculator)
     """
     week_calculator = create_week_calculator(
-        season_start_date=config['nfl_season']['season_start_date'],
+        season_start_date=config.nfl_season.season_start_date,
         manual_week=manual_week
     )
     week = week_calculator.get_week()
-    year = config['nfl_season']['year']
+    year = config.nfl_season.year
     return week, year, week_calculator
 
 

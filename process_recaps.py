@@ -232,7 +232,7 @@ def main():
 
     # Locate recaps directory
     week_dir = get_week_directory_path(config, year, target_week)
-    recaps_dir = week_dir / config['storage']['recap_subdir']
+    recaps_dir = week_dir / config.storage.recap_subdir
 
     if not recaps_dir.exists():
         handle_fatal_error(
@@ -256,7 +256,7 @@ def main():
     combined_html = combine_recaps(processed_recaps)
 
     # Save combined file
-    output_file = week_dir / config['storage']['combined_filename']
+    output_file = week_dir / config.storage.combined_filename
 
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(combined_html)
