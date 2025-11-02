@@ -14,17 +14,17 @@
     },
     {
       "year": 2025,
-      "week": 8,
-      "filename": "2025-week08.html",
-      "date": "2025-11-01",
-      "games": 13
-    },
-    {
-      "year": 2025,
       "week": 7,
       "filename": "2025-week07.html",
       "date": "2025-10-20",
       "games": 15
+    },
+    {
+      "year": 2025,
+      "week": 8,
+      "filename": "2025-week08.html",
+      "date": "2025-11-01",
+      "games": 13
     }
   ]
 }
