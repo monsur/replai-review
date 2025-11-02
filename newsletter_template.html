@@ -1,205 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReplAI Review - Week {{ week }}</title>
-    <!--[if mso]>
-    <style type="text/css">
-        table { border-collapse: collapse; }
-        .game-card { width: 600px !important; }
-    </style>
-    <![endif]-->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReplAI Review - Week {{ week }}</title>
+  <!--[if mso]><style>table{border-collapse:collapse;}.game-card{width:600px!important;}</style><![endif]-->
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f8f9fa; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
-    <!-- Wrapper table for email clients -->
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f8f9fa;">
-        <tr>
-            <td align="center" style="padding: 20px 10px;">
-
-                <!-- Main container -->
-                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; width: 100%;">
-
-                    <!-- Header -->
-                    <tr>
-                        <td style="background: linear-gradient(135deg, #013369 0%, #024a9c 100%); background-color: #013369; padding: 40px 24px; border-radius: 12px; text-align: center;">
-                            <h1 style="margin: 0 0 8px 0; font-size: 36px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">🏈 ReplAI Review</h1>
-                            <p style="margin: 0 0 8px 0; font-size: 18px; color: #ffffff; opacity: 0.95;">Week {{ week }} - 2025 NFL Season</p>
-                            <p style="margin: 16px 0 0 0; font-size: 14px; color: #ffffff; opacity: 0.85;">
-                                🎮 {{ game_count }} Games &nbsp;&nbsp;|&nbsp;&nbsp; ⭐ {{ upset_count }} Upsets
-                            </p>
-                        </td>
-                    </tr>
-
-                    <!-- Spacer -->
-                    <tr>
-                        <td height="32"></td>
-                    </tr>
-
-                    <!-- Games -->
-                    {% for game in games %}
-                    <tr>
-                        <td style="padding-bottom: 24px;">
-                            <!-- Game card -->
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" class="game-card" style="background-color: #ffffff; border-radius: 12px; overflow: hidden;">
-
-                                <!-- Badges (if any) -->
-                                {% if game.badges %}
-                                <tr>
-                                    <td style="padding: 16px 24px 0 24px;">
-                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
-                                            <tr>
-                                                {% for badge in game.badges %}
-                                                <td style="padding: 0 8px 8px 0;">
-                                                    <span style="display: inline-block; padding: 4px 12px; border-radius: 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; {% if badge.css_class == 'badge-nailbiter' %}background-color: #FFF3CD; color: #856404;{% elif badge.css_class == 'badge-comeback' %}background-color: #FFE5E5; color: #D50A0A;{% elif badge.css_class == 'badge-blowout' %}background-color: #E8F4F8; color: #0066CC;{% elif badge.css_class == 'badge-upset' %}background-color: #F3E5F5; color: #7B1FA2;{% elif badge.css_class == 'badge-game-of-week' %}background-color: #FFB612; color: #000000;{% endif %}">{{ badge.label }}</span>
-                                                </td>
-                                                {% endfor %}
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                {% endif %}
-
-                                <!-- Game metadata -->
-                                {% if game.meta %}
-                                <tr>
-                                    <td style="padding: 16px 24px 8px 24px; font-size: 13px; color: #6c757d;">
-                                        {% for meta_item in game.meta %}{{ meta_item }}{% if not loop.last %} &nbsp;•&nbsp; {% endif %}{% endfor %}
-                                    </td>
-                                </tr>
-                                {% endif %}
-
-                                <!-- Matchup -->
-                                <tr>
-                                    <td style="padding: 16px 24px;">
-                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-                                            <tr>
-                                                <!-- Away team -->
-                                                <td width="40%" align="center" valign="middle" style="padding: 8px;">
-                                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
-                                                        <tr>
-                                                            <td align="center">
-                                                                <img src="{{ game.away_icon }}" alt="{{ game.away_team }}" style="display: block; margin-bottom: 8px;">
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center" style="font-size: 16px; font-weight: 700; {% if game.away_class == 'winner' %}color: #00B140;{% else %}color: #999999;{% endif %}">
-                                                                {{ game.away_team }}
-                                                            </td>
-                                                        </tr>
-                                                        {% if game.away_record %}
-                                                        <tr>
-                                                            <td align="center" style="font-size: 12px; color: #6c757d; padding-top: 2px;">
-                                                                ({{ game.away_record }})
-                                                            </td>
-                                                        </tr>
-                                                        {% endif %}
-                                                        <tr>
-                                                            <td align="center" style="font-size: 32px; font-weight: 800; padding-top: 8px; {% if game.away_class == 'winner' %}color: #00B140;{% else %}color: #999999;{% endif %}">
-                                                                {{ game.away_score }}
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-
-                                                <!-- VS divider -->
-                                                <td width="20%" align="center" valign="middle">
-                                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
-                                                        <tr>
-                                                            <td align="center" style="font-size: 14px; font-weight: 600; color: #6c757d;">@</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td height="8"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center" style="border-top: 2px solid #e9ecef; height: 0; line-height: 0; font-size: 0;" width="40">&nbsp;</td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-
-                                                <!-- Home team -->
-                                                <td width="40%" align="center" valign="middle" style="padding: 8px;">
-                                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
-                                                        <tr>
-                                                            <td align="center">
-                                                                <img src="{{ game.home_icon }}" alt="{{ game.home_team }}" style="display: block; margin-bottom: 8px;">
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center" style="font-size: 16px; font-weight: 700; {% if game.home_class == 'winner' %}color: #00B140;{% else %}color: #999999;{% endif %}">
-                                                                {{ game.home_team }}
-                                                            </td>
-                                                        </tr>
-                                                        {% if game.home_record %}
-                                                        <tr>
-                                                            <td align="center" style="font-size: 12px; color: #6c757d; padding-top: 2px;">
-                                                                ({{ game.home_record }})
-                                                            </td>
-                                                        </tr>
-                                                        {% endif %}
-                                                        <tr>
-                                                            <td align="center" style="font-size: 32px; font-weight: 800; padding-top: 8px; {% if game.home_class == 'winner' %}color: #00B140;{% else %}color: #999999;{% endif %}">
-                                                                {{ game.home_score }}
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-
-                                <!-- Divider -->
-                                <tr>
-                                    <td style="padding: 0 24px;">
-                                        <div style="border-top: 3px solid #e9ecef; height: 0; line-height: 0; font-size: 0;">&nbsp;</div>
-                                    </td>
-                                </tr>
-
-                                <!-- Summary -->
-                                <tr>
-                                    <td style="padding: 20px 24px; font-size: 15px; line-height: 1.6; color: #1a1a1a;">
-                                        {{ game.summary | safe }}
-                                    </td>
-                                </tr>
-
-                                <!-- Footer / CTA -->
-                                <tr>
-                                    <td style="padding: 0 24px 20px 24px; border-top: 1px solid #e9ecef;">
-                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
-                                            <tr>
-                                                <td style="padding-top: 20px;">
-                                                    <!--[if mso]>
-                                                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ game.recap_url }}" style="height:40px;v-text-anchor:middle;width:150px;" arcsize="15%" stroke="f" fillcolor="#013369">
-                                                        <w:anchorlock/>
-                                                        <center style="color:#ffffff;font-family:sans-serif;font-size:14px;font-weight:bold;">Read Full Recap →</center>
-                                                    </v:roundrect>
-                                                    <![endif]-->
-                                                    <!--[if !mso]><!-->
-                                                    <a href="{{ game.recap_url }}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #013369; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">Read Full Recap →</a>
-                                                    <!--<![endif]-->
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-
-                            </table>
-                        </td>
-                    </tr>
-                    {% endfor %}
-
-                    <!-- Footer -->
-                    <tr>
-                        <td style="padding: 20px; text-align: center; font-size: 12px; color: #6c757d;">
-                            <p style="margin: 0 0 8px 0;">🤖 Generated with AI by ReplAI Review</p>
-                            <p style="margin: 0;">Week {{ week }} • 2025 NFL Season</p>
-                        </td>
-                    </tr>
-
-                </table>
+<body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background-color:#f8f9fa;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f8f9fa;">
+    <tr>
+      <td align="center" style="padding:20px 10px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;width:100%;">
+          <tr>
+            <td style="background:linear-gradient(135deg,#013369 0%,#024a9c 100%);background-color:#013369;padding:40px 24px;border-radius:12px;text-align:center;">
+              <h1 style="margin:0 0 8px 0;font-size:36px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">🏈 ReplAI Review</h1>
+              <p style="margin:0 0 8px 0;font-size:18px;color:#ffffff;opacity:0.95;">Week {{ week }} - 2025 NFL Season</p>
+              <p style="margin:16px 0 0 0;font-size:14px;color:#ffffff;opacity:0.85;">🎮 {{ game_count }} Games &nbsp;&nbsp;|&nbsp;&nbsp; ⭐ {{ upset_count }} Upsets</p>
             </td>
-        </tr>
-    </table>
+          </tr>
+          <tr><td height="32"></td></tr>
+          {% for game in games %}
+          <tr>
+            <td style="padding-bottom:24px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" class="game-card" style="background-color:#ffffff;border-radius:12px;overflow:hidden;">
+                {% if game.badges %}
+                <tr>
+                  <td style="padding:16px 24px 0 24px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        {% for badge in game.badges %}
+                        <td style="padding:0 8px 8px 0;">
+                          <span style="display:inline-block;padding:4px 12px;border-radius:16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;{% if badge.css_class == 'badge-nailbiter' %}background-color:#FFF3CD;color:#856404;{% elif badge.css_class == 'badge-comeback' %}background-color:#FFE5E5;color:#D50A0A;{% elif badge.css_class == 'badge-blowout' %}background-color:#E8F4F8;color:#0066CC;{% elif badge.css_class == 'badge-upset' %}background-color:#F3E5F5;color:#7B1FA2;{% elif badge.css_class == 'badge-game-of-week' %}background-color:#FFB612;color:#000000;{% endif %}">{{ badge.label }}</span>
+                        </td>
+                        {% endfor %}
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                {% endif %}
+                {% if game.meta %}
+                <tr>
+                  <td style="padding:16px 24px 8px 24px;font-size:13px;color:#6c757d;">
+                    {% for meta_item in game.meta %}{{ meta_item }}{% if not loop.last %} &nbsp;•&nbsp; {% endif %}{% endfor %}
+                  </td>
+                </tr>
+                {% endif %}
+
+                <tr>
+                  <td style="padding:16px 24px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td width="40%" align="center" valign="middle" style="padding:8px;">
+                          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto;">
+                            <tr><td align="center"><img src="{{ game.away_icon }}" alt="{{ game.away_team }}" style="display:block;margin-bottom:8px;"></td></tr>
+                            <tr><td align="center" style="font-size:16px;font-weight:700;{% if game.away_class == 'winner' %}color:#00B140;{% else %}color:#999999;{% endif %}">{{ game.away_team }}</td></tr>
+                            {% if game.away_record %}<tr><td align="center" style="font-size:12px;color:#6c757d;padding-top:2px;">({{ game.away_record }})</td></tr>{% endif %}
+                            <tr><td align="center" style="font-size:32px;font-weight:800;padding-top:8px;{% if game.away_class == 'winner' %}color:#00B140;{% else %}color:#999999;{% endif %}">{{ game.away_score }}</td></tr>
+                          </table>
+                        </td>
+                        <td width="20%" align="center" valign="middle">
+                          <div style="font-size:14px;font-weight:600;color:#6c757d;margin-bottom:8px;">@</div>
+                          <div style="border-top:2px solid #e9ecef;width:40px;"></div>
+                        </td>
+                        <td width="40%" align="center" valign="middle" style="padding:8px;">
+                          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto;">
+                            <tr><td align="center"><img src="{{ game.home_icon }}" alt="{{ game.home_team }}" style="display:block;margin-bottom:8px;"></td></tr>
+                            <tr><td align="center" style="font-size:16px;font-weight:700;{% if game.home_class == 'winner' %}color:#00B140;{% else %}color:#999999;{% endif %}">{{ game.home_team }}</td></tr>
+                            {% if game.home_record %}<tr><td align="center" style="font-size:12px;color:#6c757d;padding-top:2px;">({{ game.home_record }})</td></tr>{% endif %}
+                            <tr><td align="center" style="font-size:32px;font-weight:800;padding-top:8px;{% if game.home_class == 'winner' %}color:#00B140;{% else %}color:#999999;{% endif %}">{{ game.home_score }}</td></tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr><td style="padding:0 24px;"><div style="border-top:3px solid #e9ecef;"></div></td></tr>
+                <tr><td style="padding:20px 24px;font-size:15px;line-height:1.6;color:#1a1a1a;">{{ game.summary | safe }}</td></tr>
+                <tr>
+                  <td style="padding:0 24px 20px 24px;border-top:1px solid #e9ecef;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td style="padding-top:20px;">
+                          <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ game.recap_url }}" style="height:40px;v-text-anchor:middle;width:150px;" arcsize="15%" stroke="f" fillcolor="#013369"><w:anchorlock/><center style="color:#ffffff;font-family:sans-serif;font-size:14px;font-weight:bold;">Read Full Recap →</center></v:roundrect><![endif]-->
+                          <!--[if !mso]><!--><a href="{{ game.recap_url }}" target="_blank" style="display:inline-block;padding:10px 20px;background-color:#013369;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;font-size:14px;">Read Full Recap →</a><!--<![endif]-->
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td style="padding:20px;text-align:center;font-size:12px;color:#6c757d;">
+              <p style="margin:0 0 8px 0;">🤖 Generated with AI by ReplAI Review</p>
+              <p style="margin:0;">Week {{ week }} • 2025 NFL Season</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
