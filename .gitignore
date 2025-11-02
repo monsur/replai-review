@@ -1,5 +1,6 @@
-# API keys (if accidentally committed)
-# Note: Keep config.yaml in git but don't commit with real API keys
+# API keys (never commit real keys!)
+# config.yaml contains real API keys and should NOT be committed
+# Use config.yaml.template for version control (committed with placeholder keys)
 config.yaml
 
 .DS_Store

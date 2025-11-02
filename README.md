@@ -51,7 +51,12 @@ football/
 
 3. **Configure the application**:
 
-   Edit `config.yaml` and update:
+   First, create your config file from the template:
+   ```bash
+   cp config.yaml.template config.yaml
+   ```
+
+   Then edit `config.yaml` and update:
    - `nfl_season.year`: Current NFL season year
    - `nfl_season.season_start_date`: First game date of the season
    - `ai.active_provider`: Your preferred AI provider (`claude`, `openai`, or `gemini`)
@@ -63,6 +68,8 @@ football/
      - Claude: `export ANTHROPIC_API_KEY="your-key"`
      - OpenAI: `export OPENAI_API_KEY="your-key"`
      - Gemini: `export GOOGLE_API_KEY="your-key"`
+
+   **Note**: `config.yaml` is gitignored to protect your API keys. Never commit this file with real keys!
 
 ## Usage
 
@@ -400,6 +407,59 @@ mv docs/2025-week08.html docs/2025-week08-openai.html
 
 python generate_newsletter.py --week 8 --provider gemini
 ```
+
+## GitHub Actions Automation
+
+The project includes a GitHub Actions workflow that automatically generates newsletters weekly.
+
+### Setup
+
+1. **Push your repository to GitHub**
+
+2. **Configure GitHub Secrets** - Go to your repository Settings → Secrets and variables → Actions, and add these secrets:
+   - `ANTHROPIC_API_KEY` - Your Claude API key (if using Claude)
+   - `OPENAI_API_KEY` - Your OpenAI API key (if using OpenAI)
+   - `GOOGLE_API_KEY` - Your Google API key (if using Gemini)
+
+   You only need to add the secret for the AI provider configured in `config.yaml`.
+
+3. **Enable GitHub Pages** (optional but recommended):
+   - Go to Settings → Pages
+   - Source: Deploy from a branch
+   - Branch: `main` / `docs`
+   - Your newsletters will be available at: `https://[username].github.io/[repo-name]/`
+
+### How It Works
+
+The workflow (`.github/workflows/generate-newsletter.yml`) runs:
+- **Scheduled**: Every Tuesday at 4:00 AM Central Time (10:00 AM UTC)
+- **Manual**: Can be triggered manually from the Actions tab in GitHub
+
+When triggered, it will:
+1. Fetch game recaps from ESPN
+2. Process and combine recaps
+3. Generate newsletter JSON using AI
+4. Format HTML newsletter
+5. Commit the generated files to the repository
+6. Push changes back to GitHub
+
+### Manual Trigger
+
+To generate a newsletter manually:
+1. Go to the "Actions" tab in your GitHub repository
+2. Select "Generate Weekly NFL Newsletter"
+3. Click "Run workflow"
+4. The workflow will process the last complete week
+
+### Viewing Logs
+
+Check the Actions tab to see workflow runs, logs, and any errors. If generation fails, debug files will be uploaded as artifacts.
+
+### Notes
+
+- The workflow uses the date-based week calculator, so it automatically generates newsletters for the most recently completed week
+- If you want to generate a specific week, you'll need to run the scripts locally with the `--week` flag
+- The workflow commits with a bot account, so commits will show as "github-actions[bot]"
 
 ## License
 
