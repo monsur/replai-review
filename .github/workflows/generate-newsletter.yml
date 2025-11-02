@@ -121,13 +121,15 @@ jobs:
           echo "File: $NEWSLETTER_FILE"
           echo "=========================================="
 
-          # Send newsletter via Buttondown API
+          # Send newsletter via Buttondown API (JSON format)
+          # Read HTML file and escape it for JSON using jq
+          HTML_BODY=$(jq -Rs . < "$NEWSLETTER_FILE")
+
           RESPONSE=$(curl -s -w "\n%{http_code}" \
             https://api.buttondown.email/v1/emails \
             -H "Authorization: Token $BUTTONDOWN_API_KEY" \
-            -F "subject=🏈 ReplAI Review - Week $WEEK" \
-            -F "body=<$NEWSLETTER_FILE" \
-            -F "email_type=public")
+            -H "Content-Type: application/json" \
+            -d "{\"subject\":\"🏈 ReplAI Review - Week $WEEK\",\"body\":$HTML_BODY,\"email_type\":\"public\"}")
 
           HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
           BODY=$(echo "$RESPONSE" | head -n-1)
