@@ -13,16 +13,15 @@ import argparse
 import sys
 from pathlib import Path
 
-import yaml
-
 from ai_providers import create_ai_provider
-from week_calculator import create_week_calculator
-
-
-def load_config(config_path: str = "config.yaml") -> dict:
-    """Load configuration from YAML file."""
-    with open(config_path, 'r') as f:
-        return yaml.safe_load(f)
+from utils import (
+    load_config,
+    get_week_directory_path,
+    setup_week_calculator,
+    create_base_parser,
+    handle_fatal_error,
+    handle_recoverable_error
+)
 
 
 def load_prompt(prompt_file: str) -> str:
@@ -106,19 +105,8 @@ GAME RECAPS:
 
 def main():
     """Main execution function."""
-    parser = argparse.ArgumentParser(
-        description='Generate NFL newsletter JSON using AI'
-    )
-    parser.add_argument(
-        '--week',
-        type=int,
-        help='Specific week number to process (overrides auto-calculation)'
-    )
-    parser.add_argument(
-        '--config',
-        default='config.yaml',
-        help='Path to configuration file (default: config.yaml)'
-    )
+    parser = create_base_parser('Generate NFL newsletter JSON using AI')
+    # Add provider-specific argument
     parser.add_argument(
         '--provider',
         choices=['claude', 'openai', 'gemini'],
@@ -128,24 +116,15 @@ def main():
     args = parser.parse_args()
 
     # Load configuration
-    try:
-        config = load_config(args.config)
-    except FileNotFoundError:
-        print(f"Error: Configuration file '{args.config}' not found")
-        sys.exit(1)
+    config = load_config(args.config)
 
     # Determine target week
-    week_calculator = create_week_calculator(
-        season_start_date=config['nfl_season']['season_start_date'],
-        manual_week=args.week
-    )
-    target_week = week_calculator.get_week()
+    target_week, year, _ = setup_week_calculator(config, args.week)
 
     print(f"Generating JSON for week: {target_week}")
 
     # Locate combined recaps file in tmp directory
-    year = config['nfl_season']['year']
-    tmp_week_dir = Path(config['storage']['tmp_dir']) / f"{year}-week{target_week:02d}"
+    tmp_week_dir = get_week_directory_path(config, year, target_week)
     combined_file = tmp_week_dir / config['storage']['combined_filename']
 
     print(f"Input file: {combined_file}")
@@ -154,8 +133,7 @@ def main():
     try:
         recap_content = read_combined_recaps(combined_file)
     except FileNotFoundError as e:
-        print(f"Error: {e}")
-        sys.exit(1)
+        handle_fatal_error(f"Combined recaps file not found: {combined_file}", e)
 
     # Determine AI provider
     provider_name = args.provider or config['ai']['active_provider']
@@ -167,16 +145,14 @@ def main():
     try:
         ai_provider = create_ai_provider(provider_name, provider_config)
     except (ValueError, ImportError) as e:
-        print(f"Error initializing AI provider: {e}")
-        sys.exit(1)
+        handle_fatal_error(f"Failed to initialize AI provider '{provider_name}'", e)
 
     # Load prompt from file
     prompt_file = config.get('newsletter_prompt_file', 'newsletter_prompt.txt')
     try:
         prompt = load_prompt(prompt_file)
-    except FileNotFoundError:
-        print(f"Error: Prompt file '{prompt_file}' not found")
-        sys.exit(1)
+    except FileNotFoundError as e:
+        handle_fatal_error(f"Prompt file not found: {prompt_file}", e)
 
     # Generate JSON
     try:
@@ -188,11 +164,8 @@ def main():
             tmp_week_dir
         )
     except Exception as e:
-        print(f"Error generating JSON: {e}")
-
         # Try to save partial output to debug file if it exists
         try:
-            # Check if there's any response to save
             if hasattr(e, 'response') and e.response:
                 tmp_week_dir.mkdir(parents=True, exist_ok=True)
                 debug_file = tmp_week_dir / "newsletter_debug.json"
@@ -202,7 +175,7 @@ def main():
         except:
             pass  # If debug save fails, just continue with error
 
-        sys.exit(1)
+        handle_fatal_error("Failed to generate newsletter JSON", e)
 
     # Summary
     print(f"\n{'='*60}")

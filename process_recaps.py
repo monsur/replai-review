@@ -15,16 +15,16 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
-import yaml
 from bs4 import BeautifulSoup
 
-from week_calculator import create_week_calculator
-
-
-def load_config(config_path: str = "config.yaml") -> dict:
-    """Load configuration from YAML file."""
-    with open(config_path, 'r') as f:
-        return yaml.safe_load(f)
+from utils import (
+    load_config,
+    get_week_directory_path,
+    setup_week_calculator,
+    create_base_parser,
+    handle_fatal_error,
+    handle_recoverable_error
+)
 
 
 def extract_game_info(soup: BeautifulSoup) -> Tuple[str, str]:
@@ -162,7 +162,7 @@ def process_all_recaps(recaps_dir: Path) -> List[Tuple[str, str]]:
             print(f"    ✓ Cleaned successfully")
 
         except Exception as e:
-            print(f"    ✗ Error processing {recap_file.name}: {e}")
+            handle_recoverable_error(f"Error processing {recap_file.name}", e)
 
     return processed_recaps
 
@@ -219,47 +219,26 @@ def combine_recaps(processed_recaps: List[Tuple[str, str]]) -> str:
 
 def main():
     """Main execution function."""
-    parser = argparse.ArgumentParser(
-        description='Process NFL game recap HTML files and combine them'
-    )
-    parser.add_argument(
-        '--week',
-        type=int,
-        help='Specific week number to process (overrides auto-calculation)'
-    )
-    parser.add_argument(
-        '--config',
-        default='config.yaml',
-        help='Path to configuration file (default: config.yaml)'
-    )
-
+    parser = create_base_parser('Process NFL game recap HTML files and combine them')
     args = parser.parse_args()
 
     # Load configuration
-    try:
-        config = load_config(args.config)
-    except FileNotFoundError:
-        print(f"Error: Configuration file '{args.config}' not found")
-        sys.exit(1)
+    config = load_config(args.config)
 
     # Determine target week
-    week_calculator = create_week_calculator(
-        season_start_date=config['nfl_season']['season_start_date'],
-        manual_week=args.week
-    )
-    target_week = week_calculator.get_week()
+    target_week, year, _ = setup_week_calculator(config, args.week)
 
     print(f"Processing week: {target_week}")
 
     # Locate recaps directory
-    year = config['nfl_season']['year']
-    week_dir = Path(config['storage']['tmp_dir']) / f"{year}-week{target_week:02d}"
+    week_dir = get_week_directory_path(config, year, target_week)
     recaps_dir = week_dir / config['storage']['recap_subdir']
 
     if not recaps_dir.exists():
-        print(f"Error: Recaps directory not found: {recaps_dir}")
-        print("Have you run fetch_recaps.py first?")
-        sys.exit(1)
+        handle_fatal_error(
+            f"Recaps directory not found: {recaps_dir}",
+            FileNotFoundError("Have you run fetch_recaps.py first?")
+        )
 
     print(f"Input directory: {recaps_dir}")
 
@@ -267,8 +246,10 @@ def main():
     processed_recaps = process_all_recaps(recaps_dir)
 
     if not processed_recaps:
-        print("Error: No recaps were successfully processed")
-        sys.exit(1)
+        handle_fatal_error(
+            "No recaps were successfully processed",
+            ValueError("All recap processing attempts failed")
+        )
 
     # Combine recaps
     print("\nCombining recaps...")

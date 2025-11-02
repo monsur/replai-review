@@ -19,16 +19,16 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from week_calculator import create_week_calculator
-
-
-def load_config(config_path: str = "config.yaml") -> dict:
-    """Load configuration from YAML file."""
-    with open(config_path, 'r') as f:
-        return yaml.safe_load(f)
+from utils import (
+    load_config,
+    get_week_directory_path,
+    setup_week_calculator,
+    create_base_parser,
+    handle_fatal_error,
+    handle_recoverable_error
+)
 
 
 def parse_game_datetime(game_date: str) -> datetime:
@@ -409,19 +409,8 @@ def update_archive_json(docs_dir: Path, year: int, week: int,
 
 def main():
     """Main execution function."""
-    parser = argparse.ArgumentParser(
-        description='Format NFL newsletter from JSON to HTML'
-    )
-    parser.add_argument(
-        '--week',
-        type=int,
-        help='Specific week number to process (overrides auto-calculation)'
-    )
-    parser.add_argument(
-        '--config',
-        default='config.yaml',
-        help='Path to configuration file (default: config.yaml)'
-    )
+    parser = create_base_parser('Format NFL newsletter from JSON to HTML')
+    # Add format-specific argument
     parser.add_argument(
         '--json-file',
         help='Path to JSON file (overrides automatic path resolution)'
@@ -430,24 +419,15 @@ def main():
     args = parser.parse_args()
 
     # Load configuration
-    try:
-        config = load_config(args.config)
-    except FileNotFoundError:
-        print(f"Error: Configuration file '{args.config}' not found")
-        sys.exit(1)
+    config = load_config(args.config)
 
     # Determine target week
-    week_calculator = create_week_calculator(
-        season_start_date=config['nfl_season']['season_start_date'],
-        manual_week=args.week
-    )
-    target_week = week_calculator.get_week()
+    target_week, year, _ = setup_week_calculator(config, args.week)
 
     print(f"Formatting newsletter for week: {target_week}")
 
     # Determine JSON file path
-    year = config['nfl_season']['year']
-    tmp_week_dir = Path(config['storage']['tmp_dir']) / f"{year}-week{target_week:02d}"
+    tmp_week_dir = get_week_directory_path(config, year, target_week)
 
     if args.json_file:
         json_file = Path(args.json_file)
@@ -458,16 +438,16 @@ def main():
 
     # Read JSON file
     if not json_file.exists():
-        print(f"Error: JSON file not found: {json_file}")
-        print(f"Have you run generate_json.py first?")
-        sys.exit(1)
+        handle_fatal_error(
+            f"JSON file not found: {json_file}",
+            FileNotFoundError("Have you run generate_json.py first?")
+        )
 
     try:
         with open(json_file, 'r', encoding='utf-8') as f:
             json_content = f.read()
     except Exception as e:
-        print(f"Error reading JSON file: {e}")
-        sys.exit(1)
+        handle_fatal_error(f"Failed to read JSON file: {json_file}", e)
 
     # Get GitHub Pages URL for absolute image paths (required for email)
     github_pages_url = config.get('github_pages_url', '').rstrip('/')
@@ -479,10 +459,6 @@ def main():
     try:
         template_data, game_count = parse_json(json_content, base_url=github_pages_url)
     except json.JSONDecodeError as e:
-        print(f"Error parsing JSON: {e}")
-        print(f"JSON file: {json_file}")
-        print(f"Error at line {e.lineno}, column {e.colno}")
-
         # Save debug file to tmp directory
         tmp_week_dir.mkdir(parents=True, exist_ok=True)
         debug_file = tmp_week_dir / "newsletter_debug.json"
@@ -490,10 +466,11 @@ def main():
             f.write(json_content)
         print(f"Raw JSON saved to {debug_file} for debugging")
 
-        sys.exit(1)
+        handle_fatal_error(
+            f"Invalid JSON format at line {e.lineno}, column {e.colno}",
+            e
+        )
     except Exception as e:
-        print(f"Error parsing newsletter data: {e}")
-
         # Save debug file to tmp directory
         tmp_week_dir.mkdir(parents=True, exist_ok=True)
         debug_file = tmp_week_dir / "newsletter_debug.json"
@@ -501,19 +478,14 @@ def main():
             f.write(json_content)
         print(f"Raw JSON saved to {debug_file} for debugging")
 
-        import traceback
-        traceback.print_exc()
-        sys.exit(1)
+        handle_fatal_error("Failed to parse newsletter data", e)
 
     # Render newsletter using template (email-friendly, works for both web and email)
     try:
         newsletter_html = render_newsletter(template_data, "newsletter_template.html")
         print("Newsletter rendered successfully")
     except Exception as e:
-        print(f"Error rendering newsletter: {e}")
-        import traceback
-        traceback.print_exc()
-        sys.exit(1)
+        handle_fatal_error("Failed to render newsletter template", e)
 
     # Save to docs directory
     docs_dir = Path(config['storage']['docs_dir'])
