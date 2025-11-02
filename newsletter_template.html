@@ -4,499 +4,202 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReplAI Review - Week {{ week }}</title>
-    <style>
-        /* CSS Variables for Theme */
-        :root {
-            --nfl-navy: #013369;
-            --nfl-red: #D50A0A;
-            --nfl-green: #00B140;
-            --background: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-primary: #1a1a1a;
-            --text-secondary: #6c757d;
-            --border-light: #e9ecef;
-            --accent-gold: #FFB612;
-            --winner-color: #00B140;
-            --loser-color: #999;
-        }
-
-        /* Dark Mode */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --background: #1a1a1a;
-                --card-bg: #2d2d2d;
-                --text-primary: #e0e0e0;
-                --text-secondary: #a0a0a0;
-                --border-light: #404040;
-                --nfl-navy: #4A90E2;
-            }
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 32px 24px;
-            background-color: var(--background);
-            color: var(--text-primary);
-            line-height: 1.7;
-        }
-
-        /* Enhanced Header */
-        .newsletter-header {
-            text-align: center;
-            margin-bottom: 48px;
-            padding-bottom: 32px;
-            border-bottom: 4px solid var(--nfl-navy);
-            background: linear-gradient(135deg, var(--nfl-navy) 0%, #024a9c 100%);
-            color: white;
-            padding: 40px 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(1, 51, 105, 0.2);
-        }
-
-        .newsletter-title {
-            font-size: 3em;
-            font-weight: 800;
-            margin-bottom: 8px;
-            letter-spacing: -0.02em;
-        }
-
-        .newsletter-subtitle {
-            font-size: 1.2em;
-            opacity: 0.95;
-            font-weight: 400;
-            margin-bottom: 8px;
-        }
-
-        .newsletter-meta {
-            font-size: 0.95em;
-            opacity: 0.85;
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
-
-        .newsletter-meta span {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* Game Cards */
-        .games-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 32px;
-        }
-
-        .game {
-            background-color: var(--card-bg);
-            padding: 32px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .game:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-        }
-
-        /* Game Badges */
-        .game-badges {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 0.75em;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .badge-nailbiter {
-            background-color: #FFF3CD;
-            color: #856404;
-        }
-
-        .badge-comeback {
-            background-color: #FFE5E5;
-            color: #D50A0A;
-        }
-
-        .badge-blowout {
-            background-color: #E8F4F8;
-            color: #0066CC;
-        }
-
-        .badge-upset {
-            background-color: #F3E5F5;
-            color: #7B1FA2;
-        }
-
-        .badge-game-of-week {
-            background-color: var(--accent-gold);
-            color: #000;
-        }
-
-        /* Game Header */
-        .game-header {
-            margin-bottom: 24px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid var(--border-light);
-        }
-
-        .game-meta {
-            font-size: 0.85em;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .game-meta span {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* Matchup Display */
-        .matchup {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 16px;
-        }
-
-        .team-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            max-width: 200px;
-        }
-
-        .team-section.winner .team-name {
-            color: var(--winner-color);
-            font-weight: 800;
-        }
-
-        .team-section.winner .score {
-            color: var(--winner-color);
-        }
-
-        .team-section.loser .team-name {
-            color: var(--loser-color);
-            font-weight: 600;
-        }
-
-        .team-section.loser .score {
-            color: var(--loser-color);
-        }
-
-        .team-logo-container {
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .team-icon {
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-        }
-
-        .team-info {
-            text-align: center;
-        }
-
-        .team-name {
-            font-weight: 700;
-            font-size: 1.1em;
-            transition: color 0.3s ease;
-        }
-
-        .team-record {
-            font-size: 0.8em;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
-
-        .score {
-            font-size: 2.5em;
-            font-weight: 800;
-            font-variant-numeric: tabular-nums;
-            line-height: 1;
-        }
-
-        .vs-divider {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-        }
-
-        .at-symbol {
-            font-size: 0.9em;
-            font-weight: 600;
-        }
-
-        .score-divider {
-            width: 40px;
-            height: 2px;
-            background-color: var(--border-light);
-        }
-
-        /* Summary */
-        .summary {
-            font-size: 1em;
-            line-height: 1.7;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-        }
-
-        .summary strong {
-            color: var(--nfl-navy);
-            font-weight: 700;
-        }
-
-        /* Footer Actions */
-        .game-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-light);
-        }
-
-        .recap-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background-color: var(--nfl-navy);
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9em;
-            transition: all 0.3s ease;
-        }
-
-        .recap-link:hover {
-            background-color: #024a9c;
-            transform: translateX(2px);
-        }
-
-        .recap-link:focus {
-            outline: 3px solid var(--accent-gold);
-            outline-offset: 2px;
-        }
-
-        .recap-link::after {
-            content: "→";
-            font-size: 1.2em;
-        }
-
-        /* Responsive Design */
-        @media (min-width: 1024px) {
-            .games-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 640px) {
-            body {
-                padding: 16px;
-            }
-
-            .newsletter-title {
-                font-size: 2em;
-            }
-
-            .newsletter-subtitle {
-                font-size: 1em;
-            }
-
-            .game {
-                padding: 20px;
-            }
-
-            .matchup {
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .score {
-                font-size: 2em;
-            }
-
-            .team-name {
-                font-size: 1em;
-            }
-
-            .vs-divider {
-                flex-direction: row;
-            }
-
-            .score-divider {
-                width: 2px;
-                height: 40px;
-            }
-
-            .game-footer {
-                flex-direction: column;
-                gap: 12px;
-                align-items: stretch;
-            }
-
-            .recap-link {
-                justify-content: center;
-            }
-        }
-
-        /* Print Styles */
-        @media print {
-            body {
-                background-color: white;
-                color: black;
-            }
-
-            .game {
-                break-inside: avoid;
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
-
-            .recap-link {
-                background-color: white;
-                color: black;
-                border: 1px solid black;
-            }
-        }
-
-        /* Focus Styles for Accessibility */
-        *:focus {
-            outline: 3px solid var(--accent-gold);
-            outline-offset: 2px;
-        }
-
-        /* Loading Animation */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .game {
-            animation: fadeIn 0.5s ease-out;
-        }
+    <!--[if mso]>
+    <style type="text/css">
+        table { border-collapse: collapse; }
+        .game-card { width: 600px !important; }
     </style>
+    <![endif]-->
 </head>
-<body>
-    <header class="newsletter-header">
-        <h1 class="newsletter-title">🏈 ReplAI Review</h1>
-        <div class="newsletter-subtitle">Week {{ week }} - 2025 NFL Season</div>
-        <div class="newsletter-meta">
-            <span>🎮 {{ game_count }} Games</span>
-            <span>⭐ {{ upset_count }} Upsets</span>
-        </div>
-    </header>
+<body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f8f9fa; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+    <!-- Wrapper table for email clients -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f8f9fa;">
+        <tr>
+            <td align="center" style="padding: 20px 10px;">
 
-    <main class="games-container">
-        {% for game in games %}
-        <article class="game">
-            {% if game.badges %}
-            <div class="game-badges">
-                {% for badge in game.badges %}
-                <span class="badge {{ badge.css_class }}">{{ badge.label }}</span>
-                {% endfor %}
-            </div>
-            {% endif %}
+                <!-- Main container -->
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; width: 100%;">
 
-            <div class="game-header">
-                {% if game.meta %}
-                <div class="game-meta">
-                    {% for meta in game.meta %}
-                    <span>{{ meta }}</span>
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #013369 0%, #024a9c 100%); background-color: #013369; padding: 40px 24px; border-radius: 12px; text-align: center;">
+                            <h1 style="margin: 0 0 8px 0; font-size: 36px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">🏈 ReplAI Review</h1>
+                            <p style="margin: 0 0 8px 0; font-size: 18px; color: #ffffff; opacity: 0.95;">Week {{ week }} - 2025 NFL Season</p>
+                            <p style="margin: 16px 0 0 0; font-size: 14px; color: #ffffff; opacity: 0.85;">
+                                🎮 {{ game_count }} Games &nbsp;&nbsp;|&nbsp;&nbsp; ⭐ {{ upset_count }} Upsets
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Spacer -->
+                    <tr>
+                        <td height="32"></td>
+                    </tr>
+
+                    <!-- Games -->
+                    {% for game in games %}
+                    <tr>
+                        <td style="padding-bottom: 24px;">
+                            <!-- Game card -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" class="game-card" style="background-color: #ffffff; border-radius: 12px; overflow: hidden;">
+
+                                <!-- Badges (if any) -->
+                                {% if game.badges %}
+                                <tr>
+                                    <td style="padding: 16px 24px 0 24px;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                            <tr>
+                                                {% for badge in game.badges %}
+                                                <td style="padding: 0 8px 8px 0;">
+                                                    <span style="display: inline-block; padding: 4px 12px; border-radius: 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; {% if badge.css_class == 'badge-nailbiter' %}background-color: #FFF3CD; color: #856404;{% elif badge.css_class == 'badge-comeback' %}background-color: #FFE5E5; color: #D50A0A;{% elif badge.css_class == 'badge-blowout' %}background-color: #E8F4F8; color: #0066CC;{% elif badge.css_class == 'badge-upset' %}background-color: #F3E5F5; color: #7B1FA2;{% elif badge.css_class == 'badge-game-of-week' %}background-color: #FFB612; color: #000000;{% endif %}">{{ badge.label }}</span>
+                                                </td>
+                                                {% endfor %}
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                {% endif %}
+
+                                <!-- Game metadata -->
+                                {% if game.meta %}
+                                <tr>
+                                    <td style="padding: 16px 24px 8px 24px; font-size: 13px; color: #6c757d;">
+                                        {% for meta_item in game.meta %}{{ meta_item }}{% if not loop.last %} &nbsp;•&nbsp; {% endif %}{% endfor %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+
+                                <!-- Matchup -->
+                                <tr>
+                                    <td style="padding: 16px 24px;">
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                            <tr>
+                                                <!-- Away team -->
+                                                <td width="40%" align="center" valign="middle" style="padding: 8px;">
+                                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
+                                                        <tr>
+                                                            <td align="center">
+                                                                <img src="{{ game.away_icon }}" alt="{{ game.away_team }}" style="display: block; margin-bottom: 8px;">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" style="font-size: 16px; font-weight: 700; {% if game.away_class == 'winner' %}color: #00B140;{% else %}color: #999999;{% endif %}">
+                                                                {{ game.away_team }}
+                                                            </td>
+                                                        </tr>
+                                                        {% if game.away_record %}
+                                                        <tr>
+                                                            <td align="center" style="font-size: 12px; color: #6c757d; padding-top: 2px;">
+                                                                ({{ game.away_record }})
+                                                            </td>
+                                                        </tr>
+                                                        {% endif %}
+                                                        <tr>
+                                                            <td align="center" style="font-size: 32px; font-weight: 800; padding-top: 8px; {% if game.away_class == 'winner' %}color: #00B140;{% else %}color: #999999;{% endif %}">
+                                                                {{ game.away_score }}
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+
+                                                <!-- VS divider -->
+                                                <td width="20%" align="center" valign="middle">
+                                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
+                                                        <tr>
+                                                            <td align="center" style="font-size: 14px; font-weight: 600; color: #6c757d;">@</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td height="8"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" style="border-top: 2px solid #e9ecef; height: 0; line-height: 0; font-size: 0;" width="40">&nbsp;</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+
+                                                <!-- Home team -->
+                                                <td width="40%" align="center" valign="middle" style="padding: 8px;">
+                                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
+                                                        <tr>
+                                                            <td align="center">
+                                                                <img src="{{ game.home_icon }}" alt="{{ game.home_team }}" style="display: block; margin-bottom: 8px;">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" style="font-size: 16px; font-weight: 700; {% if game.home_class == 'winner' %}color: #00B140;{% else %}color: #999999;{% endif %}">
+                                                                {{ game.home_team }}
+                                                            </td>
+                                                        </tr>
+                                                        {% if game.home_record %}
+                                                        <tr>
+                                                            <td align="center" style="font-size: 12px; color: #6c757d; padding-top: 2px;">
+                                                                ({{ game.home_record }})
+                                                            </td>
+                                                        </tr>
+                                                        {% endif %}
+                                                        <tr>
+                                                            <td align="center" style="font-size: 32px; font-weight: 800; padding-top: 8px; {% if game.home_class == 'winner' %}color: #00B140;{% else %}color: #999999;{% endif %}">
+                                                                {{ game.home_score }}
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <!-- Divider -->
+                                <tr>
+                                    <td style="padding: 0 24px;">
+                                        <div style="border-top: 3px solid #e9ecef; height: 0; line-height: 0; font-size: 0;">&nbsp;</div>
+                                    </td>
+                                </tr>
+
+                                <!-- Summary -->
+                                <tr>
+                                    <td style="padding: 20px 24px; font-size: 15px; line-height: 1.6; color: #1a1a1a;">
+                                        {{ game.summary | safe }}
+                                    </td>
+                                </tr>
+
+                                <!-- Footer / CTA -->
+                                <tr>
+                                    <td style="padding: 0 24px 20px 24px; border-top: 1px solid #e9ecef;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                            <tr>
+                                                <td style="padding-top: 20px;">
+                                                    <!--[if mso]>
+                                                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ game.recap_url }}" style="height:40px;v-text-anchor:middle;width:150px;" arcsize="15%" stroke="f" fillcolor="#013369">
+                                                        <w:anchorlock/>
+                                                        <center style="color:#ffffff;font-family:sans-serif;font-size:14px;font-weight:bold;">Read Full Recap →</center>
+                                                    </v:roundrect>
+                                                    <![endif]-->
+                                                    <!--[if !mso]><!-->
+                                                    <a href="{{ game.recap_url }}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #013369; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">Read Full Recap →</a>
+                                                    <!--<![endif]-->
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
                     {% endfor %}
-                </div>
-                {% endif %}
 
-                <div class="matchup">
-                    <div class="team-section {{ game.away_class }}">
-                        <div class="team-logo-container">
-                            <img src="{{ game.away_icon }}" alt="{{ game.away_team }}" class="team-icon">
-                        </div>
-                        <div class="team-info">
-                            <div class="team-name">{{ game.away_team }}</div>
-                            {% if game.away_record %}
-                            <div class="team-record">({{ game.away_record }})</div>
-                            {% endif %}
-                        </div>
-                        <div class="score">{{ game.away_score }}</div>
-                    </div>
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 20px; text-align: center; font-size: 12px; color: #6c757d;">
+                            <p style="margin: 0 0 8px 0;">🤖 Generated with AI by ReplAI Review</p>
+                            <p style="margin: 0;">Week {{ week }} • 2025 NFL Season</p>
+                        </td>
+                    </tr>
 
-                    <div class="vs-divider">
-                        <span class="at-symbol">@</span>
-                        <div class="score-divider"></div>
-                    </div>
-
-                    <div class="team-section {{ game.home_class }}">
-                        <div class="team-logo-container">
-                            <img src="{{ game.home_icon }}" alt="{{ game.home_team }}" class="team-icon">
-                        </div>
-                        <div class="team-info">
-                            <div class="team-name">{{ game.home_team }}</div>
-                            {% if game.home_record %}
-                            <div class="team-record">({{ game.home_record }})</div>
-                            {% endif %}
-                        </div>
-                        <div class="score">{{ game.home_score }}</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary">
-                {{ game.summary | safe }}
-            </div>
-
-            <div class="game-footer">
-                <a href="{{ game.recap_url }}" class="recap-link" target="_blank" rel="noopener noreferrer">
-                    Read Full Recap
-                </a>
-            </div>
-        </article>
-        {% endfor %}
-    </main>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

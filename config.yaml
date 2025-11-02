@@ -48,3 +48,8 @@ newsletter_tagline: "AI-Powered NFL Recaps"
 # Newsletter Generation Prompt
 # Path to the prompt file (relative to this config file)
 newsletter_prompt_file: "newsletter_prompt.txt"
+
+# GitHub Pages URL (for email version with absolute image URLs)
+# Format: https://username.github.io/repo-name
+# Leave empty if not using GitHub Pages
+github_pages_url: "https://monsur.github.io/replai-review"

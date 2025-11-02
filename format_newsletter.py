@@ -137,19 +137,25 @@ def sort_games_chronologically(games: list) -> list:
     return sorted(games, key=get_sort_key)
 
 
-def prepare_game_for_template(game: dict) -> dict:
+def prepare_game_for_template(game: dict, base_url: str = "") -> dict:
     """
     Prepare a single game's data for template rendering.
 
     Args:
         game: Dictionary with game data from JSON
+        base_url: Optional base URL for absolute image paths (for email)
 
     Returns:
         Dictionary with template-ready data
     """
     # Use consistent pattern: images/{TEAM_ABB}.png
-    away_icon = f"images/{game['away_abbr']}.png"
-    home_icon = f"images/{game['home_abbr']}.png"
+    # For email, prepend base_url to make absolute URLs
+    if base_url:
+        away_icon = f"{base_url}/images/{game['away_abbr']}.png"
+        home_icon = f"{base_url}/images/{game['home_abbr']}.png"
+    else:
+        away_icon = f"images/{game['away_abbr']}.png"
+        home_icon = f"images/{game['home_abbr']}.png"
 
     # Determine winner and loser
     away_score = int(game['away_score'])
@@ -205,12 +211,13 @@ def prepare_game_for_template(game: dict) -> dict:
     }
 
 
-def parse_json(json_content: str) -> tuple[dict, int]:
+def parse_json(json_content: str, base_url: str = "") -> tuple[dict, int]:
     """
     Parse JSON and prepare data for template rendering.
 
     Args:
         json_content: Raw JSON string
+        base_url: Optional base URL for absolute image paths (for email)
 
     Returns:
         Tuple of (template data dict, game count)
@@ -244,7 +251,7 @@ def parse_json(json_content: str) -> tuple[dict, int]:
     print("Games sorted chronologically")
 
     # Prepare games for template
-    prepared_games = [prepare_game_for_template(game) for game in games]
+    prepared_games = [prepare_game_for_template(game, base_url) for game in games]
 
     # Calculate stats
     game_count = len(games)
@@ -462,9 +469,15 @@ def main():
         print(f"Error reading JSON file: {e}")
         sys.exit(1)
 
-    # Parse JSON and prepare template data
+    # Get GitHub Pages URL for absolute image paths (required for email)
+    github_pages_url = config.get('github_pages_url', '').rstrip('/')
+    if not github_pages_url:
+        print("Warning: github_pages_url not configured in config.yaml")
+        print("Images will use relative paths (won't work in email)")
+
+    # Parse JSON and prepare template data with absolute URLs
     try:
-        template_data, game_count = parse_json(json_content)
+        template_data, game_count = parse_json(json_content, base_url=github_pages_url)
     except json.JSONDecodeError as e:
         print(f"Error parsing JSON: {e}")
         print(f"JSON file: {json_file}")
@@ -492,9 +505,10 @@ def main():
         traceback.print_exc()
         sys.exit(1)
 
-    # Render newsletter using template
+    # Render newsletter using template (email-friendly, works for both web and email)
     try:
-        complete_html = render_newsletter(template_data)
+        newsletter_html = render_newsletter(template_data, "newsletter_template.html")
+        print("Newsletter rendered successfully")
     except Exception as e:
         print(f"Error rendering newsletter: {e}")
         import traceback
@@ -509,7 +523,9 @@ def main():
     output_file = docs_dir / newsletter_filename
 
     with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(complete_html)
+        f.write(newsletter_html)
+
+    print(f"Newsletter saved: {output_file}")
 
     # Update index.html to point to latest newsletter
     update_index_html(docs_dir, newsletter_filename, year, target_week)
@@ -524,6 +540,10 @@ def main():
     print(f"  Games: {game_count}")
     print(f"  Newsletter file: {output_file}")
     print(f"  File size: {output_file.stat().st_size:,} bytes")
+    if github_pages_url:
+        print(f"  Image URLs: Absolute ({github_pages_url}/images/...)")
+    else:
+        print(f"  Image URLs: Relative (images/...)")
     print(f"{'='*60}")
     print(f"\nNewsletter formatted successfully!")
     print(f"Open in browser: file://{output_file.absolute()}")
