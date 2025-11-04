@@ -43,7 +43,7 @@ These abbreviations map to team icon files using the pattern: images/{TEAM_ABB}.
 For example: CHI → images/CHI.png, NYJ → images/NYJ.png
 
 GAME METADATA:
-- game_date: Extract or infer the game date and time in format "Day MM/DD H:MMAM/PM ET" (e.g., "Sun 10/26 1:00PM ET", "Thu 10/23 8:15PM ET")
+- game_date: EXTRACT the actual game date from the recap page title or content. Look for dates in the page title like "Ravens 28-6 Dolphins (Oct 30, 2025)". Convert to format "Day MM/DD H:MMAM/PM ET" where Day is the day of week (Thu, Fri, Sun, Mon). Common game times: Thursday 8:15PM ET, Sunday 1:00PM ET / 4:05PM ET / 4:25PM ET / 8:20PM ET, Monday 8:15PM ET. IMPORTANT: Thursday and Monday games have different dates than Sunday games - extract the actual date from the recap.
 - stadium: Extract the stadium name from the recap
 - tv_network: Extract the TV network (CBS, FOX, NBC, ESPN, Prime Video, etc.)
 - away_record: Extract or infer the team's record at the time of the game (e.g., "4-4")

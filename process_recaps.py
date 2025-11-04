@@ -40,30 +40,32 @@ def extract_game_info(soup: BeautifulSoup) -> Tuple[str, str]:
     game_header = ""
     article_content = ""
 
-    # Extract game header/score information
-    # ESPN typically has this in elements like:
-    # - div with class "Gamestrip" or "ScoreCell"
-    # - h1 with game matchup information
+    # Extract game header from title tag (includes date information)
+    # ESPN format: "Team1 XX-YY Team2 (Date, Year) Game Recap - ESPN"
+    # Example: "Ravens 28-6 Dolphins (Oct 30, 2025) Game Recap - ESPN"
+    title = soup.find('title')
+    if title:
+        title_text = title.get_text(strip=True)
+        # Remove " Game Recap - ESPN" suffix
+        if " Game Recap" in title_text:
+            game_header = title_text.split(" Game Recap")[0]
+        else:
+            game_header = title_text
 
-    # Try to find the game header
-    header_candidates = [
-        soup.find('h1'),  # Main heading
-        soup.find('div', class_='Gamestrip'),
-        soup.find('div', class_='ScoreCell'),
-        soup.find('header', class_='GameInfo')
-    ]
-
-    for candidate in header_candidates:
-        if candidate:
-            game_header = candidate.get_text(strip=True)
-            if game_header:
-                break
-
-    # If we still don't have a header, try to construct from title
+    # If we still don't have a header, try other elements
     if not game_header:
-        title = soup.find('title')
-        if title:
-            game_header = title.get_text(strip=True)
+        header_candidates = [
+            soup.find('h1'),  # Main heading
+            soup.find('div', class_='Gamestrip'),
+            soup.find('div', class_='ScoreCell'),
+            soup.find('header', class_='GameInfo')
+        ]
+
+        for candidate in header_candidates:
+            if candidate:
+                game_header = candidate.get_text(strip=True)
+                if game_header:
+                    break
 
     # Extract the main article content
     # ESPN typically uses:
