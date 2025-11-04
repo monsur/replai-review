@@ -100,52 +100,29 @@ def extract_recap_links(soup: BeautifulSoup) -> List[Tuple[str, str]]:
     Returns:
         List of tuples: (game_id, recap_url)
     """
+    import re
+
+    game_ids = set()
+
+    # ESPN's scoreboard contains game IDs in various places in the HTML
+    # We'll extract all game IDs and construct recap URLs from them
+    # Pattern: gameId followed by = or / and then digits
+
+    # Search the entire page text for game IDs
+    page_text = str(soup)
+    game_id_pattern = r'gameId[=/](\d+)'
+
+    for match in re.finditer(game_id_pattern, page_text):
+        game_id = match.group(1)
+        game_ids.add(game_id)
+
+    # Convert to list of (game_id, recap_url) tuples
     recap_links = []
+    for game_id in sorted(game_ids):  # Sort for consistent ordering
+        recap_url = f"https://www.espn.com/nfl/recap?gameId={game_id}"
+        recap_links.append((game_id, recap_url))
 
-    # Look for recap links - ESPN typically has them in the game cards
-    # The structure is: <a href="/nfl/recap/_/gameId/401671716">Recap</a>
-    # or variations of this pattern
-
-    # Find all links containing "recap" in the href
-    links = soup.find_all('a', href=True)
-
-    for link in links:
-        href = link.get('href', '')
-
-        # Check if this is a recap link
-        # ESPN uses formats like:
-        # - https://www.espn.com/nfl/recap?gameId=401671817
-        # - /nfl/recap/_/gameId/401671716
-        if 'recap' in href and 'gameId' in href:
-            # Extract game ID from URL
-            # Handle both query parameter (?gameId=XXX) and path (/gameId/XXX) formats
-            if 'gameId=' in href:
-                # Query parameter format: ?gameId=401671817
-                game_id = href.split('gameId=')[-1].split('&')[0].split('#')[0]
-            elif 'gameId/' in href:
-                # Path format: /gameId/401671716
-                game_id = href.split('gameId/')[-1].split('/')[0]
-            else:
-                # Fallback
-                game_id = f"game_{len(recap_links) + 1}"
-
-            # Make absolute URL if needed
-            if href.startswith('http'):
-                full_url = href
-            else:
-                full_url = f"https://www.espn.com{href}"
-
-            recap_links.append((game_id, full_url))
-
-    # Remove duplicates (same game ID)
-    seen = set()
-    unique_links = []
-    for game_id, url in recap_links:
-        if game_id not in seen:
-            seen.add(game_id)
-            unique_links.append((game_id, url))
-
-    return unique_links
+    return recap_links
 
 
 def download_recap(game_id: str, url: str, output_dir: Path) -> bool:
