@@ -3,10 +3,11 @@
 Script 3a: Generate Newsletter JSON
 
 This script:
-1. Reads the combined recap file from tmp/YYYY-weekWW/combined.html
-2. Sends it to the configured AI provider with a prompt
-3. Receives back a JSON response with game data
-4. Saves the JSON to tmp/YYYY-weekWW/newsletter.json
+1. Reads game data from tmp/YYYY-weekWW/game_data.json (from fetch_game_data.py)
+2. Sends game metadata + recap text to AI provider
+3. AI generates summaries and badges for each game
+4. Merges AI output with API metadata
+5. Saves the JSON to tmp/YYYY-weekWW/newsletter.json
 """
 
 import argparse
@@ -108,30 +109,33 @@ def extract_json_from_response(raw_response: str) -> str:
     return content
 
 
-def read_combined_recaps(combined_file: Path) -> str:
+def read_game_data(game_data_file: Path) -> dict:
     """
-    Read the combined recaps file.
+    Read the game data file (from fetch_game_data.py).
 
     Args:
-        combined_file: Path to the combined recaps file
+        game_data_file: Path to the game_data.json file
 
     Returns:
-        Content of the file as a string
+        Game data dictionary with 'games' list
+
+    Raises:
+        FileNotFoundError: If game_data.json doesn't exist
     """
-    if not combined_file.exists():
+    if not game_data_file.exists():
         raise FileNotFoundError(
-            f"Combined recaps file not found: {combined_file}\n"
-            f"Have you run process_recaps.py first?"
+            f"Game data file not found: {game_data_file}\n"
+            f"Have you run fetch_game_data.py first?"
         )
 
-    with open(combined_file, 'r', encoding='utf-8') as f:
-        return f.read()
+    with open(game_data_file, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
 
 def generate_json(
     ai_provider,
     prompt: str,
-    recap_content: str,
+    game_data: dict,
     week: int,
     year: int,
     output_dir: Path
@@ -141,8 +145,8 @@ def generate_json(
 
     Args:
         ai_provider: AIProvider instance
-        prompt: System prompt for the AI
-        recap_content: Combined recap content
+        prompt: System prompt for the AI (simplified - only asks for summaries/badges)
+        game_data: Game data dictionary from API (metadata + recap text)
         week: Week number
         year: Season year
         output_dir: Output directory path
@@ -154,18 +158,41 @@ def generate_json(
         AIProviderException: If AI generation fails
         ValidationException: If AI output fails validation
     """
-    print("Generating newsletter JSON with AI...")
-    print(f"Input size: {len(recap_content):,} characters")
+    print("Generating summaries and badges with AI...")
 
-    # Create the user message
+    games = game_data.get('games', [])
+    print(f"Processing {len(games)} games")
+
+    # Build user message with all games
+    # Include metadata and recap text, ask AI to generate summaries/badges
+    games_text = []
+    for i, game in enumerate(games, 1):
+        game_text = f"""
+GAME {i}: {game['game_id']}
+Away Team: {game['away_team']} ({game['away_abbr']}) - {game['away_score']} - Record: {game['away_record']}
+Home Team: {game['home_team']} ({game['home_abbr']}) - {game['home_score']} - Record: {game['home_record']}
+Date: {game['game_date']}
+Stadium: {game['stadium']}
+TV Network: {game['tv_network']}
+
+RECAP ARTICLE:
+{game['recap_text']}
+"""
+        games_text.append(game_text)
+
     user_message = f"""
-Here are the NFL game recaps from this week. Please generate a newsletter following the guidelines in the system prompt.
+Here are {len(games)} NFL games from Week {week}. For each game, the metadata (scores, records, teams, etc.) is already provided from ESPN's API.
 
-GAME RECAPS:
-{recap_content}
+Your task: Generate ONLY the summary and badges for each game.
+
+{'-' * 70}
+{''.join(games_text)}
+{'-' * 70}
 """
 
-    # Generate the newsletter JSON
+    print(f"Input size: {len(user_message):,} characters")
+
+    # Generate the summaries and badges
     try:
         raw_response = ai_provider.generate(prompt, user_message)
         print(f"Generated response: {len(raw_response):,} characters")
@@ -185,9 +212,9 @@ GAME RECAPS:
         print(f"⚠️  Could not extract JSON. Raw response saved to {debug_file}")
         raise ValidationException(f"Could not extract JSON from AI response: {e}")
 
-    # Parse JSON
+    # Parse JSON (AI returns summaries and badges)
     try:
-        json_data = json.loads(json_string)
+        ai_output = json.loads(json_string)
     except json.JSONDecodeError as e:
         # Save debug file with extracted JSON string
         debug_file = output_dir / "newsletter_debug_invalid.json"
@@ -198,12 +225,44 @@ GAME RECAPS:
         print(f"   Error at line {e.lineno}, column {e.colno}: {e.msg}")
         raise ValidationException(f"AI returned invalid JSON: {e}")
 
+    # Merge AI output (summaries/badges) with API metadata
+    print("Merging AI summaries with API metadata...")
+    ai_games = ai_output.get('games', [])
+
+    # Create a map of game_id -> AI data for quick lookup
+    ai_data_by_id = {}
+    for ai_game in ai_games:
+        game_id = ai_game.get('game_id')
+        if game_id:
+            ai_data_by_id[game_id] = ai_game
+
+    # Merge: Start with API metadata, add AI summaries/badges
+    merged_games = []
+    for game in games:
+        game_id = game['game_id']
+        ai_data = ai_data_by_id.get(game_id, {})
+
+        # Build complete game object
+        # Start with API metadata (already has all required fields)
+        merged_game = game.copy()
+
+        # Remove recap_text (not needed in final output)
+        merged_game.pop('recap_text', None)
+
+        # Add AI-generated fields
+        merged_game['summary'] = ai_data.get('summary', '')
+        merged_game['badges'] = ai_data.get('badges', [])
+
+        merged_games.append(merged_game)
+
+    print(f"✅ Merged {len(merged_games)} games")
+
     # Validate using Pydantic
     try:
         newsletter = NewsletterData(
             week=week,
             year=year,
-            games=json_data.get('games', []),
+            games=merged_games,
             ai_provider=ai_provider.__class__.__name__
         )
 
@@ -217,7 +276,7 @@ GAME RECAPS:
         debug_file = output_dir / "newsletter_debug_validation_failed.json"
         output_dir.mkdir(parents=True, exist_ok=True)
         with open(debug_file, 'w', encoding='utf-8') as f:
-            json.dump(json_data, f, indent=2)
+            json.dump({'games': merged_games}, f, indent=2)
         print(f"⚠️  Failed validation. Debug file: {debug_file}")
 
         # Format errors nicely
@@ -263,17 +322,18 @@ def main():
 
     print(f"Generating JSON for week: {target_week}")
 
-    # Locate combined recaps file in tmp directory
+    # Locate game data file in tmp directory
     tmp_week_dir = get_week_directory_path(config, year, target_week)
-    combined_file = tmp_week_dir / config.storage.combined_filename
+    game_data_file = tmp_week_dir / "game_data.json"
 
-    print(f"Input file: {combined_file}")
+    print(f"Input file: {game_data_file}")
 
-    # Read combined recaps
+    # Read game data from API
     try:
-        recap_content = read_combined_recaps(combined_file)
+        game_data = read_game_data(game_data_file)
     except FileNotFoundError as e:
-        handle_fatal_error(f"Combined recaps file not found: {combined_file}", e)
+        handle_fatal_error(f"Game data file not found: {game_data_file}\n"
+                          f"Have you run fetch_game_data.py first?", e)
 
     # Determine AI provider
     provider_name = args.provider or config.ai.active_provider
@@ -299,7 +359,7 @@ def main():
         newsletter_data = generate_json(
             ai_provider,
             prompt,
-            recap_content,
+            game_data,
             target_week,
             year,
             tmp_week_dir
