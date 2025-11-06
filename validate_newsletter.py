@@ -12,33 +12,6 @@ from pathlib import Path
 from typing import List, Dict, Any
 from datetime import datetime
 
-# Known NFL QBs and their teams (2025 season - update as needed)
-QB_TEAMS = {
-    # AFC East
-    "Josh Allen": "BUF", "Tua Tagovailoa": "MIA", "Aaron Rodgers": "NYJ",
-    "Drake Maye": "NE", "Jacoby Brissett": "NE",
-    # AFC North
-    "Lamar Jackson": "BAL", "Joe Burrow": "CIN", "Deshaun Watson": "CLE",
-    "Russell Wilson": "PIT", "Justin Fields": "PIT",
-    # AFC South
-    "C.J. Stroud": "HOU", "Anthony Richardson": "IND", "Joe Flacco": "IND",
-    "Trevor Lawrence": "JAX", "Will Levis": "TEN",
-    # AFC West
-    "Bo Nix": "DEN", "Patrick Mahomes": "KC", "Justin Herbert": "LAC",
-    "Gardner Minshew": "LV", "Aidan O'Connell": "LV",
-    # NFC East
-    "Dak Prescott": "DAL", "Daniel Jones": "NYG", "Drew Lock": "NYG",
-    "Jalen Hurts": "PHI", "Jayden Daniels": "WAS",
-    # NFC North
-    "Caleb Williams": "CHI", "Jared Goff": "DET", "Jordan Love": "GB",
-    "Sam Darnold": "MIN", "J.J. McCarthy": "MIN",
-    # NFC South
-    "Kirk Cousins": "ATL", "Bryce Young": "CAR", "Andy Dalton": "CAR",
-    "Derek Carr": "NO", "Baker Mayfield": "TB",
-    # NFC West
-    "Kyler Murray": "ARI", "Matthew Stafford": "LAR", "Brock Purdy": "SF",
-    "Geno Smith": "SEA"
-}
 
 
 class ValidationError:
@@ -67,7 +40,7 @@ class NewsletterValidator:
         self.validate_structure()
         self.validate_dates()
         self.validate_records()
-        self.validate_player_teams()
+        # self.validate_player_teams()  # Disabled - too much work to maintain QB rosters
         self.validate_badges()
         self.validate_scores()
         return self.errors
@@ -168,38 +141,21 @@ class NewsletterValidator:
                 ties = int(parts[2]) if len(parts) > 2 else 0
                 total = wins + losses + ties
 
-                # Week number check
+                # Week number check - teams can play UP TO week number of games
+                # (e.g., in week 9, a team can have 9 games if no bye week yet)
+                # Only flag if they have MORE games than weeks played
                 week = self.data.get('week', 0)
-                if week > 1 and total >= week:
+                if week > 1 and total > week:
                     self.errors.append(ValidationError(
                         "WARNING", game_id, f'{team_type}_record',
                         f"Record {record} has {total} games but it's only week {week}"
                     ))
 
-    def validate_player_teams(self):
-        """Check player-team matchups make sense."""
-        for game in self.data['games']:
-            game_id = game.get('game_id', 'unknown')
-            summary = game.get('summary', '')
-            away_team = game.get('away_abbr', '')
-            home_team = game.get('home_abbr', '')
-
-            # Extract player names in <strong> tags
-            players = re.findall(r'<strong>(.*?)</strong>', summary)
-
-            for player_name in players:
-                # Clean up name
-                player_name = player_name.strip()
-
-                # Check if it's a known QB
-                if player_name in QB_TEAMS:
-                    correct_team = QB_TEAMS[player_name]
-                    if correct_team not in [away_team, home_team]:
-                        self.errors.append(ValidationError(
-                            "ERROR", game_id, "summary",
-                            f"QB '{player_name}' mentioned but plays for {correct_team}, "
-                            f"not {away_team} or {home_team}"
-                        ))
+    # Disabled: validate_player_teams() - Too much maintenance to keep QB rosters updated
+    # QBs change frequently due to injuries, trades, and backups starting
+    # def validate_player_teams(self):
+    #     """Check player-team matchups make sense."""
+    #     pass
 
     def validate_badges(self):
         """Check badges match game characteristics."""
@@ -263,13 +219,33 @@ class NewsletterValidator:
 
 def main():
     """Main validation function."""
-    if len(sys.argv) > 1:
-        newsletter_file = Path(sys.argv[1])
+    import argparse
+    import yaml
+    from week_calculator import create_week_calculator
+
+    parser = argparse.ArgumentParser(description='Validate newsletter JSON data')
+    parser.add_argument('--week', type=int, help='Week number to validate')
+    parser.add_argument('path', nargs='?', help='Direct path to newsletter.json (alternative to --week)')
+
+    args = parser.parse_args()
+
+    if args.path:
+        # Direct path provided
+        newsletter_file = Path(args.path)
+    elif args.week:
+        # Week number provided - construct path
+        with open('config.yaml', 'r') as f:
+            config = yaml.safe_load(f)
+        year = config['nfl_season']['year']
+        newsletter_file = Path(f"tmp/{year}-week{args.week:02d}/newsletter.json")
     else:
-        # Default to most recent week
-        print("Usage: python validate_newsletter.py <path-to-newsletter.json>")
-        print("Example: python validate_newsletter.py tmp/2025-week09/newsletter.json")
-        sys.exit(1)
+        # Auto-detect week
+        with open('config.yaml', 'r') as f:
+            config = yaml.safe_load(f)
+        year = config['nfl_season']['year']
+        week_calc = create_week_calculator(config['nfl_season']['season_start_date'])
+        week = week_calc.get_week()
+        newsletter_file = Path(f"tmp/{year}-week{week:02d}/newsletter.json")
 
     if not newsletter_file.exists():
         print(f"Error: File not found: {newsletter_file}")

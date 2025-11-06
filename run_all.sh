@@ -47,22 +47,27 @@ echo "=================================="
 echo ""
 
 # Script 1: Fetch recaps
-echo "Step 1/4: Fetching game recaps from ESPN..."
+echo "Step 1/5: Fetching game recaps from ESPN..."
 python3 fetch_recaps.py $WEEK
 echo ""
 
 # Script 2: Process recaps
-echo "Step 2/4: Processing and combining recaps..."
+echo "Step 2/5: Processing and combining recaps..."
 python3 process_recaps.py $WEEK
 echo ""
 
 # Script 3a: Generate JSON with AI
-echo "Step 3/4: Generating newsletter JSON with AI..."
+echo "Step 3/5: Generating newsletter JSON with AI..."
 python3 generate_json.py $WEEK $PROVIDER
 echo ""
 
-# Script 3b: Format HTML newsletter
-echo "Step 4/4: Formatting HTML newsletter..."
+# Script 3b: Validate newsletter data
+echo "Step 4/5: Validating newsletter data..."
+python3 validate_newsletter.py $WEEK
+echo ""
+
+# Script 3c: Format HTML newsletter
+echo "Step 5/5: Formatting HTML newsletter..."
 python3 format_newsletter.py $WEEK
 echo ""
 
