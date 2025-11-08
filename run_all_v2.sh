@@ -363,7 +363,7 @@ import sys
 sys.path.insert(0, '${SCRIPT_DIR}')
 from week_calculator import DateBasedWeekCalculator
 
-calc = DateBasedWeekCalculator(2025)
+calc = DateBasedWeekCalculator('$season_start')
 target = datetime.strptime('$target_date', '%Y-%m-%d')
 week = calc.get_week_for_date(target)
 print(week)
