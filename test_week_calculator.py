@@ -241,6 +241,86 @@ class TestEdgeCases(unittest.TestCase):
         self.assertEqual(calculator.get_week(), -1)
 
 
+class TestGetWeekForDate(unittest.TestCase):
+    """Test the get_week_for_date method."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        # 2025 NFL season started on Thursday, September 4, 2025
+        self.calculator = DateBasedWeekCalculator("2025-09-04")
+
+    def test_week_1_thursday(self):
+        """Test Week 1 opening day (Thursday)."""
+        test_date = datetime(2025, 9, 4)  # Thursday, Week 1
+        week = self.calculator.get_week_for_date(test_date)
+        self.assertEqual(week, 1)
+
+    def test_week_1_sunday(self):
+        """Test Week 1 Sunday."""
+        test_date = datetime(2025, 9, 7)  # Sunday, Week 1
+        week = self.calculator.get_week_for_date(test_date)
+        self.assertEqual(week, 1)
+
+    def test_week_1_wednesday(self):
+        """Test Week 1 Wednesday (end of week)."""
+        test_date = datetime(2025, 9, 10)  # Wednesday, Week 1
+        week = self.calculator.get_week_for_date(test_date)
+        self.assertEqual(week, 1)
+
+    def test_week_2_thursday(self):
+        """Test Week 2 Thursday."""
+        test_date = datetime(2025, 9, 11)  # Thursday, Week 2
+        week = self.calculator.get_week_for_date(test_date)
+        self.assertEqual(week, 2)
+
+    def test_week_9_sunday(self):
+        """Test Week 9 Sunday."""
+        test_date = datetime(2025, 10, 30)  # Thursday, Week 9
+        week = self.calculator.get_week_for_date(test_date)
+        self.assertEqual(week, 9)
+
+    def test_week_9_thursday(self):
+        """Test Week 9 Thursday."""
+        test_date = datetime(2025, 10, 30)  # Thursday, Week 9
+        week = self.calculator.get_week_for_date(test_date)
+        self.assertEqual(week, 9)
+
+    def test_week_18_sunday(self):
+        """Test Week 18 (last regular season week)."""
+        # Week 18 starts about 125 days after Sept 4
+        test_date = datetime(2026, 1, 4)  # Week 18
+        week = self.calculator.get_week_for_date(test_date)
+        self.assertEqual(week, 18)
+
+    def test_clamped_to_maximum(self):
+        """Test that weeks beyond 18 are clamped to 18."""
+        far_future = datetime(2026, 6, 1)  # Well after season ends
+        week = self.calculator.get_week_for_date(far_future)
+        self.assertEqual(week, 18)
+
+    def test_clamped_to_minimum(self):
+        """Test that dates before season start are clamped to 1."""
+        before_season = datetime(2025, 8, 1)  # Before season
+        week = self.calculator.get_week_for_date(before_season)
+        self.assertEqual(week, 1)
+
+    def test_full_week_progression(self):
+        """Test week calculation across multiple weeks."""
+        expected = [
+            (datetime(2025, 9, 4), 1),   # Week 1 Thursday
+            (datetime(2025, 9, 11), 2),  # Week 2 Thursday
+            (datetime(2025, 9, 18), 3),  # Week 3 Thursday
+            (datetime(2025, 10, 16), 7), # Week 7 Thursday
+            (datetime(2025, 10, 30), 9), # Week 9 Thursday
+            (datetime(2025, 11, 2), 9),  # Week 9 Sunday
+        ]
+
+        for test_date, expected_week in expected:
+            with self.subTest(date=test_date):
+                week = self.calculator.get_week_for_date(test_date)
+                self.assertEqual(week, expected_week)
+
+
 class TestRealWorldScenarios(unittest.TestCase):
     """Test real-world usage scenarios."""
 

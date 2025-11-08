@@ -100,6 +100,37 @@ class DateBasedWeekCalculator(WeekCalculator):
 
         return week
 
+    def get_week_for_date(self, target_date: datetime) -> int:
+        """
+        Calculate which NFL week a specific date falls into.
+
+        This method calculates the week number for any given date,
+        without regard to whether the week is "complete" or not.
+
+        Args:
+            target_date: Date to check
+
+        Returns:
+            Week number (1-18)
+
+        Example:
+            >>> calc = DateBasedWeekCalculator("2025-09-04")
+            >>> calc.get_week_for_date(datetime(2025, 9, 4))  # Week 1 Thursday
+            1
+            >>> calc.get_week_for_date(datetime(2025, 9, 7))  # Week 1 Sunday
+            1
+            >>> calc.get_week_for_date(datetime(2025, 11, 9)) # Week 9 Sunday
+            9
+        """
+        # Calculate days since season start
+        days_since_start = (target_date - self.season_start).days
+
+        # Calculate week (1-indexed)
+        week = (days_since_start // 7) + 1
+
+        # Clamp to valid range (1-18 for regular season)
+        return max(1, min(week, 18))
+
 
 class ManualWeekCalculator(WeekCalculator):
     """
