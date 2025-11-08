@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "date": "20251109",
+    "type": "day",
+    "week": 9,
+    "year": 2025,
+    "fetched_at": "2025-11-09T18:00:00+00:00"
+  },
+  "games": [
+    {
+      "game_id": "401547891",
+      "away_team": "Philadelphia Eagles",
+      "away_abbr": "PHI",
+      "away_score": 28,
+      "away_record": "8-1",
+      "home_team": "Dallas Cowboys",
+      "home_abbr": "DAL",
+      "home_score": 23,
+      "home_record": "4-5",
+      "game_date_iso": "2025-11-09T13:00Z",
+      "game_date_display": "Sun 11/9 9:00AM ET",
+      "stadium": "AT&T Stadium",
+      "tv_network": "FOX",
+      "recap_url": "https://www.espn.com/nfl/recap?gameId=401547891",
+      "recap_text": "The Philadelphia Eagles dominated the Dallas Cowboys in a division matchup, securing a 28-23 victory. Philadelphia's offense controlled the tempo, with multiple scoring drives throughout the game. Dallas tried to rally late but fell just short of the comeback."
+    },
+    {
+      "game_id": "401547892",
+      "away_team": "Kansas City Chiefs",
+      "away_abbr": "KC",
+      "away_score": 31,
+      "away_record": "9-0",
+      "home_team": "Buffalo Bills",
+      "home_abbr": "BUF",
+      "home_score": 28,
+      "home_record": "7-2",
+      "game_date_iso": "2025-11-09T17:00Z",
+      "game_date_display": "Sun 11/9 1:00PM ET",
+      "stadium": "Highmark Stadium",
+      "tv_network": "CBS",
+      "recap_url": "https://www.espn.com/nfl/recap?gameId=401547892",
+      "recap_text": "The Kansas City Chiefs remained undefeated with a thrilling 31-28 victory over the Buffalo Bills. In a back-and-forth battle, Kansas City's late-game execution proved decisive. This was an instant classic between two AFC East contenders."
+    }
+  ]
+}
