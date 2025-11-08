@@ -1,0 +1,390 @@
+test_filter_different_date (test_fetch_games.TestFilterGamesByDate.test_filter_different_date)
+Test filtering games for a different date. ... ok
+test_filter_no_games (test_fetch_games.TestFilterGamesByDate.test_filter_no_games)
+Test filtering returns empty list when no games match. ... ok
+test_filter_preserves_game_data (test_fetch_games.TestFilterGamesByDate.test_filter_preserves_game_data)
+Test that filtering preserves all game data. ... ok
+test_filter_single_date (test_fetch_games.TestFilterGamesByDate.test_filter_single_date)
+Test filtering games for a single date. ... ok
+test_basic_iso_date_sunday_morning (test_fetch_games.TestFormatGameDate.test_basic_iso_date_sunday_morning)
+Test formatting Sunday morning game. ... ok
+test_invalid_format (test_fetch_games.TestFormatGameDate.test_invalid_format)
+Test that invalid format raises ValueError. ... ok
+test_monday_night_football (test_fetch_games.TestFormatGameDate.test_monday_night_football)
+Test formatting Monday Night Football. ... ok
+test_sunday_afternoon_game (test_fetch_games.TestFormatGameDate.test_sunday_afternoon_game)
+Test formatting Sunday afternoon game. ... ok
+test_game_scores_are_ints (test_fetch_games.TestGamesJsonStructure.test_game_scores_are_ints)
+Test that game scores are integers. ... ok
+test_games_have_required_fields (test_fetch_games.TestGamesJsonStructure.test_games_have_required_fields)
+Test that all games have required fields. ... ok
+test_games_is_list (test_fetch_games.TestGamesJsonStructure.test_games_is_list)
+Test that games is a list. ... ok
+test_has_metadata (test_fetch_games.TestGamesJsonStructure.test_has_metadata)
+Test that games.json has metadata. ... ok
+test_metadata_has_required_fields (test_fetch_games.TestGamesJsonStructure.test_metadata_has_required_fields)
+Test that metadata has all required fields. ... ok
+test_metadata_values (test_fetch_games.TestGamesJsonStructure.test_metadata_values)
+Test metadata values. ... ok
+test_fixture_contains_valid_games (test_fetch_games.TestIntegration.test_fixture_contains_valid_games)
+Test that fixture contains properly formatted games. ... ok
+test_sample_fixture_is_valid (test_fetch_games.TestIntegration.test_sample_fixture_is_valid)
+Test that sample fixture is valid JSON. ... ok
+test_game_has_required_fields (test_fetch_games.TestParseGameFromApi.test_game_has_required_fields)
+Test that parsed game has all required fields. ... ok
+test_parse_game_without_broadcast (test_fetch_games.TestParseGameFromApi.test_parse_game_without_broadcast)
+Test parsing game without broadcast info. ... ok
+test_parse_game_without_records (test_fetch_games.TestParseGameFromApi.test_parse_game_without_records)
+Test parsing game without team records. ... ok
+test_parse_game_without_venue (test_fetch_games.TestParseGameFromApi.test_parse_game_without_venue)
+Test parsing game without venue. ... ok
+test_parse_valid_game (test_fetch_games.TestParseGameFromApi.test_parse_valid_game)
+Test parsing valid game event. ... ok
+test_complex_html (test_fetch_games.TestStripHtmlTags.test_complex_html)
+Test stripping complex HTML. ... ok
+test_empty_html (test_fetch_games.TestStripHtmlTags.test_empty_html)
+Test with empty HTML. ... ok
+test_html_with_multiple_spaces (test_fetch_games.TestStripHtmlTags.test_html_with_multiple_spaces)
+Test that multiple spaces are normalized. ... ok
+test_simple_html (test_fetch_games.TestStripHtmlTags.test_simple_html)
+Test stripping simple HTML tags. ... ok
+test_multiple_games (test_generate_newsletter.TestConstructAiPrompt.test_multiple_games)
+Test with multiple games. ... ok
+test_returns_tuple (test_generate_newsletter.TestConstructAiPrompt.test_returns_tuple)
+Test that function returns a tuple of (system_prompt, user_message). ... ok
+test_system_prompt_equals_template (test_generate_newsletter.TestConstructAiPrompt.test_system_prompt_equals_template)
+Test that system prompt equals the template. ... ok
+test_user_message_contains_games (test_generate_newsletter.TestConstructAiPrompt.test_user_message_contains_games)
+Test that user message contains game information. ... ok
+test_user_message_contains_recap (test_generate_newsletter.TestConstructAiPrompt.test_user_message_contains_recap)
+Test that user message contains recap text. ... ok
+test_bare_json (test_generate_newsletter.TestExtractJsonFromResponse.test_bare_json)
+Test extracting bare JSON without any wrapping. ... ok
+test_inline_backticks (test_generate_newsletter.TestExtractJsonFromResponse.test_inline_backticks)
+Test extracting JSON from inline backticks. ... ok
+test_invalid_format_raises_error (test_generate_newsletter.TestExtractJsonFromResponse.test_invalid_format_raises_error)
+Test that invalid format raises ValueError. ... ok
+test_json_is_valid (test_generate_newsletter.TestExtractJsonFromResponse.test_json_is_valid)
+Test that extracted JSON is valid JSON. ... ok
+test_json_with_text_before_and_after (test_generate_newsletter.TestExtractJsonFromResponse.test_json_with_text_before_and_after)
+Test extracting JSON when surrounded by text. ... ok
+test_markdown_code_block_no_language (test_generate_newsletter.TestExtractJsonFromResponse.test_markdown_code_block_no_language)
+Test extracting JSON from markdown code block without language specifier. ... ok
+test_markdown_json_code_block (test_generate_newsletter.TestExtractJsonFromResponse.test_markdown_json_code_block)
+Test extracting JSON from markdown code block with json language specifier. ... ok
+test_fixture_data_structure (test_generate_newsletter.TestIntegration.test_fixture_data_structure)
+Test that fixture data has correct structure for Stage 2. ... ok
+test_prompt_construction_with_fixture (test_generate_newsletter.TestIntegration.test_prompt_construction_with_fixture)
+Test prompt construction with fixture data. ... ok
+test_file_not_found (test_generate_newsletter.TestLoadGamesFile.test_file_not_found)
+Test that FileNotFoundError is raised for missing file. ... ok
+test_invalid_json (test_generate_newsletter.TestLoadGamesFile.test_invalid_json)
+Test that JSONDecodeError is raised for invalid JSON. ... ok
+test_load_valid_games_file (test_generate_newsletter.TestLoadGamesFile.test_load_valid_games_file)
+Test loading valid games.json from fixture. ... ok
+test_missing_games (test_generate_newsletter.TestLoadGamesFile.test_missing_games)
+Test that ValueError is raised when games list is missing. ... ok
+test_missing_metadata (test_generate_newsletter.TestLoadGamesFile.test_missing_metadata)
+Test that ValueError is raised when metadata is missing. ... ok
+test_ai_fields_added (test_generate_newsletter.TestMergeAiOutput.test_ai_fields_added)
+Test that AI fields are added to games. ... ok
+test_empty_ai_output (test_generate_newsletter.TestMergeAiOutput.test_empty_ai_output)
+Test handling when AI output is empty. ... ⚠️  Warning: No AI output for game 401547891
+⚠️  Warning: No AI output for game 401547892
+ok
+test_game_count_preserved (test_generate_newsletter.TestMergeAiOutput.test_game_count_preserved)
+Test that all games are in the output. ... ok
+test_missing_ai_data (test_generate_newsletter.TestMergeAiOutput.test_missing_ai_data)
+Test handling when AI output is missing for some games. ... ⚠️  Warning: No AI output for game 401547892
+ok
+test_original_fields_preserved (test_generate_newsletter.TestMergeAiOutput.test_original_fields_preserved)
+Test that original game fields are preserved. ... ok
+test_recap_text_removed (test_generate_newsletter.TestMergeAiOutput.test_recap_text_removed)
+Test that recap_text is removed from output. ... ok
+test_returns_list (test_generate_newsletter.TestMergeAiOutput.test_returns_list)
+Test that function returns a list of games. ... ok
+test_argument_order_independence (test_orchestration.TestArgumentParsing.test_argument_order_independence)
+Test that argument order doesn't matter. ... ok
+test_date_type_combination (test_orchestration.TestArgumentParsing.test_date_type_combination)
+Test that both --date and --type are parsed correctly. ... ok
+test_date_format_8_digits (test_orchestration.TestOrchestrationScript.test_date_format_8_digits)
+Test that date must be exactly 8 digits. ... ok
+test_help_flag (test_orchestration.TestOrchestrationScript.test_help_flag)
+Test that --help flag works. ... ok
+test_invalid_date_day (test_orchestration.TestOrchestrationScript.test_invalid_date_day)
+Test that script rejects invalid day. ... ok
+test_invalid_date_format (test_orchestration.TestOrchestrationScript.test_invalid_date_format)
+Test that script rejects invalid date format. ... ok
+test_invalid_date_month (test_orchestration.TestOrchestrationScript.test_invalid_date_month)
+Test that script rejects invalid month. ... ok
+test_invalid_provider_argument (test_orchestration.TestOrchestrationScript.test_invalid_provider_argument)
+Test that script rejects invalid provider. ... ok
+test_invalid_type_argument (test_orchestration.TestOrchestrationScript.test_invalid_type_argument)
+Test that script rejects invalid type. ... ok
+test_missing_config_file (test_orchestration.TestOrchestrationScript.test_missing_config_file)
+Test that script fails when config file is missing. ... ok
+test_missing_required_date_argument (test_orchestration.TestOrchestrationScript.test_missing_required_date_argument)
+Test that script fails without --date argument. ... ok
+test_script_exists (test_orchestration.TestOrchestrationScript.test_script_exists)
+Test that run_all_v2.sh exists. ... ok
+test_script_is_executable (test_orchestration.TestOrchestrationScript.test_script_is_executable)
+Test that script is executable. ... ok
+test_unknown_option (test_orchestration.TestOrchestrationScript.test_unknown_option)
+Test that script rejects unknown options. ... ok
+test_valid_date_formats (test_orchestration.TestOrchestrationScript.test_valid_date_formats)
+Test various valid date formats. ... ok
+test_valid_provider_claude (test_orchestration.TestOrchestrationScript.test_valid_provider_claude)
+Test that claude is accepted as valid provider. ... ok
+test_valid_provider_gemini (test_orchestration.TestOrchestrationScript.test_valid_provider_gemini)
+Test that gemini is accepted as valid provider. ... ok
+test_valid_provider_openai (test_orchestration.TestOrchestrationScript.test_valid_provider_openai)
+Test that openai is accepted as valid provider. ... ok
+test_valid_type_day (test_orchestration.TestOrchestrationScript.test_valid_type_day)
+Test that 'day' is accepted as valid type. ... ok
+test_valid_type_week (test_orchestration.TestOrchestrationScript.test_valid_type_week)
+Test that 'week' is accepted as valid type. ... ok
+test_error_goes_to_stderr (test_orchestration.TestOutputFormatting.test_error_goes_to_stderr)
+Test that errors are written to stderr. ... ok
+test_help_goes_to_stdout (test_orchestration.TestOutputFormatting.test_help_goes_to_stdout)
+Test that help text goes to stdout. ... ok
+test_help_output_format (test_orchestration.TestOutputFormatting.test_help_output_format)
+Test that help output is properly formatted. ... ok
+test_date_validation_comprehensive (test_orchestration.TestValidationFunctions.test_date_validation_comprehensive)
+Test comprehensive date validation. ... ok
+test_creates_index_html (test_publish_newsletter.TestGenerateIndexHtml.test_creates_index_html)
+Test that index.html is created. ... ok
+test_index_contains_game_count (test_publish_newsletter.TestGenerateIndexHtml.test_index_contains_game_count)
+Test that index.html displays game counts. ... ok
+test_index_contains_week_info (test_publish_newsletter.TestGenerateIndexHtml.test_index_contains_week_info)
+Test that index.html contains week information. ... ok
+test_index_is_valid_html (test_publish_newsletter.TestGenerateIndexHtml.test_index_is_valid_html)
+Test that generated index is valid HTML. ... ok
+test_badge_formatting (test_publish_newsletter.TestIntegration.test_badge_formatting)
+Test various badge formats. ... ok
+test_prepare_game_with_all_fields (test_publish_newsletter.TestIntegration.test_prepare_game_with_all_fields)
+Test game preparation with all fields. ... ok
+test_file_not_found (test_publish_newsletter.TestLoadNewsletterFile.test_file_not_found)
+Test that FileNotFoundError is raised for missing file. ... ok
+test_load_valid_newsletter_from_fixture (test_publish_newsletter.TestLoadNewsletterFile.test_load_valid_newsletter_from_fixture)
+Test loading valid newsletter.json. ... ok
+test_missing_games (test_publish_newsletter.TestLoadNewsletterFile.test_missing_games)
+Test that ValueError is raised when games list is missing. ... ok
+test_missing_metadata (test_publish_newsletter.TestLoadNewsletterFile.test_missing_metadata)
+Test that ValueError is raised when metadata is missing. ... ok
+test_badges_formatted (test_publish_newsletter.TestPrepareGameForTemplate.test_badges_formatted)
+Test that badges are formatted correctly. ... ok
+test_includes_team_icons (test_publish_newsletter.TestPrepareGameForTemplate.test_includes_team_icons)
+Test that result includes team icons. ... ok
+test_metadata_formatted (test_publish_newsletter.TestPrepareGameForTemplate.test_metadata_formatted)
+Test that metadata is formatted correctly. ... ok
+test_missing_optional_fields (test_publish_newsletter.TestPrepareGameForTemplate.test_missing_optional_fields)
+Test handling of missing optional fields. ... ok
+test_returns_dict (test_publish_newsletter.TestPrepareGameForTemplate.test_returns_dict)
+Test that function returns a dictionary. ... ok
+test_tie_game (test_publish_newsletter.TestPrepareGameForTemplate.test_tie_game)
+Test tie game. ... ok
+test_winner_loser_classification (test_publish_newsletter.TestPrepareGameForTemplate.test_winner_loser_classification)
+Test correct winner/loser classification. ... ok
+test_winner_loser_reversed (test_publish_newsletter.TestPrepareGameForTemplate.test_winner_loser_reversed)
+Test winner/loser when home team wins. ... ok
+test_archive_has_day_entry (test_publish_newsletter.TestUpdateArchive.test_archive_has_day_entry)
+Test that day mode creates day entry. ... ok
+test_archive_has_week_entry (test_publish_newsletter.TestUpdateArchive.test_archive_has_week_entry)
+Test that archive contains week entry. ... ok
+test_create_new_archive (test_publish_newsletter.TestUpdateArchive.test_create_new_archive)
+Test creating a new archive.json. ... ok
+test_multiple_weeks (test_publish_newsletter.TestUpdateArchive.test_multiple_weeks)
+Test adding multiple weeks to archive. ... ok
+test_week_mode_entry (test_publish_newsletter.TestUpdateArchive.test_week_mode_entry)
+Test creating week mode entry. ... ok
+test_day_subdirectory (test_stage_utils.TestDaySubdirectory.test_day_subdirectory)
+Test day subdirectory path. ... ok
+test_day_subdirectory_week_1 (test_stage_utils.TestDaySubdirectory.test_day_subdirectory_week_1)
+Test day subdirectory for Week 1. ... ok
+test_basic_iso_date (test_stage_utils.TestFormatGameDate.test_basic_iso_date)
+Test formatting basic ISO date. ... ok
+test_eastern_time_conversion (test_stage_utils.TestFormatGameDate.test_eastern_time_conversion)
+Test that UTC is correctly converted to Eastern Time. ... ok
+test_includes_day_name (test_stage_utils.TestFormatGameDate.test_includes_day_name)
+Test that result includes day name abbreviation. ... ok
+test_includes_time (test_stage_utils.TestFormatGameDate.test_includes_time)
+Test that result includes time. ... ok
+test_invalid_iso_format (test_stage_utils.TestFormatGameDate.test_invalid_iso_format)
+Test that invalid ISO format raises ValueError. ... ok
+test_midnight_conversion (test_stage_utils.TestFormatGameDate.test_midnight_conversion)
+Test midnight time. ... ok
+test_games_file_path_day_mode (test_stage_utils.TestGamesFilePath.test_games_file_path_day_mode)
+Test games.json path for day mode. ... ok
+test_games_file_path_filename (test_stage_utils.TestGamesFilePath.test_games_file_path_filename)
+Test that filename is always 'games.json'. ... ok
+test_games_file_path_week_mode (test_stage_utils.TestGamesFilePath.test_games_file_path_week_mode)
+Test games.json path for week mode. ... ok
+test_day_mode_full_path (test_stage_utils.TestIntegration.test_day_mode_full_path)
+Test full path construction for day mode. ... ok
+test_multiple_days_same_week (test_stage_utils.TestIntegration.test_multiple_days_same_week)
+Test handling multiple daily runs in same week. ... ok
+test_week_mode_full_path (test_stage_utils.TestIntegration.test_week_mode_full_path)
+Test full path construction for week mode. ... ok
+test_newsletter_file_path_day_mode (test_stage_utils.TestNewsletterFilePath.test_newsletter_file_path_day_mode)
+Test newsletter.json path for day mode. ... ok
+test_newsletter_file_path_filename (test_stage_utils.TestNewsletterFilePath.test_newsletter_file_path_filename)
+Test that filename is always 'newsletter.json'. ... ok
+test_newsletter_file_path_week_mode (test_stage_utils.TestNewsletterFilePath.test_newsletter_file_path_week_mode)
+Test newsletter.json path for week mode. ... ok
+test_day_mode_filename (test_stage_utils.TestOutputHtmlFilename.test_day_mode_filename)
+Test HTML filename for day mode (Sunday). ... ok
+test_day_mode_monday (test_stage_utils.TestOutputHtmlFilename.test_day_mode_monday)
+Test HTML filename for day mode (Monday). ... ok
+test_day_mode_thursday (test_stage_utils.TestOutputHtmlFilename.test_day_mode_thursday)
+Test HTML filename for day mode (Thursday). ... ok
+test_filename_format_day_mode (test_stage_utils.TestOutputHtmlFilename.test_filename_format_day_mode)
+Test that day mode filename has correct format. ... ok
+test_missing_metadata_field (test_stage_utils.TestOutputHtmlFilename.test_missing_metadata_field)
+Test that missing metadata field raises ValueError. ... ok
+test_week_18_day_mode (test_stage_utils.TestOutputHtmlFilename.test_week_18_day_mode)
+Test HTML filename for Week 18 day mode. ... ok
+test_week_1_filename (test_stage_utils.TestOutputHtmlFilename.test_week_1_filename)
+Test HTML filename for Week 1. ... ok
+test_week_mode_filename (test_stage_utils.TestOutputHtmlFilename.test_week_mode_filename)
+Test HTML filename for week mode. ... ok
+test_impossible_date (test_stage_utils.TestParseDate.test_impossible_date)
+Test that impossible dates raise ValueError. ... ok
+test_invalid_day (test_stage_utils.TestParseDate.test_invalid_day)
+Test that invalid day raises ValueError. ... ok
+test_invalid_length (test_stage_utils.TestParseDate.test_invalid_length)
+Test that invalid length raises ValueError. ... ok
+test_invalid_month (test_stage_utils.TestParseDate.test_invalid_month)
+Test that invalid month raises ValueError. ... ok
+test_invalid_year (test_stage_utils.TestParseDate.test_invalid_year)
+Test that invalid year raises ValueError. ... ok
+test_non_numeric (test_stage_utils.TestParseDate.test_non_numeric)
+Test that non-numeric input raises ValueError. ... ok
+test_valid_date (test_stage_utils.TestParseDate.test_valid_date)
+Test parsing valid date. ... ok
+test_valid_date_dec_31 (test_stage_utils.TestParseDate.test_valid_date_dec_31)
+Test parsing December 31st. ... ok
+test_valid_date_jan_1 (test_stage_utils.TestParseDate.test_valid_date_jan_1)
+Test parsing January 1st. ... ok
+test_valid_date_leap_year (test_stage_utils.TestParseDate.test_valid_date_leap_year)
+Test parsing leap year February 29. ... ok
+test_day_lowercase (test_stage_utils.TestValidateType.test_day_lowercase)
+Test 'day' in lowercase. ... ok
+test_day_mixed_case (test_stage_utils.TestValidateType.test_day_mixed_case)
+Test 'Day' in mixed case. ... ok
+test_day_uppercase (test_stage_utils.TestValidateType.test_day_uppercase)
+Test 'DAY' in uppercase. ... ok
+test_empty_string (test_stage_utils.TestValidateType.test_empty_string)
+Test that empty string raises ValueError. ... ok
+test_invalid_type (test_stage_utils.TestValidateType.test_invalid_type)
+Test that invalid type raises ValueError. ... ok
+test_week_lowercase (test_stage_utils.TestValidateType.test_week_lowercase)
+Test 'week' in lowercase. ... ok
+test_week_uppercase (test_stage_utils.TestValidateType.test_week_uppercase)
+Test 'WEEK' in uppercase. ... ok
+test_with_whitespace (test_stage_utils.TestValidateType.test_with_whitespace)
+Test with leading/trailing whitespace. ... ok
+test_week_directory_different_year (test_stage_utils.TestWeekDirectory.test_week_directory_different_year)
+Test directory path with different year. ... ok
+test_week_directory_week_1 (test_stage_utils.TestWeekDirectory.test_week_directory_week_1)
+Test directory path for Week 1. ... ok
+test_week_directory_week_18 (test_stage_utils.TestWeekDirectory.test_week_directory_week_18)
+Test directory path for Week 18 (last regular season). ... ok
+test_week_directory_week_9 (test_stage_utils.TestWeekDirectory.test_week_directory_week_9)
+Test directory path for Week 9. ... ok
+test_work_directory_day_mode (test_stage_utils.TestWorkDirectory.test_work_directory_day_mode)
+Test work directory for day mode. ... ok
+test_work_directory_different_dates (test_stage_utils.TestWorkDirectory.test_work_directory_different_dates)
+Test multiple day mode directories in same week. ... ok
+test_work_directory_week_mode (test_stage_utils.TestWorkDirectory.test_work_directory_week_mode)
+Test work directory for week mode. ... ok
+test_creates_date_based_calculator (test_week_calculator.TestCreateWeekCalculator.test_creates_date_based_calculator)
+Test factory creates DateBasedWeekCalculator when no manual week. ... ok
+test_creates_manual_calculator (test_week_calculator.TestCreateWeekCalculator.test_creates_manual_calculator)
+Test factory creates ManualWeekCalculator when manual_week provided. ... ok
+test_factory_with_none_manual_week (test_week_calculator.TestCreateWeekCalculator.test_factory_with_none_manual_week)
+Test factory with explicit None for manual_week. ... ok
+test_manual_week_overrides_date_based (test_week_calculator.TestCreateWeekCalculator.test_manual_week_overrides_date_based)
+Test that manual_week parameter takes precedence. ... ok
+test_all_days_of_week_pattern (test_week_calculator.TestDateBasedWeekCalculator.test_all_days_of_week_pattern)
+Test that Thu-Mon return previous week, Tue-Wed return current week. ... ok
+test_default_reference_date (test_week_calculator.TestDateBasedWeekCalculator.test_default_reference_date)
+Test that get_week works without explicit reference_date. ... ok
+test_week_1_monday (test_week_calculator.TestDateBasedWeekCalculator.test_week_1_monday)
+Test Week 1 on Monday Night Football (incomplete week). ... ok
+test_week_1_sunday (test_week_calculator.TestDateBasedWeekCalculator.test_week_1_sunday)
+Test Week 1 on Sunday (incomplete week). ... ok
+test_week_1_thursday (test_week_calculator.TestDateBasedWeekCalculator.test_week_1_thursday)
+Test Week 1 on Thursday (opening day - incomplete). ... ok
+test_week_1_tuesday (test_week_calculator.TestDateBasedWeekCalculator.test_week_1_tuesday)
+Test Tuesday of Week 1 (week now complete). ... ok
+test_week_1_wednesday (test_week_calculator.TestDateBasedWeekCalculator.test_week_1_wednesday)
+Test Wednesday of Week 1 (week complete). ... ok
+test_week_2_thursday (test_week_calculator.TestDateBasedWeekCalculator.test_week_2_thursday)
+Test Week 2 Thursday (Week 2 in progress, return Week 1). ... ok
+test_week_8_monday (test_week_calculator.TestDateBasedWeekCalculator.test_week_8_monday)
+Test Week 8 Monday (Week 8 in progress, return Week 7). ... ok
+test_week_8_sunday (test_week_calculator.TestDateBasedWeekCalculator.test_week_8_sunday)
+Test Week 8 Sunday (Week 8 in progress, return Week 7). ... ok
+test_week_8_thursday (test_week_calculator.TestDateBasedWeekCalculator.test_week_8_thursday)
+Test Week 8 Thursday (Week 8 in progress, return Week 7). ... ok
+test_week_8_tuesday_returns_week_8 (test_week_calculator.TestDateBasedWeekCalculator.test_week_8_tuesday_returns_week_8)
+Test Tuesday of Week 8 (Week 8 complete). ... ok
+test_week_calculation_late_season (test_week_calculator.TestDateBasedWeekCalculator.test_week_calculation_late_season)
+Test week calculation late in season. ... ok
+test_week_calculation_mid_season (test_week_calculator.TestDateBasedWeekCalculator.test_week_calculation_mid_season)
+Test week calculation in mid-season. ... ok
+test_week_never_below_1 (test_week_calculator.TestDateBasedWeekCalculator.test_week_never_below_1)
+Test that week number never goes below 1. ... ok
+test_day_before_season_start (test_week_calculator.TestEdgeCases.test_day_before_season_start)
+Test day before season starts. ... ok
+test_different_season_start_date (test_week_calculator.TestEdgeCases.test_different_season_start_date)
+Test with a different season start date. ... ok
+test_far_future_date (test_week_calculator.TestEdgeCases.test_far_future_date)
+Test with a date far in the future. ... ok
+test_manual_week_negative (test_week_calculator.TestEdgeCases.test_manual_week_negative)
+Test manual calculator with negative week (edge case). ... ok
+test_manual_week_zero (test_week_calculator.TestEdgeCases.test_manual_week_zero)
+Test manual calculator with week 0 (edge case). ... ok
+test_season_start_is_week_1 (test_week_calculator.TestEdgeCases.test_season_start_is_week_1)
+Test that season start date returns Week 1 (clamped minimum). ... ok
+test_clamped_to_maximum (test_week_calculator.TestGetWeekForDate.test_clamped_to_maximum)
+Test that weeks beyond 18 are clamped to 18. ... ok
+test_clamped_to_minimum (test_week_calculator.TestGetWeekForDate.test_clamped_to_minimum)
+Test that dates before season start are clamped to 1. ... ok
+test_full_week_progression (test_week_calculator.TestGetWeekForDate.test_full_week_progression)
+Test week calculation across multiple weeks. ... ok
+test_week_18_sunday (test_week_calculator.TestGetWeekForDate.test_week_18_sunday)
+Test Week 18 (last regular season week). ... ok
+test_week_1_sunday (test_week_calculator.TestGetWeekForDate.test_week_1_sunday)
+Test Week 1 Sunday. ... ok
+test_week_1_thursday (test_week_calculator.TestGetWeekForDate.test_week_1_thursday)
+Test Week 1 opening day (Thursday). ... ok
+test_week_1_wednesday (test_week_calculator.TestGetWeekForDate.test_week_1_wednesday)
+Test Week 1 Wednesday (end of week). ... ok
+test_week_2_thursday (test_week_calculator.TestGetWeekForDate.test_week_2_thursday)
+Test Week 2 Thursday. ... ok
+test_week_9_sunday (test_week_calculator.TestGetWeekForDate.test_week_9_sunday)
+Test Week 9 Sunday. ... ok
+test_week_9_thursday (test_week_calculator.TestGetWeekForDate.test_week_9_thursday)
+Test Week 9 Thursday. ... ok
+test_ignores_reference_date (test_week_calculator.TestManualWeekCalculator.test_ignores_reference_date)
+Test that manual calculator ignores reference_date parameter. ... ok
+test_returns_specified_week (test_week_calculator.TestManualWeekCalculator.test_returns_specified_week)
+Test that calculator returns the manually specified week. ... ok
+test_week_1 (test_week_calculator.TestManualWeekCalculator.test_week_1)
+Test with week 1. ... ok
+test_week_18 (test_week_calculator.TestManualWeekCalculator.test_week_18)
+Test with week 18 (last regular season week). ... ok
+test_full_season_progression (test_week_calculator.TestRealWorldScenarios.test_full_season_progression)
+Test week progression throughout entire season. ... ok
+test_manual_override_for_past_week (test_week_calculator.TestRealWorldScenarios.test_manual_override_for_past_week)
+Test generating newsletter for a past week. ... ok
+test_newsletter_generation_tuesday (test_week_calculator.TestRealWorldScenarios.test_newsletter_generation_tuesday)
+Test typical newsletter generation on Tuesday morning. ... ok
+test_newsletter_generation_wednesday (test_week_calculator.TestRealWorldScenarios.test_newsletter_generation_wednesday)
+Test newsletter generation on Wednesday (last day of week). ... ok
+
+----------------------------------------------------------------------
+Ran 191 tests in 17.244s
+
+OK
