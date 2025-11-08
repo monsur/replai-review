@@ -287,7 +287,8 @@ def main():
 
         # Create AI provider
         provider_name = args.provider or config['ai']['active_provider']
-        ai_provider = create_ai_provider(provider_name, config)
+        provider_config = config['ai']['providers'][provider_name]
+        ai_provider = create_ai_provider(provider_name, provider_config)
 
         print(f"🤖 Using AI provider: {provider_name}")
         print("⏳ Generating summaries and badges...")
