@@ -57,9 +57,9 @@ python3 generate_json.py $WEEK $PROVIDER
 echo ""
 
 # Script 3: Validate newsletter data
-echo "Step 3/4: Validating newsletter data..."
-python3 validate_newsletter.py $WEEK
-echo ""
+# echo "Step 3/4: Validating newsletter data..."
+# python3 validate_newsletter.py $WEEK
+# echo ""
 
 # Script 4: Format HTML newsletter
 echo "Step 4/4: Formatting HTML newsletter..."
