@@ -1,10 +1,17 @@
 {
   "latest": {
     "year": 2025,
-    "week": 13,
-    "filename": "2025-week13.html"
+    "week": 14,
+    "filename": "2025-week14.html"
   },
   "weeks": [
+    {
+      "year": 2025,
+      "week": 14,
+      "filename": "2025-week14.html",
+      "date": "2025-12-10",
+      "games": 14
+    },
     {
       "year": 2025,
       "week": 13,
