@@ -100,9 +100,9 @@ class Game(BaseModel):
 
     summary: str = Field(
         ...,
-        min_length=50,
+        min_length=20,
         max_length=1500,
-        description="Game summary (3-10 sentences, 50-1500 characters)"
+        description="Game summary (3-10 sentences, 20-1500 characters)"
     )
 
     badges: List[str] = Field(
