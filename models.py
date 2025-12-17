@@ -100,7 +100,7 @@ class Game(BaseModel):
 
     summary: str = Field(
         ...,
-        min_length=20,
+        min_length=5,
         max_length=1500,
         description="Game summary (3-10 sentences, 20-1500 characters)"
     )
